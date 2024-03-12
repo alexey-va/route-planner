@@ -1,11 +1,14 @@
 export function calculate(params) {
     let comments = [];
 
+    // If distance is 0, return -1
     if (params.distance === 0) return {
         price: -1,
         description: ["Нулевая дистанция"]
     };
 
+
+    // check for minimal purchase amount
     let minimal_city_price = vehiclesConfig[params.vehicle].minimal_city_price;
     if (params.purchaseAmount < minimal_city_price) {
         return {
@@ -14,18 +17,22 @@ export function calculate(params) {
         };
     }
 
-
+    // check for free city delivery
     if (params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.by_time) {
         return {
             price: 0,
             description: ["Бесплатно в пределах города (до 1.5 тонн)"]
         };
-    } else if (params.region === "Киров" && params.weight <= config.free_city_weight && params.options.by_time) {
+    }
+    // add comments for paid city delivery
+    else if (params.region === "Киров" && params.weight <= config.free_city_weight && params.options.by_time) {
         comments.push("Платно в пределах города при срочной доставке")
     }
 
+    // if not in city add comment
     if (params.region !== "Киров") comments.push(["За пределами города"]);
 
+    // calculate price
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
     comments.push("Машина: " + vehiclesConfig[params.vehicle].name + " (" + vehiclesConfig[params.vehicle].price + " руб/км)");
     if (params.options.by_time) {
