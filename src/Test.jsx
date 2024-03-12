@@ -1,7 +1,6 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 
-function Test({setDistance, setDuration}) {
-
+function Test({setDistance, setDuration, setRegion}) {
 
 
     useEffect(() => {
@@ -12,10 +11,11 @@ function Test({setDistance, setDuration}) {
     function init() {
         // Стоимость за километр.
         var myMap = new ymaps.Map('map', {
-                center: [58.565190, 49.605433],
-                zoom: 15,
+                center: [49.605433, 58.565190],
+                zoom: 12,
                 controls: []
             }),
+
             // Создадим панель маршрутизации.
             routePanelControl = new ymaps.control.RoutePanel({
                 options: {
@@ -34,17 +34,26 @@ function Test({setDistance, setDuration}) {
                         right: 10
                     }
                 }
-            });
+            }), deliveryPoint = new ymaps.GeoObject({
+                geometry: {type: 'Point'},
+                properties: {iconCaption: 'Адрес'}
+            }, {
+                preset: 'islands#blackDotIconWithCaption',
+                draggable: true,
+                iconCaptionMaxWidth: '215'
+            }), deliveryZones;
+        myMap.geoObjects.add(deliveryPoint);
+
         // Пользователь сможет построить только автомобильный маршрут.
         routePanelControl.routePanel.options.set({
             types: {auto: true}
         });
 
         // Если вы хотите задать неизменяемую точку "откуда", раскомментируйте код ниже.
-/*        routePanelControl.routePanel.state.set({
+        routePanelControl.routePanel.state.set({
             fromEnabled: true,
             from: 'Киров, Коммунальная 5'
-         });*/
+        });
 
         myMap.controls.add(routePanelControl).add(zoomControl);
 
@@ -60,18 +69,25 @@ function Test({setDistance, setDuration}) {
                 var activeRoute = route.getActiveRoute();
                 if (activeRoute) {
                     // Получим протяженность маршрута.
-                    console.log(route.getActiveRoute().properties);
+                    var coords = route.getActiveRoute().properties.get('boundedBy')[0];
+                    var polygon = deliveryZones.searchContaining(coords).get(0);
+                    var region = polygon.properties.get('description');
+                    setRegion(region);
+
+                    /*                    ymaps.geocode(coords, {
+                                            // Ищем только станции метро.
+                                            kind: 'street',
+                                            // Запрашиваем не более 20 результатов.
+                                            results: 1
+                                        }).then((res) => {
+                                            console.log(res.geoObjects.get(0).properties.get('metaDataProperty')['GeocoderMetaData']['Address']['Components']);
+                                        });*/
+
                     var duration = route.getActiveRoute().properties.get("duration");
                     var length = route.getActiveRoute().properties.get("distance");
                     setDistance(length.value)
                     setDuration(duration.value)
 
-                    let obj = {
-                        distance: length.value,
-                        time: duration.value
-                    }
-
-                    var price = calculate(obj);
                     let balloonContentLayout = ymaps.templateLayoutFactory.createClass(
                         '<span>Расстояние: ' + length.text + '.</span><br/>'
                         //+ '<span style="font-weight: bold; font-style: italic">Стоимость доставки: ' + price + ' р.</span>'
@@ -82,6 +98,28 @@ function Test({setDistance, setDuration}) {
                     activeRoute.balloon.open();
                 }
             });
+
+
+            function onZonesLoad(json) {
+                // Добавляем зоны на карту.
+                deliveryZones = ymaps.geoQuery(json).addToMap(myMap);
+                // Задаём цвет и контент балунов полигонов.
+                deliveryZones.each(function (obj) {
+                    obj.options.set({
+                        fillColor: obj.properties.get('fill'),
+                        fillOpacity: obj.properties.get('fill-opacity'),
+                        strokeColor: obj.properties.get('stroke'),
+                        strokeWidth: obj.properties.get('stroke-width'),
+                        strokeOpacity: obj.properties.get('stroke-opacity')
+                    });
+                    obj.properties.set('balloonContent', obj.properties.get('description'));
+                });
+            }
+
+            fetch('data.geojson')
+                .then(response => response.json())
+                .then(data => onZonesLoad(data))
+                .catch(error => console.error('Error fetching data:', error));
 
         });
         // Функция, вычисляющая стоимость доставки.

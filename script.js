@@ -1,4 +1,74 @@
-function calculate(params) {
-    let res = params['distance']+params['duration'];
-    return res;
+export function calculate(params) {
+    let comments = [];
+
+    if (params.distance === 0) return {
+        price: -1,
+        description: ["Нулевая дистанция"]
+    };
+
+    let minimal_city_price = vehiclesConfig[params.vehicle].minimal_city_price;
+    if (params.purchaseAmount < minimal_city_price) {
+        return {
+            price: -1,
+            description: ["Минимальная сумма покупки не достигнута ("+minimal_city_price+" руб)"]
+        };
+    }
+
+
+    if (params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.by_time) {
+        return {
+            price: 0,
+            description: ["Бесплатно в пределах города (до 1.5 тонн)"]
+        };
+    } else if (params.region === "Киров" && params.weight <= config.free_city_weight && params.options.by_time) {
+        comments.push("Платно в пределах города при срочной доставке")
+    }
+
+    if (params.region !== "Киров") comments.push(["За пределами города"]);
+
+    let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
+    comments.push("Машина: " + vehiclesConfig[params.vehicle].name + " (" + vehiclesConfig[params.vehicle].price + " руб/км)");
+    if (params.options.by_time) {
+        if (params.options.right_now) {
+            price *= config.right_now;
+            comments.push("Срочная доставка (x2)");
+        } else {
+            price *= config.by_time;
+            comments.push("Доставка по времени (x1.5)");
+        }
+    }
+    return {
+        price: price,
+        description: comments
+    };
+}
+
+export const config = {
+    by_time: 1.5,
+    right_now: 2,
+    free_city_weight: 1.5
+}
+
+export const vehiclesConfig = {
+    0: {
+        name: "Газель",
+        price: 35,
+        price_hour: 1200,
+        max_weight: 1.5,
+        minimal_city_price: 750
+    },
+    1: {
+        name: "Газон",
+        price: 45,
+        price_hour: 1200,
+        max_weight: 5,
+        minimal_city_price: 2400
+    },
+    2: {
+        name: "Камаз",
+        price: 60,
+        price_hour: 1200,
+        max_weight: 8,
+        minimal_city_price: 3000
+    }
 }
