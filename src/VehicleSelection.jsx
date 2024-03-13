@@ -1,6 +1,6 @@
 import React from 'react';
 
-function VehicleSelection({ vehiclesConfig, weight, vehicle, setVehicle }) {
+function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
     return (
         <div className="mx-2 flex flex-row gap-12 mt-4">
             {/* VEHICLE SELECTION */}
@@ -22,9 +22,6 @@ function VehicleSelection({ vehiclesConfig, weight, vehicle, setVehicle }) {
                     </div>
                 );
             })}
-            <div className="flex items-center space-x-2 text-red-600">
-                {vehicle !== 0 ? "Грузовой транспорт" : ""}
-            </div>
             {/* VEHICLE SELECTION */}
         </div>
     );

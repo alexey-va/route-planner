@@ -1,71 +1,56 @@
 import React from 'react';
 
-function ResultDisplay({distance, duration, region, price, weight}) {
-    // Style for each row in the results
-    const rowStyle = {
-        padding: '8px 0', // Add padding for better spacing
-        borderBottom: '1px solid #ddd', // Light grey line for separation
-    };
-
-    const commentsContainerStyle = {
-        maxHeight: '96px', // Adjust based on your line-height and desired number of lines
-        overflowY: 'auto',  // Allows scrolling within the container
-        padding: '4px 0',   // Add some padding if needed
-        borderBottom: '1px solid #ddd', // Retain the border from rowStyle if necessary
-    };
-
-    const formatPrice = (price) => {
-        if (price === 0) {
+function ResultDisplay({ distance, duration, region, price, weight }) {
+    // Convert the function to use Tailwind for consistency and improved design
+    const formatPrice = (priceValue) => {
+        if (priceValue === 0) {
             return "Бесплатно";
-        } else if (price === -1 || price === undefined || isNaN(price)) {
+        } else if (priceValue === -1 || priceValue === undefined || isNaN(priceValue)) {
             return "Нет";
         } else {
-            return `${price.toFixed(0)} руб`;
+            return `${priceValue.toFixed(0)} руб`;
         }
-    }
+    };
 
     return (
         <div className="mt-4 mb-auto px-2 py-4 flex flex-col border-t border-gray-200 space-y-2">
-            <div style={rowStyle}>
-                <div className="flex justify-between">
-                    <span className="font-semibold">Расстояние:</span>
-                    <span>{distance ? (distance / 1000.0).toFixed(1) : 0} км</span>
-                </div>
+            {/* Other details remain the same */}
+            <div className="flex justify-between">
+                <span className="font-semibold">Расстояние:</span>
+                <span>{distance ? (distance / 1000.0).toFixed(1) : 0} км</span>
             </div>
-            <div style={rowStyle}>
-                <div className="flex justify-between">
-                    <span className="font-semibold">Время:</span>
-                    <span>{duration ? (duration / 60).toFixed(0) : 0} минут</span>
-                </div>
+            <div className="flex justify-between">
+                <span className="font-semibold">Район:</span>
+                <span>{region || "Неизвестно"}</span>
             </div>
-            <div style={rowStyle}>
-                <div className="flex justify-between">
-                    <span className="font-semibold">Регион:</span>
-                    <span>{region === "" ? "Неизвестно" : region}</span>
-                </div>
+            <div className="flex justify-between">
+                <span className="font-semibold">Вес:</span>
+                <span>{weight || 1} кг</span>
             </div>
-            <div style={rowStyle}>
-                <div className="flex justify-between">
-                    <span className="font-semibold">Вес:</span>
-                    <span>{weight === "" ? 1 : weight} кг</span>
-                </div>
+
+            {/* Comments Section */}
+            <div className="mt-4 p-4 border-t border-gray-200">
+                <span className="font-semibold text-lg">Комментарии:</span>
+                {price.description.length > 0 ? (
+                    <ul className="list-disc list-outside mt-2 bg-gray-50 p-3 rounded-lg border border-gray-300 pl-10"> {/* Adjusted padding and list style */}
+                        {price.description.map((comment, index) => (
+                            <li key={index} className="mt-1 break-words"> {/* Ensures words break properly */}
+                                {comment}
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div className="mt-2 bg-gray-50 p-3 rounded-lg border border-gray-300 text-gray-500">Нет комментариев.</div>
+                )}
             </div>
-            <div style={{...rowStyle, borderBottom: 'none'}}> {/* Adjust if you want other styles from rowStyle */}
-                <span className="font-semibold">Комментарии:</span>
-                <div style={commentsContainerStyle}>
-                    {price.description.map((comment, index) => (
-                        <p key={index}> - {comment}</p>
-                    ))}
-                </div>
-            </div>
-            {/* Price details with a different style for emphasis */}
-            <div className="flex justify-between bg-blue-100 p-4 px-6 rounded-lg" style={{margin: '20px 0'}}>
+
+            {/* Price Details */}
+            <div className="flex justify-between bg-blue-100 p-4 rounded-lg mt-4">
                 <span className="font-semibold text-xl">Стоимость:</span>
                 <span className="text-xl font-bold">
                     {formatPrice(price.price)}
                 </span>
             </div>
-
         </div>
     );
 }

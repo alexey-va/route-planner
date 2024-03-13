@@ -16,7 +16,7 @@ function App() {
     const [distance, setDistance] = useState(getFromLocalStorageOrDefault('distance', 0));
     const [region, setRegion] = useState(getFromLocalStorageOrDefault('region', ''));
     const [duration, setDuration] = useState(getFromLocalStorageOrDefault('duration', 0));
-    const [weight, setWeight] = useState(getFromLocalStorageOrDefault('weight', 0.1));
+    const [weight, setWeight] = useState(getFromLocalStorageOrDefault('weight', 100));
     const [options, setOptions] = useState(getFromLocalStorageOrDefault('options', {
         by_time: false,
         right_now: false,
@@ -69,15 +69,18 @@ function App() {
 
     const handleWeightChange = (e) => {
         let newWeight = parseFloat(e.target.value);
-        setWeight(newWeight);
+        let amount = newWeight;
+        if (amount >= 100000) amount = 100000;
+        if (amount === '' || isNaN(amount)) amount = 0;
+        setWeight(amount);
 
         // Check if weight exceeds max weight of selected vehicle
         const selectedVehicleConfig = vehiclesConfig[vehicle];
-        if (selectedVehicleConfig && newWeight > selectedVehicleConfig.max_weight) {
+        if (selectedVehicleConfig && amount > selectedVehicleConfig.max_weight) {
             // Find the next available vehicle
             let nextAvailableVehicle = 0;
             for (const [key, value] of Object.entries(vehiclesConfig)) {
-                if (value.max_weight >= newWeight) {
+                if (value.max_weight >= amount) {
                     nextAvailableVehicle = parseInt(key);
                     break;
                 }
@@ -90,7 +93,7 @@ function App() {
         setDistance(0);
         setRegion('');
         setDuration(0);
-        setWeight(0.1);
+        setWeight(100);
         setOptions({
             by_time: false,
             right_now: false,
@@ -100,6 +103,7 @@ function App() {
             price: 0,
             description: [""]
         });
+        setPurchaseAmount(0);
     };
 
     return (
@@ -120,6 +124,7 @@ function App() {
                             setDistance={setDistance}
                             purchaseAmount={purchaseAmount}
                             setPurchaseAmount={setPurchaseAmount}
+                            vehicle={vehicle}
                         />
                         <div className="mt-4">
                             <div className="flex flex-row gap-10 mt-4">
