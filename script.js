@@ -7,6 +7,10 @@ export function calculate(params) {
         description: ["Нулевая дистанция"]
     };
 
+    if(params.weight === 0){
+        comments.push("Нулевой вес");
+    }
+
 
     // check for minimal purchase amount
     let minimal_city_price = vehiclesConfig[params.vehicle].minimal_city_price;
@@ -66,21 +70,21 @@ export const vehiclesConfig = {
         name: "Газель",
         price: 35,
         price_hour: 1200,
-        max_weight: 1.5,
+        max_weight: 1500,
         minimal_city_price: 750
     },
     1: {
         name: "Газон",
         price: 45,
         price_hour: 1200,
-        max_weight: 5,
+        max_weight: 5000,
         minimal_city_price: 2400
     },
     2: {
         name: "Камаз",
         price: 60,
         price_hour: 1200,
-        max_weight: 8,
+        max_weight: 8000,
         minimal_city_price: 3000
     }
 }
