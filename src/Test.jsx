@@ -116,7 +116,7 @@ function Test({setDistance, setDuration, setRegion}) {
                 });
             }
 
-            fetch('data.geojson')
+            fetch('./data.geojson')
                 .then(response => response.json())
                 .then(data => onZonesLoad(data))
                 .catch(error => console.error('Error fetching data:', error));

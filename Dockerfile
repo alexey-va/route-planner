@@ -4,6 +4,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
+COPY ./data.geojson ./dist/data.geojson
 
 FROM node:16-alpine
 WORKDIR /app
