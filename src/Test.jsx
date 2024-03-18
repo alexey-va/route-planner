@@ -71,7 +71,7 @@ function Test({setDistance, setDuration, setRegion}) {
                     // Получим протяженность маршрута.
                     var coords = route.getActiveRoute().properties.get('boundedBy')[0];
                     var polygon = deliveryZones.searchContaining(coords).get(0);
-                    var region = polygon.properties.get('description');
+                    var region = !polygon ? "Не Киров" : polygon.properties.get('description');
                     setRegion(region);
 
                     /*                    ymaps.geocode(coords, {
