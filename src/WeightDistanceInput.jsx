@@ -1,14 +1,11 @@
 import React from 'react';
-import {vehiclesConfig} from "../script.js";
+import {vehiclesConfig} from "../script.jsx";
 
 function WeightDistanceInput({
                                  weight,
                                  handleWeightChange,
                                  distance,
-                                 setDistance,
-                                 purchaseAmount,
-                                 setPurchaseAmount,
-                                 vehicle
+                                 setDistance
                              }) {
 
     let displayDistance = (distance / 1000).toString();
@@ -16,18 +13,11 @@ function WeightDistanceInput({
         displayDistance = displayDistance.slice(0, displayDistance.indexOf('.') + 2);
     }
 
-    let displaySum = (purchaseAmount).toString();
-    if (displaySum.includes('.')) {
-        displaySum = displaySum.slice(0, displaySum.indexOf('.') + 2);
-    }
 
     let displayWeight = (weight).toString();
     if (displayWeight.includes('.')) {
         displayWeight = displayWeight.slice(0, displayWeight.indexOf('.'));
     }
-
-    const minimalCityPrice = vehiclesConfig[vehicle].minimal_city_price; // Extract the minimal city price for the current vehicle
-
 
     // Calculate left offset based on the content length
     const kgLabelStyle = {
@@ -38,9 +28,6 @@ function WeightDistanceInput({
         left: `${Math.max(1, displayDistance.length - (displayDistance.includes('.') ? 0.4 : 0)) / 1.6 + 1.4}rem`,
     };
 
-    const rubLabelStyle = {
-        left: `${(purchaseAmount ? Math.max(1, displaySum.length) / 1.6 : 0.8) + 1.4}rem`,
-    };
 
     const handleDistanceChange = (e) => {
         let km = parseFloat(e.target.value); // Convert input from string to float
@@ -49,27 +36,6 @@ function WeightDistanceInput({
         if (km < 0 || isNaN(km)) km = 0;
         setDistance(km * 1000); // Convert kilometers back to meters for internal state
     };
-
-    const handlePurchaseAmountChange = (e) => {
-        let value = e.target.value;
-        let amount = value === '' ? '' : parseFloat(value);
-        if (amount >= 1000000000) amount = 1000000000;
-        if (amount === '' || isNaN(amount)) amount = 0;
-        setPurchaseAmount(amount);
-    };
-
-    const handleWeightChangeLocally = (e) => {
-        let newWeight = parseFloat(e.target.value);
-        let amount = newWeight;
-        if (amount >= 100000) amount = 100000;
-        if (amount === '' || isNaN(amount)) amount = 0;
-        handleWeightChange(amount);
-    }
-
-
-    const sumBgColor = purchaseAmount >= vehiclesConfig[vehicle].minimal_city_price ? 'bg-green-100' : 'bg-red-100';
-    const sumOutlineColor = purchaseAmount >= vehiclesConfig[vehicle].minimal_city_price ? 'border-green-400' : 'border-red-400';
-
 
     return (
         <div>
@@ -110,7 +76,7 @@ function WeightDistanceInput({
                 </div>
             </div>
             {/* PURCHASE AMOUNT */}
-            <div className="relative mt-4">
+            {/*            <div className="relative mt-4">
                 <label htmlFor="purchaseAmount" className="font-semibold text-xl">Сумма покупки (руб):</label>
                 <div className={`${sumOutlineColor} flex items-center border border-gray-300 rounded-md mt-2`}>
                     <input
@@ -129,7 +95,8 @@ function WeightDistanceInput({
                         {purchaseAmount < minimalCityPrice ? `Минимум ${minimalCityPrice} руб` : ''}
                     </span>
                 </div>
-            </div>
+            </div>*/}
+
         </div>
     );
 }

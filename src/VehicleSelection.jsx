@@ -17,7 +17,12 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
                                 checked={vehicle === parseInt(key)}
                                 onChange={() => setVehicle(parseInt(key))}
                             />
-                            <label htmlFor={`vehicle-${key}`}>{value.name}</label>
+                            <label
+                                className={`flex flex-row`}
+                                htmlFor={`vehicle-${key}`}>
+                                {value.name}
+                                <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">{value.max_weight/1000}т</span>
+                            </label>
                         </div>
                     </div>
                 );

@@ -48,7 +48,7 @@ function ResultDisplay({distance, duration, region, price, weight}) {
             </div>
 
             {/* Price Details */}
-            <div className="flex justify-between bg-blue-100 p-4 rounded-lg mt-4">
+            <div className="mx-2 flex justify-between bg-blue-100 p-4 rounded-lg mt-4">
                 <span className="font-semibold text-xl">Стоимость:</span>
                 <span className="text-xl font-bold">
                     {formatPrice(price.price)}

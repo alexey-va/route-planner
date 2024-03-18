@@ -1,7 +1,7 @@
 import Test from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput"; // Import the new component at the top
 import {useEffect, useState} from "react";
-import {calculate, config, vehiclesConfig} from "../script.js";
+import {calculate, config, vehiclesConfig} from "../script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
@@ -20,13 +20,13 @@ function App() {
     const [options, setOptions] = useState(getFromLocalStorageOrDefault('options', {
         by_time: false,
         right_now: false,
+        price: false
     }));
     const [vehicle, setVehicle] = useState(getFromLocalStorageOrDefault('vehicle', 0));
     const [price, setPrice] = useState(getFromLocalStorageOrDefault('price', {
         price: 0,
         description: [""]
     }));
-    const [purchaseAmount, setPurchaseAmount] = useState(getFromLocalStorageOrDefault('purchaseAmount', 0));
 
     useEffect(() => {
         localStorage.setItem('distance', JSON.stringify(distance));
@@ -36,7 +36,6 @@ function App() {
         localStorage.setItem('options', JSON.stringify(options));
         localStorage.setItem('vehicle', JSON.stringify(vehicle));
         localStorage.setItem('price', JSON.stringify(price));
-        localStorage.setItem('purchaseAmount', JSON.stringify(purchaseAmount));
 
         // Calculate price whenever distance, duration, or weight changes
         let params = {
@@ -45,12 +44,11 @@ function App() {
             weight: weight,
             options: options,
             vehicle: vehicle,
-            region: region,
-            purchaseAmount: purchaseAmount
+            region: region
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [distance, duration, weight, options, vehicle, region, purchaseAmount]);
+    }, [distance, duration, weight, options, vehicle, region]);
 
     const handleOptionChange = (option) => {
         if (option === 'by_time' && options[option]) {
@@ -97,13 +95,13 @@ function App() {
         setOptions({
             by_time: false,
             right_now: false,
+            price: false
         });
         setVehicle(0);
         setPrice({
             price: 0,
-            description: [""]
+            description: [""],
         });
-        setPurchaseAmount(0);
     };
 
     return (
@@ -122,8 +120,6 @@ function App() {
                             handleWeightChange={handleWeightChange}
                             distance={distance}
                             setDistance={setDistance}
-                            purchaseAmount={purchaseAmount}
-                            setPurchaseAmount={setPurchaseAmount}
                             vehicle={vehicle}
                         />
                         <div className="mt-4">

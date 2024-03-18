@@ -1,6 +1,7 @@
 import React from 'react';
+import {config} from "../script.jsx";
 
-function DeliveryOptions({ options, handleOptionChange }) {
+function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
     return (
         <div className="mt-4">
             <label className="font-semibold text-xl">Настройки</label>
@@ -10,11 +11,16 @@ function DeliveryOptions({ options, handleOptionChange }) {
                     <div className="flex items-center space-x-2">
                         <input
                             type="checkbox"
-                            id="option1"
-                            checked={options.by_time}
+                            id="by_time"
+                            checked={options.by_time || false}
                             onChange={() => handleOptionChange('by_time')}
                         />
-                        <label htmlFor="option1">Срочно</label>
+                        <label htmlFor="by_time">
+                            Срочно
+                            <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">
+                                x{config.by_time}
+                            </span>
+                        </label>
                     </div>
                 </div>
                 {/* BY TIME DELIVERY */}
@@ -24,15 +30,33 @@ function DeliveryOptions({ options, handleOptionChange }) {
                     <div className="flex items-center space-x-2">
                         <input
                             type="checkbox"
-                            id="option4"
-                            checked={options.right_now}
+                            id="right_now"
+                            checked={options.right_now || false}
                             onChange={() => handleOptionChange('right_now')}
-                            disabled={!options.by_time}
+                            disabled={!options.by_time || false}
                         />
-                        <label htmlFor="option4">Прямо сейчас</label>
+                        <label htmlFor="right_now">
+                            Прямо сейчас
+                            <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">
+                                x{config.right_now}
+                            </span>
+                        </label>
                     </div>
                 </div>
                 {/* RIGHT NOW DELIVERY */}
+            </div>
+            <div className="mx-2 flex flex-row gap-10 mt-4">
+            <div className="">
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="price"
+                            checked={options.price || false}
+                            onChange={() => handleOptionChange('price')}
+                        />
+                        <label htmlFor="price">Сумма покупки ≥ 10,000 руб</label>
+                    </div>
+                </div>
             </div>
         </div>
     );
