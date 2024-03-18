@@ -44,7 +44,7 @@ export function calculate(params) {
             comments.push("Срочная доставка (x2)");
         } else {
             price *= config.by_time;
-            comments.push("Доставка по времени (x1.5)");
+            comments.push("Доставка ко времени (x1.5)");
         }
     }
 

@@ -16,7 +16,7 @@ function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
                             onChange={() => handleOptionChange('by_time')}
                         />
                         <label htmlFor="by_time">
-                            Срочно
+                            Ко времени
                             <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">
                                 x{config.by_time}
                             </span>
@@ -26,7 +26,7 @@ function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
                 {/* BY TIME DELIVERY */}
 
                 {/* RIGHT NOW DELIVERY */}
-                <div className="">
+{/*                <div className="">
                     <div className="flex items-center space-x-2">
                         <input
                             type="checkbox"
@@ -42,7 +42,7 @@ function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
                             </span>
                         </label>
                     </div>
-                </div>
+                </div>*/}
                 {/* RIGHT NOW DELIVERY */}
             </div>
             <div className="mx-2 flex flex-row gap-10 mt-4">
