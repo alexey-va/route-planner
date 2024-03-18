@@ -38,6 +38,12 @@ export function calculate(params) {
     // calculate price
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
     comments.push("Машина: " + vehiclesConfig[params.vehicle].name);
+
+    if(price < vehiclesConfig[params.vehicle].minimal_city_price){
+        price = vehiclesConfig[params.vehicle].minimal_city_price;
+        comments.push("Минимальная стоимость доставки "+vehiclesConfig[params.vehicle].minimal_city_price+" руб");
+    }
+
     if (params.options.by_time) {
         if (params.options.right_now) {
             price *= config.right_now;
@@ -48,10 +54,7 @@ export function calculate(params) {
         }
     }
 
-    if(price < vehiclesConfig[params.vehicle].minimal_city_price){
-        price = vehiclesConfig[params.vehicle].minimal_city_price;
-        comments.push("Минимальная стоимость доставки "+vehiclesConfig[params.vehicle].minimal_city_price+" руб");
-    }
+
 
     return {
         price: price,
