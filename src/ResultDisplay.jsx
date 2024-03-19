@@ -33,15 +33,16 @@ function ResultDisplay({distance, duration, region, price, weight}) {
             {/* Comments Section */}
             <div className="mt-2 py-2 px-2 border-t border-gray-200">
                 <span className="font-semibold text-lg">Комментарии:</span>
-                {price.description.length > 0 ? (
-                    <ul className="list-disc list-outside mt-2 bg-gray-50 p-2 rounded-lg border border-gray-300 pl-8"> {/* Adjusted padding and list style */}
-                        {price.description.map((comment, index) => (
-                            <li key={index} className="mt-0 break-words"> {/* Ensures words break properly */}
-                                {comment}
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
+                {/* Create a new array with at least three elements */}
+                <ul className="list-disc list-outside mt-2 bg-gray-50 p-2 rounded-lg border border-gray-300 pl-8">
+                    {(price.description.length > 0 ? price.description : []).concat(Array(Math.max(0, 3 - price.description.length)).fill('')).map((comment, index) => (
+                        <li key={index}
+                            className={`mt-0 break-words ${!comment && 'opacity-0'}`}> {/* Apply opacity-0 for empty comments */}
+                            {comment || 'Пустой комментарий'} {/* Display placeholder text or nothing */}
+                        </li>
+                    ))}
+                </ul>
+                {price.description.length === 0 && (
                     <div className="mt-2 bg-gray-50 p-3 rounded-lg border border-gray-300 text-gray-500">Нет
                         комментариев.</div>
                 )}

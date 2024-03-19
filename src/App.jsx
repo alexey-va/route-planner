@@ -111,9 +111,8 @@ function App() {
                 <div className="w-full  min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
                     <Test setDistance={setDistance} setDuration={setDuration} setRegion={setRegion}/>
                 </div>
-                <hr className="bg-gray-400 h-0.5"/>
                 {/* Content container */}
-                <div className="p-2 text-lg font-sans flex flex-col">
+                <div className="p-2 text-lg font-sans flex flex-col border-t border-2">
                     <div className="">
                         <WeightDistanceInput
                             weight={weight}
