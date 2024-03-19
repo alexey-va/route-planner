@@ -24,11 +24,11 @@
 
 1. Клонируйте репозиторий на вашу машину:
    ```bash
-   git clone <ссылка-на-ваш-репозиторий>
+   git clone https://github.com/alexey-va/route-planner.git
    ```
 2. Установите необходимые зависимости:
    ```bash
-   cd <имя-проекта>
+   cd route-planner
    npm install
    ```
 3. Запустите проект:
