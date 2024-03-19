@@ -108,9 +108,9 @@ function App() {
 
     return (
         <div className="w-full h-screen bg-white flex justify-center items-center">
-            <div className="w-full h-screen md:w-full flex flex-col">
+            <div className="bg-white w-full h-screen md:w-full flex flex-col">
                 {/* Map container */}
-                <div className="relative w-full h-[300px] min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
+                <div className="relative w-full h-[400px] min-h-[400px] min-w-[300px] md:min-h-[500px] md:min-w-[400px]">
                     <Test setDistance={setDistance}
                           setDuration={setDuration}
                           setRegion={setRegion}
@@ -122,7 +122,7 @@ function App() {
 
                 </div>
                 {/* Content container */}
-                <div className="p-2 text-lg font-sans flex flex-col border-t border-2">
+                <div className="p-2 text-lg font-sans flex flex-col border-t-2">
                     <div className="">
                         <WeightDistanceInput
                             weight={weight}

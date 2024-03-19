@@ -42,7 +42,7 @@ function Test({setDistance, setDuration, setRegion}) {
 
         // Пользователь сможет построить только автомобильный маршрут.
         routePanelControl.routePanel.options.set({
-            types: {auto: true, truck: true, pedestrian: false, bicycle: false, taxi: false}
+            types: {auto: true}
         });
 
         // Если вы хотите задать неизменяемую точку "откуда", раскомментируйте код ниже.
@@ -65,9 +65,14 @@ function Test({setDistance, setDuration, setRegion}) {
                 var activeRoute = route.getActiveRoute();
                 if (activeRoute) {
                     // Получим протяженность маршрута.
-                    var coords = routePanelControl.routePanel.state.get('to');
+                    var coords = route.properties.get("rawProperties").RouterMetaData.Waypoints[1].coordinates;
+                    //console.log(routePanelControl.routePanel.state)
+                    //console.log(activeRoute)
+                    //console.log(myMap)
+                    //console.log(coords)
+                    //console.log(route.properties.get("rawProperties").RouterMetaData.Waypoints[1].coordinates)
                     var polygon = deliveryZones.searchContaining(coords).get(0);
-                    var region = !polygon ? "Не Киров" : polygon.properties.get('description');
+                    var region = !polygon ? "Область" : polygon.properties.get('description');
                     setRegion(region);
                     var duration = route.getActiveRoute().properties.get("duration");
                     var length = route.getActiveRoute().properties.get("distance");
