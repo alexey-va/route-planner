@@ -108,7 +108,7 @@ function App() {
         <div className="w-full h-screen bg-white flex justify-center items-center">
             <div className="w-full h-screen md:w-full md:h-full flex flex-col">
                 {/* Map container */}
-                <div className="w-full  min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
+                <div className="w-full min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
                     <Test setDistance={setDistance} setDuration={setDuration} setRegion={setRegion}/>
                 </div>
                 {/* Content container */}
