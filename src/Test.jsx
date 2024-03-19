@@ -1,8 +1,6 @@
-import {useEffect} from "react";
+import {useEffect, useImperativeHandle} from "react";
 
 function Test({setDistance, setDuration, setRegion}) {
-
-
     useEffect(() => {
         ymaps.ready(init);
     }, []);
@@ -11,21 +9,19 @@ function Test({setDistance, setDuration, setRegion}) {
     function init() {
         // Стоимость за километр.
         var myMap = new ymaps.Map('map', {
-                center: [49.605433, 58.565190],
-                zoom: 12,
-                controls: []
-            }),
-
-            // Создадим панель маршрутизации.
-            routePanelControl = new ymaps.control.RoutePanel({
-                options: {
-                    // Добавим заголовок панели.
-                    showHeader: true,
-                    title: 'Расчёт доставки',
-                    maxWidth: 500,
-                }
-            }),
-            zoomControl = new ymaps.control.ZoomControl({
+            center: [49.605433, 58.565190],
+            zoom: 12,
+            controls: []
+        }),
+        routePanelControl = new ymaps.control.RoutePanel({
+            options: {
+                // Добавим заголовок панели.
+                showHeader: true,
+                title: 'Расчёт доставки',
+                maxWidth: 500,
+            }
+        }),
+        zoomControl = new ymaps.control.ZoomControl({
                 options: {
                     size: 'small',
                     float: 'none',

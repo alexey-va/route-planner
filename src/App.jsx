@@ -1,6 +1,6 @@
 import Test from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput"; // Import the new component at the top
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {calculate, config, vehiclesConfig} from "../script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
@@ -11,6 +11,7 @@ function App() {
         const storedValue = localStorage.getItem(key);
         return storedValue ? JSON.parse(storedValue) : defaultValue;
     };
+
 
     // Initial state values retrieved from localStorage or default values
     const [distance, setDistance] = useState(getFromLocalStorageOrDefault('distance', 0));
@@ -102,14 +103,23 @@ function App() {
             price: 0,
             description: [""],
         });
+
     };
 
     return (
         <div className="w-full h-screen bg-white flex justify-center items-center">
-            <div className="w-full h-screen md:w-full md:h-full flex flex-col">
+            <div className="w-full md:w-full flex flex-col">
                 {/* Map container */}
-                <div className="w-full min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
-                    <Test setDistance={setDistance} setDuration={setDuration} setRegion={setRegion}/>
+                <div className="relative w-full h-[300px] min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
+                    <Test setDistance={setDistance}
+                          setDuration={setDuration}
+                          setRegion={setRegion}
+                          vehicle={vehicle}
+                    />
+                    {vehicle != 0 ? <div
+                        className="transition-all animate-pulseOutline left-1 bottom-1 absolute w-[8.75rem] h-[2rem]
+                         ring-2 ring-red-500 ring-opacity-100 rounded-sm pointer-events-none"></div> : ""}
+
                 </div>
                 {/* Content container */}
                 <div className="p-2 text-lg font-sans flex flex-col border-t border-2">

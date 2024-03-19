@@ -5,7 +5,8 @@ function WeightDistanceInput({
                                  weight,
                                  handleWeightChange,
                                  distance,
-                                 setDistance
+                                 setDistance,
+                                 vehicle
                              }) {
 
     let displayDistance = (distance / 1000).toString();
@@ -59,7 +60,12 @@ function WeightDistanceInput({
             </div>
             {/* DISTANCE */}
             <div className="relative mt-2">
-                <label htmlFor="distance" className="font-semibold text-l">Расстояние (км):</label>
+                <div className={`relative`}>
+                    <div className={`absolute inset-0 w-[9rem] -left-0.5 rounded-sm ${vehicle != 0 ? "animate-pulseOutline ring-2 ring-red-500 ring-opacity-100" : ""}`}></div>
+                    <label htmlFor="distance" className="font-semibold text-l block bg-transparent z-10 relative">
+                        Расстояние (км):
+                    </label>
+                </div>
                 <div className="flex items-center border border-gray-300 rounded-md mt-1">
                     <input
                         type="number"
