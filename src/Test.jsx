@@ -46,7 +46,7 @@ function Test({setDistance, setDuration, setRegion}) {
 
         // Пользователь сможет построить только автомобильный маршрут.
         routePanelControl.routePanel.options.set({
-            types: {auto: true}
+            types: {auto: true, truck: true, pedestrian: false, bicycle: false, taxi: false}
         });
 
         // Если вы хотите задать неизменяемую точку "откуда", раскомментируйте код ниже.
@@ -69,20 +69,10 @@ function Test({setDistance, setDuration, setRegion}) {
                 var activeRoute = route.getActiveRoute();
                 if (activeRoute) {
                     // Получим протяженность маршрута.
-                    var coords = route.getActiveRoute().properties.get('boundedBy')[0];
+                    var coords = routePanelControl.routePanel.state.get('to');
                     var polygon = deliveryZones.searchContaining(coords).get(0);
                     var region = !polygon ? "Не Киров" : polygon.properties.get('description');
                     setRegion(region);
-
-                    /*                    ymaps.geocode(coords, {
-                                            // Ищем только станции метро.
-                                            kind: 'street',
-                                            // Запрашиваем не более 20 результатов.
-                                            results: 1
-                                        }).then((res) => {
-                                            console.log(res.geoObjects.get(0).properties.get('metaDataProperty')['GeocoderMetaData']['Address']['Components']);
-                                        });*/
-
                     var duration = route.getActiveRoute().properties.get("duration");
                     var length = route.getActiveRoute().properties.get("distance");
                     setDistance(length.value)
