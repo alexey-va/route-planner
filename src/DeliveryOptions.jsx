@@ -3,9 +3,8 @@ import {config} from "../script.jsx";
 
 function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
     return (
-        <div className="mt-4">
-            <label className="font-semibold text-xl">Настройки</label>
-            <div className="mx-2 flex flex-row gap-10 mt-4">
+        <div className="pr-10">
+            <div className="mx-2 flex flex-row gap-10 mt-2">
                 {/* BY TIME DELIVERY */}
                 <div className="flex flex-col space-y-2">
                     <div className="flex items-center space-x-2">
@@ -45,7 +44,7 @@ function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
                 </div>*/}
                 {/* RIGHT NOW DELIVERY */}
             </div>
-            <div className="mx-2 flex flex-row gap-10 mt-4">
+            <div className="mx-2 flex flex-row gap-10 mt-2">
             <div className="">
                     <div className="flex items-center space-x-2">
                         <input

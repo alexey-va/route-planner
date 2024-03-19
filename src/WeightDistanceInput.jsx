@@ -21,11 +21,11 @@ function WeightDistanceInput({
 
     // Calculate left offset based on the content length
     const kgLabelStyle = {
-        left: `${Math.max(1, displayWeight.length) / 1.6 + 1.4}rem`,
+        left: `${Math.max(1, displayWeight.length) / 1.6 + 1.0}rem`,
     };
 
     const kmLabelStyle = {
-        left: `${Math.max(1, displayDistance.length - (displayDistance.includes('.') ? 0.4 : 0)) / 1.6 + 1.4}rem`,
+        left: `${Math.max(1, displayDistance.length - (displayDistance.includes('.') ? 0.4 : 0)) / 1.6 + 1.0}rem`,
     };
 
 
@@ -40,9 +40,9 @@ function WeightDistanceInput({
     return (
         <div>
             {/* WEIGHT */}
-            <div className="relative mt-2">
-                <label htmlFor="weight" className="font-semibold text-xl">Вес (кг):</label>
-                <div className="flex items-center border border-gray-300 rounded-md mt-2">
+            <div className="relative mt-1">
+                <label htmlFor="weight" className="font-semibold text-l">Вес (кг):</label>
+                <div className="flex items-center border border-gray-300 rounded-md mt-1">
                     <input
                         type="number"
                         id="weight"
@@ -52,15 +52,15 @@ function WeightDistanceInput({
                         placeholder="Введите вес"
                         value={displayWeight}
                         onChange={handleWeightChange}
-                        className="w-full p-2 rounded-md pl-4 pr-4 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        className="w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     />
-                    <span className="pointer-events-none absolute text-gray-700" style={kgLabelStyle}>кг</span>
+                    <span className="pointer-events-none absolute text-gray-400" style={kgLabelStyle}>кг</span>
                 </div>
             </div>
             {/* DISTANCE */}
-            <div className="relative mt-4">
-                <label htmlFor="distance" className="font-semibold text-xl">Расстояние (км):</label>
-                <div className="flex items-center border border-gray-300 rounded-md mt-2">
+            <div className="relative mt-2">
+                <label htmlFor="distance" className="font-semibold text-l">Расстояние (км):</label>
+                <div className="flex items-center border border-gray-300 rounded-md mt-1">
                     <input
                         type="number"
                         id="distance"
@@ -70,33 +70,12 @@ function WeightDistanceInput({
                         step="any"
                         value={displayDistance}
                         onChange={handleDistanceChange}
-                        className="w-full p-2 rounded-md pl-4 pr-4 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        className="w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     />
-                    <span className="pointer-events-none absolute text-gray-700" style={kmLabelStyle}>км</span>
+                    <span className="pointer-events-none absolute text-gray-400" style={kmLabelStyle}>км</span>
                 </div>
             </div>
             {/* PURCHASE AMOUNT */}
-            {/*            <div className="relative mt-4">
-                <label htmlFor="purchaseAmount" className="font-semibold text-xl">Сумма покупки (руб):</label>
-                <div className={`${sumOutlineColor} flex items-center border border-gray-300 rounded-md mt-2`}>
-                    <input
-                        type="number"
-                        id="purchaseAmount"
-                        min={0}
-                        max={1000000000}
-                        placeholder="0"
-                        step={100}
-                        value={displaySum}
-                        onChange={handlePurchaseAmountChange}
-                        className={`transition-all duration-300 ${sumBgColor} w-full p-2 rounded-md pl-4 pr-4 focus:outline-none focus:ring-2 ${purchaseAmount < minimalCityPrice ? 'focus:ring-red-500' : 'focus:ring-green-500'}`}
-                    />
-                    <span className={`pointer-events-none absolute text-gray-700`} style={rubLabelStyle}>руб</span>
-                    <span className={`pointer-events-none absolute text-gray-500 right-10`}>
-                        {purchaseAmount < minimalCityPrice ? `Минимум ${minimalCityPrice} руб` : ''}
-                    </span>
-                </div>
-            </div>*/}
-
         </div>
     );
 }

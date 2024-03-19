@@ -1,6 +1,6 @@
 import Test from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput"; // Import the new component at the top
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {calculate, config, vehiclesConfig} from "../script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
@@ -106,15 +106,15 @@ function App() {
 
     return (
         <div className="w-full h-screen bg-white flex justify-center items-center">
-            <div className="bg-white w-full h-screen md:w-full md:h-full flex flex-col">
+            <div className="w-full h-screen md:w-full md:h-full flex flex-col">
                 {/* Map container */}
-                <div className="w-full flex-shrink-0 min-h-[500px] min-w-[300px] md:min-h-[600px] md:min-w-[400px]">
+                <div className="w-full  min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
                     <Test setDistance={setDistance} setDuration={setDuration} setRegion={setRegion}/>
                 </div>
                 <hr className="bg-gray-400 h-0.5"/>
                 {/* Content container */}
-                <div className="p-4 text-lg font-sans flex flex-col flex-grow">
-                    <div className="flex-grow">
+                <div className="p-2 text-lg font-sans flex flex-col">
+                    <div className="">
                         <WeightDistanceInput
                             weight={weight}
                             handleWeightChange={handleWeightChange}
@@ -122,16 +122,22 @@ function App() {
                             setDistance={setDistance}
                             vehicle={vehicle}
                         />
-                        <div className="mt-4">
-                            <div className="flex flex-row gap-10 mt-4">
+
+                        <div className="mt-1">
+                            <label className="font-semibold text-xl">Настройки</label>
+                            <div className="mt-0 flex flex-wrap">
                                 <DeliveryOptions options={options} handleOptionChange={handleOptionChange}/>
+                                <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
+                                                  setVehicle={setVehicle}/>
                             </div>
-                            <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle} setVehicle={setVehicle}/>
                         </div>
-                        <ResultDisplay distance={distance} duration={duration} region={region} price={price} weight={weight}/>
+                        <ResultDisplay distance={distance} duration={duration} region={region} price={price}
+                                       weight={weight}/>
                     </div>
                     {/* Button placed outside the flex-grow div to prevent overflow */}
-                    <button className="mt-0 rounded-md text-white p-4 mx-2 text-3xl bg-blue-600" onClick={reset}>Сбросить</button>
+                    <button className="mt-0 rounded-md text-white p-3 mx-2 text-3xl bg-blue-600"
+                            onClick={reset}>Сбросить
+                    </button>
                 </div>
             </div>
         </div>

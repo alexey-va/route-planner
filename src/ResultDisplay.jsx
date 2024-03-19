@@ -13,7 +13,7 @@ function ResultDisplay({distance, duration, region, price, weight}) {
     };
 
     return (
-        <div className="mt-4 mb-auto py-4 flex flex-col border-t border-gray-200 space-y-2">
+        <div className="mt-2 mb-auto py-2 flex flex-col border-t border-gray-200 space-y-2">
             {/* Other details remain the same */}
             <div className="flex flex-col space-y-2 px-2">
                 <div className="flex justify-between">
@@ -31,7 +31,7 @@ function ResultDisplay({distance, duration, region, price, weight}) {
             </div>
 
             {/* Comments Section */}
-            <div className="mt-4 py-4 px-2 border-t border-gray-200">
+            <div className="mt-2 py-2 px-2 border-t border-gray-200">
                 <span className="font-semibold text-lg">Комментарии:</span>
                 {price.description.length > 0 ? (
                     <ul className="list-disc list-outside mt-2 bg-gray-50 p-2 rounded-lg border border-gray-300 pl-8"> {/* Adjusted padding and list style */}
@@ -48,7 +48,7 @@ function ResultDisplay({distance, duration, region, price, weight}) {
             </div>
 
             {/* Price Details */}
-            <div className="mx-2 flex justify-between bg-blue-100 p-4 rounded-lg mt-4">
+            <div className="mx-2 flex justify-between bg-blue-100 p-4 rounded-lg mt-2">
                 <span className="font-semibold text-xl">Стоимость:</span>
                 <span className="text-xl font-bold">
                     {formatPrice(price.price)}
