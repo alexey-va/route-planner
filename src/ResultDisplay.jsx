@@ -34,7 +34,7 @@ function ResultDisplay({distance, duration, region, price, weight}) {
             <div className="mt-2 py-2 px-2 border-t border-gray-200">
                 <span className="font-semibold text-lg">Комментарии:</span>
                 {/* Create a new array with at least three elements */}
-                <ul className="list-disc list-outside mt-2 bg-gray-50 p-2 rounded-lg border border-gray-300 pl-8">
+                <ul className="list-disc list-outside mt-2 p-2 rounded-lg pl-8">
                     {(price.description.length > 0 ? price.description : []).concat(Array(Math.max(0, 3 - price.description.length)).fill('')).map((comment, index) => (
                         <li key={index}
                             className={`mt-0 break-words ${!comment && 'opacity-0'}`}> {/* Apply opacity-0 for empty comments */}
