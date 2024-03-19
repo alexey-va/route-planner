@@ -108,7 +108,7 @@ function App() {
 
     return (
         <div className="w-full h-screen bg-white flex justify-center items-center">
-            <div className="w-full md:w-full flex flex-col">
+            <div className="w-full h-screen md:w-full flex flex-col">
                 {/* Map container */}
                 <div className="relative w-full h-[300px] min-h-[300px] min-w-[300px] md:min-h-[400px] md:min-w-[400px]">
                     <Test setDistance={setDistance}
