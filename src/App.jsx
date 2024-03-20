@@ -114,7 +114,7 @@ function App() {
         setBridge(false)
         if (routePanelControl) {
             routePanelControl.routePanel.state.set({
-                fromEnabled: true,
+                fromEnabled: false,
                 from: routePanelControl.routePanel.state.get("from"),
                 to: "",
                 type: "auto"

@@ -49,7 +49,7 @@ function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, 
 
         // Если вы хотите задать неизменяемую точку "откуда", раскомментируйте код ниже.
         routePanelControl.routePanel.state.set({
-            fromEnabled: true,
+            fromEnabled: false,
             from: 'Киров, Коммунальная 5'
         });
 
