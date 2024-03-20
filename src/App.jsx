@@ -116,7 +116,7 @@ function App() {
                           setRegion={setRegion}
                           vehicle={vehicle}
                     />
-                    {vehicle != 0 ? <div
+                    {vehiclesConfig[vehicle].heavy ? <div
                         className="transition-all animate-pulseOutline left-1 bottom-1 absolute w-[8.75rem] h-[2rem]
                          ring-2 ring-red-500 ring-opacity-100 rounded-sm pointer-events-none"></div> : ""}
 

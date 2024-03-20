@@ -11,6 +11,22 @@ export function calculate(params) {
         comments.push("Нулевой вес");
     }
 
+    // check if weight is too heavy for any vehicle
+    let atLeastOneFit = false;
+    for (let key in vehiclesConfig) {
+        if (params.weight <= vehiclesConfig[key].max_weight) {
+            atLeastOneFit = true;
+            break;
+        }
+    }
+
+    if (!atLeastOneFit) {
+        return {
+            price: -1,
+            description: ["Вес превышает грузоподъемность любой из машин"]
+        };
+    }
+
     // check for free city delivery
     if (params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.by_time && params.options.price && params.vehicle === 0) {
         if (params.distance > config.city_max_distance * 1000) {
@@ -77,20 +93,31 @@ export const vehiclesConfig = {
         price: 35,
         price_hour: 1200,
         max_weight: 1500,
-        minimal_city_price: 750
+        minimal_city_price: 750,
+        heavy: false
     },
     1: {
+        name: "Газель",
+        price: 40,
+        price_hour: 1200,
+        max_weight: 2000,
+        minimal_city_price: 900,
+        heavy: false
+    },
+    2: {
         name: "Газон",
         price: 45,
         price_hour: 1200,
         max_weight: 5000,
-        minimal_city_price: 1500
+        minimal_city_price: 1500,
+        heavy: true
     },
-    2: {
+    3: {
         name: "Камаз",
         price: 60,
         price_hour: 1200,
         max_weight: 10000,
-        minimal_city_price: 3000
+        minimal_city_price: 3000,
+        heavy: true
     }
 }
