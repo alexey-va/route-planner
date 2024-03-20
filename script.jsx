@@ -52,7 +52,14 @@ export function calculate(params) {
     if (params.region !== "Киров") comments.push(["За пределами города"]);
 
     // calculate price
+
+    if(vehiclesConfig[params.vehicle].heavy && params.bridge){
+        comments.push("Доставка за мостом на грузовом транспорте. Расстояние увеличено на "+config.bridge_distance_add+" км.");
+        params.distance += config.bridge_distance_add * 1000;
+    }
+
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
+    comments.push("Базовая цена: " + (params.distance / 1000).toFixed(1) + " км × " + vehiclesConfig[params.vehicle].price + " руб/км = " + price.toFixed() + " руб");
     //comments.push("Машина: " + vehiclesConfig[params.vehicle].name);
 
     // minimal price adjustments
@@ -65,10 +72,10 @@ export function calculate(params) {
     if (params.options.by_time) {
         if (params.options.right_now) {
             price *= config.right_now;
-            comments.push("Срочная доставка (x2)");
+            comments.push("Срочная доставка. ");
         } else {
+            comments.push("Доставка ко времени. Цена: "+price.toFixed()+" руб × "+config.by_time+" = "+(price*config.by_time).toFixed()+" руб");
             price *= config.by_time;
-            comments.push("Доставка ко времени (x1.5)");
         }
     }
 
@@ -84,7 +91,8 @@ export const config = {
     by_time: 1.5,
     right_now: 2,
     free_city_weight: 1500,
-    city_max_distance: 100
+    city_max_distance: 100,
+    bridge_distance_add: 10
 }
 
 export const vehiclesConfig = {

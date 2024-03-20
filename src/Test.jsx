@@ -1,18 +1,14 @@
-import {useEffect, useImperativeHandle} from "react";
+import {useEffect} from "react";
 
-function Test({setDistance, setDuration, setRegion}) {
+export let routePanelControl; // Move this to the outer scope
+
+function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, setBridge}) {
     useEffect(() => {
         ymaps.ready(init);
     }, []);
 
 
     function init() {
-        // Стоимость за километр.
-        var myMap = new ymaps.Map('map', {
-            center: [49.605433, 58.565190],
-            zoom: 12,
-            controls: []
-        }),
         routePanelControl = new ymaps.control.RoutePanel({
             options: {
                 // Добавим заголовок панели.
@@ -20,6 +16,12 @@ function Test({setDistance, setDuration, setRegion}) {
                 title: 'Расчёт доставки',
                 maxWidth: 500,
             }
+        });
+        // Стоимость за километр.
+        var myMap = new ymaps.Map('map', {
+            center: [49.605433, 58.565190],
+            zoom: 12,
+            controls: []
         }),
         zoomControl = new ymaps.control.ZoomControl({
                 options: {
@@ -66,18 +68,33 @@ function Test({setDistance, setDuration, setRegion}) {
                 if (activeRoute) {
                     // Получим протяженность маршрута.
                     var coords = route.properties.get("rawProperties").RouterMetaData.Waypoints[1].coordinates;
-                    //console.log(routePanelControl.routePanel.state)
+                    var address = route.properties.get("rawProperties").RouterMetaData.Waypoints[1].name
                     //console.log(activeRoute)
                     //console.log(myMap)
                     //console.log(coords)
                     //console.log(route.properties.get("rawProperties").RouterMetaData.Waypoints[1].coordinates)
-                    var polygon = deliveryZones.searchContaining(coords).get(0);
+                    var polygons = deliveryZones.searchContaining(coords);
+
+                    // check that at least one polygon is За Мостом
+                    let bridge = false;
+                    polygons.each(function (obj) {
+                        if (obj.properties.get('description') === "За мостом") {
+                            bridge = true;
+                        }
+                    });
+
+                    setBridge(bridge)
+                    var polygon = polygons.get(0);
                     var region = !polygon ? "Область" : polygon.properties.get('description');
+                    if(region === 'За мостом') region = 'Область'
+
                     setRegion(region);
                     var duration = route.getActiveRoute().properties.get("duration");
                     var length = route.getActiveRoute().properties.get("distance");
                     setDistance(length.value)
+                    setMapDistance(length.value)
                     setDuration(duration.value)
+                    setAddress(address)
 
                     let balloonContentLayout = ymaps.templateLayoutFactory.createClass(
                         '<span>Расстояние: ' + length.text + '.</span><br/>'

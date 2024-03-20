@@ -1,7 +1,7 @@
-import Test from "./Test.jsx";
+import Test, {routePanelControl} from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput"; // Import the new component at the top
-import React, {useEffect, useRef, useState} from "react";
-import {calculate, config, vehiclesConfig} from "../script.jsx";
+import {useEffect, useState} from "react";
+import {calculate, vehiclesConfig} from "../script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
@@ -16,6 +16,8 @@ function App() {
     // Initial state values retrieved from localStorage or default values
     const [distance, setDistance] = useState(getFromLocalStorageOrDefault('distance', 0));
     const [region, setRegion] = useState(getFromLocalStorageOrDefault('region', ''));
+    const [bridge, setBridge] = useState(getFromLocalStorageOrDefault('bridge', false))
+    const [address, setAddress] = useState(getFromLocalStorageOrDefault('address', ''))
     const [duration, setDuration] = useState(getFromLocalStorageOrDefault('duration', 0));
     const [weight, setWeight] = useState(getFromLocalStorageOrDefault('weight', 100));
     const [options, setOptions] = useState(getFromLocalStorageOrDefault('options', {
@@ -24,6 +26,7 @@ function App() {
         price: false
     }));
     const [vehicle, setVehicle] = useState(getFromLocalStorageOrDefault('vehicle', 0));
+    const [mapDistance, setMapDistance] = useState(getFromLocalStorageOrDefault('mapDistance', 0))
     const [price, setPrice] = useState(getFromLocalStorageOrDefault('price', {
         price: 0,
         description: [""]
@@ -37,6 +40,8 @@ function App() {
         localStorage.setItem('options', JSON.stringify(options));
         localStorage.setItem('vehicle', JSON.stringify(vehicle));
         localStorage.setItem('price', JSON.stringify(price));
+        localStorage.setItem('address', JSON.stringify(address));
+        localStorage.setItem('mapDistance', JSON.stringify(mapDistance));
 
         // Calculate price whenever distance, duration, or weight changes
         let params = {
@@ -45,7 +50,8 @@ function App() {
             weight: weight,
             options: options,
             vehicle: vehicle,
-            region: region
+            region: region,
+            bridge: bridge
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
@@ -103,22 +109,36 @@ function App() {
             price: 0,
             description: [""],
         });
-
+        setAddress('')
+        setMapDistance(0)
+        setBridge(false)
+        if (routePanelControl) {
+            routePanelControl.routePanel.state.set({
+                fromEnabled: true,
+                from: routePanelControl.routePanel.state.get("from"),
+                to: "",
+                type: "auto"
+            })
+        }
     };
 
     return (
         <div className="w-full h-screen bg-white flex justify-center items-center">
             <div className="bg-white w-full h-screen md:w-full flex flex-col">
                 {/* Map container */}
-                <div className="relative w-full h-[400px] min-h-[400px] min-w-[300px] md:min-h-[500px] md:min-w-[400px]">
+                <div
+                    className="relative w-full h-[400px] min-h-[400px] min-w-[300px] md:min-h-[500px] md:min-w-[400px]">
                     <Test setDistance={setDistance}
                           setDuration={setDuration}
                           setRegion={setRegion}
                           vehicle={vehicle}
+                          setAddress={setAddress}
+                          setMapDistance={setMapDistance}
+                          setBridge={setBridge}
                     />
-                    {vehiclesConfig[vehicle].heavy ? <div
+{/*                    {vehiclesConfig[vehicle].heavy ? <div
                         className="transition-all animate-pulseOutline left-1 bottom-1 absolute w-[8.75rem] h-[2rem]
-                         ring-2 ring-red-500 ring-opacity-100 rounded-sm pointer-events-none"></div> : ""}
+                         ring-2 ring-red-500 ring-opacity-100 rounded-sm pointer-events-none"></div> : ""}*/}
 
                 </div>
                 {/* Content container */}
@@ -140,7 +160,13 @@ function App() {
                                                   setVehicle={setVehicle}/>
                             </div>
                         </div>
-                        <ResultDisplay distance={distance} duration={duration} region={region} price={price}
+                        <ResultDisplay distance={distance}
+                                       mapDistance={mapDistance}
+                                       duration={duration}
+                                       region={region}
+                                       price={price}
+                                       address={address}
+                                       bridge={bridge}
                                        weight={weight}/>
                     </div>
                     {/* Button placed outside the flex-grow div to prevent overflow */}

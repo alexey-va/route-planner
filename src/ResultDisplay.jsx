@@ -1,6 +1,4 @@
-import React from 'react';
-
-function ResultDisplay({distance, duration, region, price, weight}) {
+function ResultDisplay({distance, duration, region, address, price, weight, mapDistance, bridge}) {
     // Convert the function to use Tailwind for consistency and improved design
     const formatPrice = (priceValue) => {
         if (priceValue === 0) {
@@ -12,17 +10,28 @@ function ResultDisplay({distance, duration, region, price, weight}) {
         }
     };
 
+
     return (
         <div className="mt-2 mb-auto py-2 flex flex-col border-t border-gray-200 space-y-2">
             {/* Other details remain the same */}
             <div className="flex flex-col space-y-2 px-2">
                 <div className="flex justify-between">
                     <span className="font-semibold">Расстояние:</span>
+                    <span
+                        className="font-semibold">{distance && Math.abs(distance - mapDistance) > 99.9 ? "Установлено вручную" : ""}</span>
                     <span>{distance ? (distance / 1000.0).toFixed(1) : 0} км</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="font-semibold">Район:</span>
-                    <span>{region || "Неизвестно"}</span>
+                    <span>
+                        <span>{region || "Неизвестно"}</span>
+                        <span className={`${bridge ? "ml-2" : ""} opacity-70`}>{bridge ? "(За мостом)" : ""}</span>
+                    </span>
+
+                </div>
+                <div className="flex justify-between">
+                    <span className="font-semibold">Адрес:</span>
+                    <span>{address || "Неизвестно"}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="font-semibold">Вес:</span>
