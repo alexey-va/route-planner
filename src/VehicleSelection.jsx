@@ -8,7 +8,7 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
                 let isDisabled = weight > value.max_weight;
                 //console.log(vehiclesConfig[key].heavy, vehiclesConfig[key])
                 return (
-                    <div key={key} className="flex flex-col space-y-2">
+                    <div key={key} className="flex flex-col space-y-2 max-sm:text-sm text-md">
                         <div className="flex items-center space-x-[0.4rem]">
                             <input
                                 type="radio"

@@ -167,7 +167,7 @@ function App() {
                         />
 
                         <div className="mt-1">
-                            <label className="font-semibold text-xl">Настройки</label>
+                            <label className="font-semibold max-sm:text-lg text-xl">Настройки</label>
                             <div className="mt-0 flex flex-col">
                                 <DeliveryOptions options={options}
                                                  handleOptionChange={handleOptionChange}
@@ -187,7 +187,7 @@ function App() {
                                        weight={weight}/>
                     </div>
                     {/* Button placed outside the flex-grow div to prevent overflow */}
-                    <button className="mt-0 rounded-md text-white p-3 mx-2 text-3xl bg-blue-600"
+                    <button className="max-sm:p-2 mt-0 rounded-md text-white p-3 mx-2 max-sm:text-xl text-3xl bg-blue-600"
                             onClick={reset}>Сбросить
                     </button>
                 </div>

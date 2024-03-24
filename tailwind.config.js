@@ -15,6 +15,9 @@ export default {
       animation: {
         pulseOutline: 'pulseOutline 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
+      screens: {
+        'xs': '380px',
+      },
     },
   },
   plugins: [],

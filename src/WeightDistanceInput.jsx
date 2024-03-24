@@ -39,10 +39,10 @@ function WeightDistanceInput({
     };
 
     return (
-        <div>
+        <div className={`max-sm:text-lg text-xl`}>
             {/* WEIGHT */}
-            <div className="relative mt-1">
-                <label htmlFor="weight" className="font-semibold text-l">Вес (кг):</label>
+            <div className="relative mt-1  ">
+                <label htmlFor="weight" className="font-semibold">Вес (кг):</label>
                 <div className="flex items-center border border-gray-300 rounded-md mt-1">
                     <input
                         type="number"
@@ -53,7 +53,7 @@ function WeightDistanceInput({
                         placeholder="Введите вес"
                         value={displayWeight}
                         onChange={handleWeightChange}
-                        className="w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        className="min-sm:text-lg w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     />
                     <span className="pointer-events-none absolute text-gray-400" style={kgLabelStyle}>кг</span>
                 </div>
@@ -62,7 +62,7 @@ function WeightDistanceInput({
             <div className="relative mt-2">
                 <div className={`relative`}>
                     {/*<div className={`absolute inset-0 w-[9.5rem] -left-0.5 rounded-sm ${vehiclesConfig[vehicle].heavy ? "animate-pulseOutline ring-2 ring-red-500 ring-opacity-100" : ""}`}></div>*/}
-                    <label htmlFor="distance" className="font-semibold text-l block bg-transparent z-10 relative">
+                    <label htmlFor="distance" className="font-semibold">
                         Расстояние (км):
                     </label>
                 </div>
@@ -76,7 +76,7 @@ function WeightDistanceInput({
                         step="any"
                         value={displayDistance}
                         onChange={handleDistanceChange}
-                        className="w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        className="min-sm:text-lg w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     />
                     <span className="pointer-events-none absolute text-gray-400" style={kmLabelStyle}>км</span>
                 </div>
