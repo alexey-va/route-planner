@@ -78,7 +78,7 @@ function DeliveryOptions({options, handleOptionChange, handleTimeChange}) {
                             onChange={() => handleOptionChange('opt')}
                         />
                         <label htmlFor="price_opt">
-                            Оптом
+                            Опт
                         </label>
                     </div>
                 </div>
