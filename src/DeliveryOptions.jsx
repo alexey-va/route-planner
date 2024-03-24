@@ -17,18 +17,26 @@ function DeliveryOptions({options, handleOptionChange, handleTimeChange}) {
                         <label htmlFor="by_time">
                             Ко времени
                             <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">
-                                x{config.by_time}
+                                9:00 - 16:00
                             </span>
+                            {/*                         <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">
+                                x{config.by_time}
+                            </span>*/}
                         </label>
                     </div>
-                    <div className={`flex items-center space-x-2 ${!options.by_time ? "hidden" : ""}`}>
-                        <select
-                            className="border border-gray-300 rounded-md px-2 py-0 text-md"
-                            onChange={(e) => handleTimeChange(e.target.value)}
-                        >
-                            <option value="day">9:00 - 16:00</option>
-                            <option value="other">Другое</option>
-                        </select>
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="cement"
+                            checked={options.cement || false}
+                            onChange={() => handleOptionChange('cement')}
+                        />
+                        <label htmlFor="by_time">
+                            Цемент/ЦПС
+                            <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">
+                                более 15 штук
+                            </span>
+                        </label>
                     </div>
                 </div>
                 {/* BY TIME DELIVERY */}

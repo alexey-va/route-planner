@@ -28,7 +28,8 @@ export function calculate(params) {
     }
 
     // check for free city delivery
-    if (params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.by_time && params.options.price && params.vehicle === 0) {
+    if (params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.by_time
+        && params.options.price && params.vehicle === 0 && !params.options.cement) {
         if (params.distance > config.city_max_distance * 1000) {
             comments.push("Расстояние в пределах города больше 100км. Нет бесплатной доставки");
         } else {
@@ -36,7 +37,7 @@ export function calculate(params) {
                 price: 0,
                 description: [!params.options.opt ?
                     "Бесплатно в пределах города (до 1.5 тонн) при покупке от 10,000 рублей" :
-                    "Бесплатно в пределах города (до 1.5 тонн) при покупке от 15,000 рублей"]
+                    "Бесплатно в пределах города (до 1.5 тонн) при покупке от 15,000 рублей (оптом)"]
             };
         }
     }
@@ -49,6 +50,8 @@ export function calculate(params) {
         else comments.push("Платно в пределах города при покупке менее 10,000 рублей")
     }else if(params.region === "Киров" && params.weight <= config.free_city_weight && params.options.price && params.vehicle !== 0){
         comments.push("Платно в пределах города при доставке не на Газели")
+    } else if(params.options.cement){
+        comments.push("Платно при доставке цемента или ЦПС более 15 шт")
     }
 
     // if not in city add comment
