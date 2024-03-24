@@ -1,5 +1,5 @@
 import React from 'react';
-import {vehiclesConfig} from "../script.jsx";
+import {vehiclesConfig} from "./script.jsx";
 
 function WeightDistanceInput({
                                  weight,

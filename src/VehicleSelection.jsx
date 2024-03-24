@@ -9,7 +9,7 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
                 //console.log(vehiclesConfig[key].heavy, vehiclesConfig[key])
                 return (
                     <div key={key} className="flex flex-col space-y-2">
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-[0.4rem]">
                             <input
                                 type="radio"
                                 id={`vehicle-${key}`} // Ensuring unique ID
@@ -23,7 +23,6 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
                                 htmlFor={`vehicle-${key}`}>
                                 {value.name}
                                 <span className="ml-2 text-gray-500 text-sm self-center translate-y-0.5">{value.max_weight/1000}т</span>
-                                {/*{vehiclesConfig[vehicle].heavy && key === '1' ? <span className={`text-nowrap absolute pl-2 self-center translate-y-5 -translate-x-7 text-[0.7rem] text-red-600`}>Рассчитайте маршрут вручную для грузового транспорта</span> : ""}*/}
                             </label>
 
                         </div>

@@ -1,19 +1,28 @@
 import Test, {routePanelControl} from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput"; // Import the new component at the top
 import {useEffect, useState} from "react";
-import {calculate, vehiclesConfig} from "../script.jsx";
+import {calculate, vehiclesConfig} from "./script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
 
 function App() {
     const getFromLocalStorageOrDefault = (key, defaultValue) => {
+        let lastUpdateDate = localStorage.getItem('last_updated');
+        if (lastUpdateDate) {
+            let currentDate = Date.now();
+            let diff = currentDate - lastUpdateDate;
+            if (diff > 1000 * 60 * 30) {
+                localStorage.clear();
+            }
+        }
         const storedValue = localStorage.getItem(key);
         return storedValue ? JSON.parse(storedValue) : defaultValue;
     };
 
 
     // Initial state values retrieved from localStorage or default values
+    const [time, setTime] = useState(getFromLocalStorageOrDefault('time', 'day'))
     const [distance, setDistance] = useState(getFromLocalStorageOrDefault('distance', 0));
     const [region, setRegion] = useState(getFromLocalStorageOrDefault('region', ''));
     const [bridge, setBridge] = useState(getFromLocalStorageOrDefault('bridge', false))
@@ -23,7 +32,8 @@ function App() {
     const [options, setOptions] = useState(getFromLocalStorageOrDefault('options', {
         by_time: false,
         right_now: false,
-        price: false
+        price: false,
+        opt: false
     }));
     const [vehicle, setVehicle] = useState(getFromLocalStorageOrDefault('vehicle', 0));
     const [mapDistance, setMapDistance] = useState(getFromLocalStorageOrDefault('mapDistance', 0))
@@ -33,6 +43,7 @@ function App() {
     }));
 
     useEffect(() => {
+        localStorage.setItem('last_updated', Date.now());
         localStorage.setItem('distance', JSON.stringify(distance));
         localStorage.setItem('region', JSON.stringify(region));
         localStorage.setItem('duration', JSON.stringify(duration));
@@ -42,6 +53,7 @@ function App() {
         localStorage.setItem('price', JSON.stringify(price));
         localStorage.setItem('address', JSON.stringify(address));
         localStorage.setItem('mapDistance', JSON.stringify(mapDistance));
+        localStorage.setItem('time', JSON.stringify(time));
 
         // Calculate price whenever distance, duration, or weight changes
         let params = {
@@ -51,18 +63,19 @@ function App() {
             options: options,
             vehicle: vehicle,
             region: region,
-            bridge: bridge
+            bridge: bridge,
+            time: time
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [distance, duration, weight, options, vehicle, region]);
+    }, [distance, duration, weight, options, vehicle, region, time]);
 
     const handleOptionChange = (option) => {
-        if (option === 'by_time' && options[option]) {
+        if (option === 'opt' && !options[option]) {
             setOptions(prevOptions => ({
                 ...prevOptions,
                 [option]: !prevOptions[option],
-                right_now: false
+                price: false
             }));
         } else {
             setOptions(prevOptions => ({
@@ -120,6 +133,7 @@ function App() {
                 type: "auto"
             })
         }
+        setTime('day')
     };
 
     return (
@@ -136,7 +150,7 @@ function App() {
                           setMapDistance={setMapDistance}
                           setBridge={setBridge}
                     />
-{/*                    {vehiclesConfig[vehicle].heavy ? <div
+                    {/*                    {vehiclesConfig[vehicle].heavy ? <div
                         className="transition-all animate-pulseOutline left-1 bottom-1 absolute w-[8.75rem] h-[2rem]
                          ring-2 ring-red-500 ring-opacity-100 rounded-sm pointer-events-none"></div> : ""}*/}
 
@@ -154,8 +168,11 @@ function App() {
 
                         <div className="mt-1">
                             <label className="font-semibold text-xl">Настройки</label>
-                            <div className="mt-0 flex flex-wrap">
-                                <DeliveryOptions options={options} handleOptionChange={handleOptionChange}/>
+                            <div className="mt-0 flex flex-col">
+                                <DeliveryOptions options={options}
+                                                 handleOptionChange={handleOptionChange}
+                                                 handleTimeChange={(value) => setTime(value)}
+                                />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>
                             </div>

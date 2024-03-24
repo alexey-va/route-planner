@@ -43,7 +43,8 @@ export function calculate(params) {
     else if (params.region === "Киров" && params.weight <= config.free_city_weight && params.options.by_time) {
         comments.push("Платно в пределах города при срочной доставке")
     } else if(params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.price){
-        comments.push("Платно в пределах города при покупке менее 10,000 рублей")
+        if(params.options.opt) comments.push("Платно в пределах города при покупке менее 15,000 рублей (оптом)")
+        else comments.push("Платно в пределах города при покупке менее 10,000 рублей")
     }else if(params.region === "Киров" && params.weight <= config.free_city_weight && params.options.price && params.vehicle !== 0){
         comments.push("Платно в пределах города при доставке не на Газели")
     }
@@ -74,8 +75,13 @@ export function calculate(params) {
             price *= config.right_now;
             comments.push("Срочная доставка. ");
         } else {
-            comments.push("Доставка ко времени. Цена: "+price.toFixed()+" руб × "+config.by_time+" = "+(price*config.by_time).toFixed()+" руб");
-            price *= config.by_time;
+            if(params.time === 'day') {
+                comments.push("Доставка ко времени (9:00 - 16:00). Цена: " + price.toFixed() + " руб × " + config.by_time + " = " + (price * config.by_time).toFixed() + " руб");
+                price *= config.by_time;
+            } else{
+                comments.push("Доставка ко времени (16:00 - 9:00). Цена: " + price.toFixed() + " руб × " + config.by_time_not_day + " = " + (price * config.by_time_not_day).toFixed() + " руб");
+                price *= config.by_time_not_day;
+            }
         }
     }
 
@@ -89,6 +95,7 @@ export function calculate(params) {
 
 export const config = {
     by_time: 1.5,
+    by_time_not_day: 1.7,
     right_now: 2,
     free_city_weight: 1500,
     city_max_distance: 100,

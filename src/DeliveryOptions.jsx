@@ -1,12 +1,12 @@
 import React from 'react';
-import {config} from "../script.jsx";
+import {config} from "./script.jsx";
 
-function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
+function DeliveryOptions({options, handleOptionChange, handleTimeChange}) {
     return (
         <div className="pr-10">
             <div className="mx-2 flex flex-row gap-10 mt-2">
                 {/* BY TIME DELIVERY */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-row space-x-[8.75rem]">
                     <div className="flex items-center space-x-2">
                         <input
                             type="checkbox"
@@ -21,11 +21,20 @@ function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
                             </span>
                         </label>
                     </div>
+                    <div className={`flex items-center space-x-2 ${!options.by_time ? "hidden" : ""}`}>
+                        <select
+                            className="border border-gray-300 rounded-md px-2 py-0 text-md"
+                            onChange={(e) => handleTimeChange(e.target.value)}
+                        >
+                            <option value="day">9:00 - 16:00</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
                 </div>
                 {/* BY TIME DELIVERY */}
 
                 {/* RIGHT NOW DELIVERY */}
-{/*                <div className="">
+                {/*                <div className="">
                     <div className="flex items-center space-x-2">
                         <input
                             type="checkbox"
@@ -45,7 +54,7 @@ function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
                 {/* RIGHT NOW DELIVERY */}
             </div>
             <div className="mx-2 flex flex-row gap-10 mt-2">
-            <div className="">
+                <div className="">
                     <div className="flex items-center space-x-2">
                         <input
                             type="checkbox"
@@ -53,7 +62,24 @@ function DeliveryOptions({ options, handleOptionChange, handlePriceChange }) {
                             checked={options.price || false}
                             onChange={() => handleOptionChange('price')}
                         />
-                        <label htmlFor="price">Сумма покупки ≥ 10,000 руб</label>
+                        <label htmlFor="price">
+                            Сумма покупки
+                            <span className={"font-semibold mx-1"}>{options.opt ? "≥ 15,000" : "≥ 10,000"}</span>
+                            руб
+                        </label>
+                    </div>
+                </div>
+                <div className="">
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="price_opt"
+                            checked={options.opt || false}
+                            onChange={() => handleOptionChange('opt')}
+                        />
+                        <label htmlFor="price_opt">
+                            Оптом
+                        </label>
                     </div>
                 </div>
             </div>
