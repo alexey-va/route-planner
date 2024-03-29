@@ -29,7 +29,7 @@ export function calculate(params) {
 
     let inCity = params.region === "Киров";
     let inCityWeight = params.weight <= config.free_city_weight;
-    let fixedTime = params.options.by_time || params.options.morning || params.options.evening;
+    let fixedTime = params.options.by_time;
     let enoughPrice = params.options.price;
     let onGazel = params.vehicle === 0;
     let isCement = params.options.cement;
@@ -39,11 +39,25 @@ export function calculate(params) {
         if (params.distance > config.city_max_distance * 1000) {
             comments.push("Расстояние в пределах города больше 100км. Нет бесплатной доставки");
         } else {
+            let price = 0;
+            if (params.options.opt) {
+                price = 0;
+                comments.push("Бесплатно в пределах города (до 1.5 тонн) при покупке от 15,000 рублей (оптом)");
+            } else {
+                price = 0;
+                comments.push("Бесплатно в пределах города (до 1.5 тонн) при покупке от 10,000 рублей");
+            }
+            if(params.options.morning){
+                price += config.morning_add;
+                comments.push("Доставка утром. Надбавка: " + price.toFixed() + " руб");
+            }
+            if(params.options.evening){
+                price += config.evening_add;
+                comments.push("Доставка вечером. Надбавка: " + price.toFixed() + " руб");
+            }
             return {
-                price: 0,
-                description: [!params.options.opt ?
-                    "Бесплатно в пределах города (до 1.5 тонн) при покупке от 10,000 рублей" :
-                    "Бесплатно в пределах города (до 1.5 тонн) при покупке от 15,000 рублей (оптом)"]
+                price: price,
+                description: comments
             };
         }
     }
@@ -85,10 +99,10 @@ export function calculate(params) {
         comments.push("Доставка к конкретному времени . Цена: " + price.toFixed() + " руб × " + config.by_time + " = " + (price * config.by_time).toFixed() + " руб");
         price *= config.by_time;
     } else if(params.options.morning) {
-        comments.push("Доставка утром. Цена: " + price.toFixed() + " руб + " + config.morning_add + " руб = " + (price + config.morning_add).toFixed() + " руб");
+        comments.push("Доставка утром. Надбавка: " + config.morning_add + " руб");
         price += config.morning_add;
     } else if(params.options.evening) {
-        comments.push("Доставка вечером. Цена: " + price.toFixed() + " руб + " + config.evening_add + " руб = " + (price + config.evening_add).toFixed() + " руб");
+        comments.push("Доставка утром. Надбавка: " + config.evening_add + " руб");
         price += config.evening_add;
     }
 
@@ -100,7 +114,7 @@ export function calculate(params) {
 }
 
 export const config = {
-    by_time: 1.5,
+    by_time: 1.7,
     morning_add: 500,
     evening_add: 300,
     right_now: 2,
