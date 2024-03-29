@@ -1,6 +1,6 @@
 import React from 'react';
 
-function DeliveryOptions({ options, handleOptionChange }) {
+function DeliveryOptions({options, handleOptionChange}) {
     return (
         <div className="pl-2 pt-2 max-sm:text-sm text-md pr-4">
             {/* Time options */}
@@ -14,8 +14,10 @@ function DeliveryOptions({ options, handleOptionChange }) {
                             onChange={() => handleOptionChange('by_time')}
                             className="self-center"
                         />
-                        <label htmlFor="by_time" className="ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
+                        <label htmlFor="by_time" className="relative ml-2 gap-x-1.5 max-xs:ml-1
+                         max-xs:text-xs flex flex-wrap items-center self-center">
                             Ко времени
+                            <span className={`sm:translate-y-0.5 text-red-600 text-sm`}>9:00-16:00</span>
                         </label>
                     </div>
                     <div className="flex flex-row items-start space-x-2">
@@ -26,7 +28,8 @@ function DeliveryOptions({ options, handleOptionChange }) {
                             onChange={() => handleOptionChange('morning')}
                             className="self-center"
                         />
-                        <label htmlFor="morning" className="ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
+                        <label htmlFor="morning"
+                               className="ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
                             9:00-12:00
                         </label>
                     </div>
@@ -38,7 +41,8 @@ function DeliveryOptions({ options, handleOptionChange }) {
                             onChange={() => handleOptionChange('evening')}
                             className="self-center"
                         />
-                        <label htmlFor="evening" className="ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
+                        <label htmlFor="evening"
+                               className="ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
                             12:00-16:00
                         </label>
                     </div>

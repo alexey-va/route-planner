@@ -25,7 +25,7 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
                                     htmlFor={`vehicle-${key}`}>
                                     {value.name}
                                     <span
-                                        className="ml-1 text-gray-500 text-sm self-center">{value.max_weight / 1000}т</span>
+                                        className="md:translate-y-0.5 ml-1 text-gray-500 text-sm self-center">{value.max_weight / 1000}т</span>
                                 </label>
 
                             </div>
