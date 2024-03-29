@@ -4,7 +4,8 @@ function DeliveryOptions({options, handleOptionChange}) {
     return (
         <div className="pl-2 pt-2 max-sm:text-sm text-md pr-4">
             {/* Time options */}
-            <div className="mb-2 p-4 bg-gray-200 rounded-lg">
+            <div className="mb-2 p-4 bg-gray-100 rounded-lg relative">
+                <div className="absolute top-[25%] right-10 text-[0.9rem] font-semibold text-gray-700">Интервал</div>
                 <div className="flex flex-row auto-cols-auto max-sm:gap-x-3 gap-x-10">
                     <div className="flex flex-row items-start">
                         <input
@@ -51,7 +52,7 @@ function DeliveryOptions({options, handleOptionChange}) {
             {/* Time options */}
 
             {/* Price options */}
-            <div className="mb-2 p-4 bg-gray-200 rounded-lg">
+            <div className="mb-2 p-4 bg-gray-100 rounded-lg">
                 <div className="flex flex-row auto-cols-auto max-sm:gap-x-3 gap-x-10">
                     <div className="flex flex-row items-start space-x-2">
                         <input
@@ -83,7 +84,7 @@ function DeliveryOptions({options, handleOptionChange}) {
             {/* Price options */}
 
             {/* Cement options */}
-            <div className="p-4 bg-gray-200 rounded-lg">
+            <div className="p-4 bg-gray-100 rounded-lg">
                 <div className="grid grid-flow-col auto-cols-auto gap-x-1">
                     <div className="flex flex-row items-start space-x-2">
                         <input
