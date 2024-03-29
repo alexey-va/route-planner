@@ -7,7 +7,7 @@ export function calculate(params) {
         description: ["Не установлено расстояние"]
     };
 
-    if(params.weight === 0){
+    if (params.weight === 0) {
         comments.push("Нулевой вес");
     }
 
@@ -27,9 +27,15 @@ export function calculate(params) {
         };
     }
 
+    let inCity = params.region === "Киров";
+    let inCityWeight = params.weight <= config.free_city_weight;
+    let fixedTime = params.options.by_time || params.options.morning || params.options.evening;
+    let enoughPrice = params.options.price;
+    let onGazel = params.vehicle === 0;
+    let isCement = params.options.cement;
+
     // check for free city delivery
-    if (params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.by_time
-        && params.options.price && params.vehicle === 0 && !params.options.cement) {
+    if (inCity && inCityWeight && !fixedTime && enoughPrice && onGazel && !isCement) {
         if (params.distance > config.city_max_distance * 1000) {
             comments.push("Расстояние в пределах города больше 100км. Нет бесплатной доставки");
         } else {
@@ -43,14 +49,14 @@ export function calculate(params) {
     }
 
     // add comments for paid city delivery
-    else if (params.region === "Киров" && params.weight <= config.free_city_weight && params.options.by_time) {
-        comments.push("Платно в пределах города при срочной доставке")
-    } else if(params.region === "Киров" && params.weight <= config.free_city_weight && !params.options.price){
-        if(params.options.opt) comments.push("Платно в пределах города при покупке менее 15,000 рублей (оптом)")
+    else if (inCity && inCityWeight && fixedTime) {
+        comments.push("Платно в пределах города при выборе времени доставки");
+    } else if (inCity && inCityWeight && !enoughPrice) {
+        if (params.options.opt) comments.push("Платно в пределах города при покупке менее 15,000 рублей (оптом)")
         else comments.push("Платно в пределах города при покупке менее 10,000 рублей")
-    }else if(params.region === "Киров" && params.weight <= config.free_city_weight && params.options.price && params.vehicle !== 0){
+    } else if (inCity && inCityWeight && enoughPrice && onGazel) {
         comments.push("Платно в пределах города при доставке не на Газели")
-    } else if(params.options.cement){
+    } else if (inCity && isCement) {
         comments.push("Платно при доставке цемента или ЦПС более 15 шт")
     }
 
@@ -59,37 +65,32 @@ export function calculate(params) {
 
     // calculate price
 
-    if(vehiclesConfig[params.vehicle].heavy && params.bridge){
-        comments.push("Доставка за мостом на грузовом транспорте. Расстояние увеличено на "+config.bridge_distance_add+" км.");
+    if (vehiclesConfig[params.vehicle].heavy && params.bridge) {
+        comments.push("Доставка за мостом на грузовом транспорте. Расстояние увеличено на " + config.bridge_distance_add + " км.");
         params.distance += config.bridge_distance_add * 1000;
     }
 
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
-    comments.push("Базовая цена: " + (params.distance / 1000).toFixed(1) + " км × " + vehiclesConfig[params.vehicle].price + " руб/км = " + price.toFixed() + " руб");
+    comments.push("Базовая цена: " +vehiclesConfig[params.vehicle].price + " руб/км × "+ (params.distance / 1000).toFixed(1) + " км" +  " = " + price.toFixed() + " руб");
     //comments.push("Машина: " + vehiclesConfig[params.vehicle].name);
 
     // minimal price adjustments
-    if(price < vehiclesConfig[params.vehicle].minimal_city_price){
+    if (price < vehiclesConfig[params.vehicle].minimal_city_price) {
         price = vehiclesConfig[params.vehicle].minimal_city_price;
-        comments.push("Минимальная стоимость доставки "+vehiclesConfig[params.vehicle].minimal_city_price+" руб");
+        comments.push("Минимальная стоимость доставки " + vehiclesConfig[params.vehicle].minimal_city_price + " руб");
     }
 
     // by time adjustments
     if (params.options.by_time) {
-        if (params.options.right_now) {
-            price *= config.right_now;
-            comments.push("Срочная доставка. ");
-        } else {
-            if(params.time === 'day') {
-                comments.push("Доставка ко времени (9:00 - 16:00). Цена: " + price.toFixed() + " руб × " + config.by_time + " = " + (price * config.by_time).toFixed() + " руб");
-                price *= config.by_time;
-            } else{
-                comments.push("Доставка ко времени (16:00 - 9:00). Цена: " + price.toFixed() + " руб × " + config.by_time_not_day + " = " + (price * config.by_time_not_day).toFixed() + " руб");
-                price *= config.by_time_not_day;
-            }
-        }
+        comments.push("Доставка к конкретному времени . Цена: " + price.toFixed() + " руб × " + config.by_time + " = " + (price * config.by_time).toFixed() + " руб");
+        price *= config.by_time;
+    } else if(params.options.morning) {
+        comments.push("Доставка утром. Цена: " + price.toFixed() + " руб + " + config.morning_add + " руб = " + (price + config.morning_add).toFixed() + " руб");
+        price += config.morning_add;
+    } else if(params.options.evening) {
+        comments.push("Доставка вечером. Цена: " + price.toFixed() + " руб + " + config.evening_add + " руб = " + (price + config.evening_add).toFixed() + " руб");
+        price += config.evening_add;
     }
-
 
 
     return {
@@ -100,7 +101,8 @@ export function calculate(params) {
 
 export const config = {
     by_time: 1.5,
-    by_time_not_day: 1.7,
+    morning_add: 500,
+    evening_add: 300,
     right_now: 2,
     free_city_weight: 1500,
     city_max_distance: 100,
@@ -110,7 +112,7 @@ export const config = {
 export const vehiclesConfig = {
     0: {
         name: "Газель",
-        price: 35,
+        price: 40,
         price_hour: 1200,
         max_weight: 1500,
         minimal_city_price: 750,
@@ -118,7 +120,7 @@ export const vehiclesConfig = {
     },
     1: {
         name: "Газель",
-        price: 40,
+        price: 45,
         price_hour: 1200,
         max_weight: 2000,
         minimal_city_price: 900,
@@ -126,7 +128,7 @@ export const vehiclesConfig = {
     },
     2: {
         name: "Газон",
-        price: 45,
+        price: 50,
         price_hour: 1200,
         max_weight: 5000,
         minimal_city_price: 1500,
@@ -134,7 +136,7 @@ export const vehiclesConfig = {
     },
     3: {
         name: "Камаз",
-        price: 60,
+        price: 65,
         price_hour: 1200,
         max_weight: 10000,
         minimal_city_price: 3000,

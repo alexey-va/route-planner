@@ -31,7 +31,8 @@ function App() {
     const [weight, setWeight] = useState(getFromLocalStorageOrDefault('weight', 100));
     const [options, setOptions] = useState(getFromLocalStorageOrDefault('options', {
         by_time: false,
-        right_now: false,
+        morning: false,
+        evening: false,
         price: false,
         opt: false
     }));
@@ -77,7 +78,20 @@ function App() {
                 [option]: !prevOptions[option],
                 price: false
             }));
-        } else {
+        }
+        else if(option === 'by_time' || option === 'morning' || option === 'evening') {
+            let newOptions = {
+                by_time: false,
+                morning: false,
+                evening: false,
+            };
+            newOptions[option] = !options[option];
+            setOptions(prevOptions => ({
+                ...prevOptions,
+                ...newOptions
+            }));
+        }
+        else {
             setOptions(prevOptions => ({
                 ...prevOptions,
                 [option]: !prevOptions[option]
