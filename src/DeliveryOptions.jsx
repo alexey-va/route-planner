@@ -39,7 +39,7 @@ function DeliveryOptions({ options, handleOptionChange }) {
                             className="self-center"
                         />
                         <label htmlFor="evening" className="ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
-                            12:00-19:00
+                            12:00-16:00
                         </label>
                     </div>
                 </div>
