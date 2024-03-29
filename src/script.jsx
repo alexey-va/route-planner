@@ -21,9 +21,10 @@ export function calculate(params) {
     }
 
     if (!atLeastOneFit) {
+        comments.push("Вес превышает грузоподъемность всех доступных машин");
         return {
-            price: -1,
-            description: ["Вес превышает грузоподъемность любой из машин"]
+            price: -2,
+            description: comments
         };
     }
 
@@ -96,7 +97,7 @@ export function calculate(params) {
 
     // by time adjustments
     if (params.options.by_time) {
-        comments.push("Доставка к конкретному времени . Цена: " + price.toFixed() + " руб × " + config.by_time + " = " + (price * config.by_time).toFixed() + " руб");
+        comments.push("Доставка к конкретному времени. Цена: " + price.toFixed() + " руб × " + config.by_time + " = " + (price * config.by_time).toFixed() + " руб");
         price *= config.by_time;
     } else if(params.options.morning) {
         comments.push("Доставка утром. Надбавка: " + config.morning_add + " руб");

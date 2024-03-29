@@ -5,7 +5,11 @@ function ResultDisplay({distance, duration, region, address, price, weight, mapD
             return "Бесплатно";
         } else if (priceValue === -1 || priceValue === undefined || isNaN(priceValue)) {
             return "Нет";
-        } else {
+        }
+        else if(priceValue === -2){
+            return "Рассчитайте вручную";
+        }
+        else {
             return `${priceValue.toFixed(0)} руб`;
         }
     };
