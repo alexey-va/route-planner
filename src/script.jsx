@@ -51,8 +51,7 @@ export function calculate(params) {
             if(params.options.morning){
                 price += config.morning_add;
                 comments.push("Доставка утром. Надбавка: " + price.toFixed() + " руб");
-            }
-            if(params.options.evening){
+            }else if(params.options.evening){
                 price += config.evening_add;
                 comments.push("Доставка вечером. Надбавка: " + price.toFixed() + " руб");
             }
@@ -69,7 +68,7 @@ export function calculate(params) {
     } else if (inCity && inCityWeight && !enoughPrice) {
         if (params.options.opt) comments.push("Платно при покупке менее 15,000 рублей (оптом)")
         else comments.push("Платно при покупке менее 10,000 рублей")
-    } else if (inCity && inCityWeight && enoughPrice && onGazel) {
+    } else if (inCity && inCityWeight && enoughPrice && !onGazel) {
         comments.push("Платно при доставке не на Газели")
     } else if (inCity && isCement) {
         comments.push("Платно при доставке цемента или ЦПС более 15 шт")
@@ -103,7 +102,7 @@ export function calculate(params) {
         comments.push("Доставка утром. Надбавка: " + config.morning_add + " руб");
         price += config.morning_add;
     } else if(params.options.evening) {
-        comments.push("Доставка утром. Надбавка: " + config.evening_add + " руб");
+        comments.push("Доставка вечером. Надбавка: " + config.evening_add + " руб");
         price += config.evening_add;
     }
 

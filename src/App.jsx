@@ -78,8 +78,7 @@ function App() {
                 [option]: !prevOptions[option],
                 price: false
             }));
-        }
-        else if(option === 'by_time' || option === 'morning' || option === 'evening') {
+        } else if (option === 'by_time' || option === 'morning' || option === 'evening') {
             let newOptions = {
                 by_time: false,
                 morning: false,
@@ -90,8 +89,7 @@ function App() {
                 ...prevOptions,
                 ...newOptions
             }));
-        }
-        else {
+        } else {
             setOptions(prevOptions => ({
                 ...prevOptions,
                 [option]: !prevOptions[option]
@@ -151,27 +149,28 @@ function App() {
     };
 
     return (
-        <div className="w-full h-screen bg-white flex justify-center items-center">
-            <div className="bg-white w-full h-screen md:w-full flex flex-col">
-                {/* Map container */}
-                <div
-                    className="relative w-full h-[400px] min-h-[400px] min-w-[300px] md:min-h-[500px] md:min-w-[400px]">
-                    <Test setDistance={setDistance}
-                          setDuration={setDuration}
-                          setRegion={setRegion}
-                          vehicle={vehicle}
-                          setAddress={setAddress}
-                          setMapDistance={setMapDistance}
-                          setBridge={setBridge}
-                    />
-                    {/*                    {vehiclesConfig[vehicle].heavy ? <div
+        <div className="w-full h-full flex justify-center items-center max-md:p-0">
+            <div className="max-md:p-0 max-md:w-full max-md:h-full min-w-[40rem] max-sm:min-w-[20rem] bg-white flex justify-center
+             items-center max-md:drop-shadow-none max-md:rounded-none drop-shadow-xl rounded-md max-md:my-0 ">
+                <div className="w-full flex flex-col self-start h-full">
+                    {/* Map container */}
+                    <div className="relative w-full h-[500px] min-h-[500px] min-w-[400px]
+                     md:min-h-[500px] md:min-w-[350px] max-sm:min-w-[20rem] grow">
+                        <Test setDistance={setDistance}
+                              setDuration={setDuration}
+                              setRegion={setRegion}
+                              vehicle={vehicle}
+                              setAddress={setAddress}
+                              setMapDistance={setMapDistance}
+                              setBridge={setBridge}
+                        />
+                        {/*                    {vehiclesConfig[vehicle].heavy ? <div
                         className="transition-all animate-pulseOutline left-1 bottom-1 absolute w-[8.75rem] h-[2rem]
                          ring-2 ring-red-500 ring-opacity-100 rounded-sm pointer-events-none"></div> : ""}*/}
 
-                </div>
-                {/* Content container */}
-                <div className="p-2 text-lg font-sans flex flex-col border-t-2">
-                    <div className="">
+                    </div>
+                    {/* Content container */}
+                    <div className="px-4 py-2 text-lg font-sans flex flex-col border-t-2 grow">
                         <WeightDistanceInput
                             weight={weight}
                             handleWeightChange={handleWeightChange}
@@ -198,12 +197,12 @@ function App() {
                                        price={price}
                                        address={address}
                                        bridge={bridge}
-                                       weight={weight}/>
+                                       weight={weight}
+                                       reset={reset}
+                        />
+
+
                     </div>
-                    {/* Button placed outside the flex-grow div to prevent overflow */}
-                    <button className="max-sm:p-2 mt-0 rounded-md text-white p-3 mx-2 max-sm:text-xl text-3xl bg-blue-600"
-                            onClick={reset}>Сбросить
-                    </button>
                 </div>
             </div>
         </div>

@@ -1,15 +1,13 @@
-function ResultDisplay({distance, duration, region, address, price, weight, mapDistance, bridge}) {
+function ResultDisplay({distance, duration, region, address, price, weight, mapDistance, bridge, reset}) {
     // Convert the function to use Tailwind for consistency and improved design
     const formatPrice = (priceValue) => {
         if (priceValue === 0) {
             return "Бесплатно";
         } else if (priceValue === -1 || priceValue === undefined || isNaN(priceValue)) {
             return "Нет";
-        }
-        else if(priceValue === -2){
+        } else if (priceValue === -2) {
             return "Рассчитайте вручную";
-        }
-        else {
+        } else {
             return `${priceValue.toFixed(0)} руб`;
         }
     };
@@ -19,10 +17,10 @@ function ResultDisplay({distance, duration, region, address, price, weight, mapD
         <div className="mt-2 mb-auto py-2 flex flex-col border-t border-gray-200 space-y-2 max-sm:text-sm text-md">
             {/* Other details remain the same */}
             <div className="flex flex-col space-y-2 px-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between relative">
                     <span className="font-semibold">Расстояние:</span>
                     <span
-                        className="font-semibold">{distance && Math.abs(distance - mapDistance) > 99.9 ? "Установлено вручную" : ""}</span>
+                        className="absolute left-[7rem] font-semibold text-red-600 ml-[3rem]">{distance && Math.abs(distance - mapDistance) > 99.9 ? "Установлено вручную" : ""}</span>
                     <span>{distance ? (distance / 1000.0).toFixed(1) : 0} км</span>
                 </div>
                 <div className="flex justify-between">
@@ -61,11 +59,18 @@ function ResultDisplay({distance, duration, region, address, price, weight, mapD
             </div>
 
             {/* Price Details */}
-            <div className="mx-2 flex justify-between bg-blue-100 max-sm:p-2 text-2xl max-sm:text-xl p-4 rounded-lg mt-2">
+            <div
+                className="mx-2 flex justify-between bg-blue-100 max-sm:p-2 text-2xl max-sm:text-xl p-4 rounded-lg mt-2">
                 <span className="font-semibold">Стоимость:</span>
                 <span className="font-bold">
                     {formatPrice(price.price)}
                 </span>
+            </div>
+            <div className="px-2">
+                <button
+                    className="hover:bg-blue-600 bg-blue-500 transition-all w-full max-sm:p-2 mt-0 rounded-md text-white p-3  max-sm:text-xl text-3xl "
+                    onClick={reset}>Сбросить
+                </button>
             </div>
         </div>
     );

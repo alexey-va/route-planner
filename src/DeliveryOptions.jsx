@@ -4,8 +4,7 @@ function DeliveryOptions({options, handleOptionChange}) {
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}
-            <div className="max-sm:px-2 max-sm:py-2 mb-2 p-4 bg-gray-100 rounded-lg relative">
-                <div className="absolute max-sm:invisible top-[25%] right-10 text-[0.9rem] font-semibold text-gray-700">Интервал</div>
+            <div className="max-sm:px-2 max-sm:py-2  px-4 py-2  rounded-lg relative">
                 <div className="flex flex-row auto-cols-auto max-sm:gap-x-3 gap-x-10">
                     <div className="flex flex-row items-start">
                         <input
@@ -18,9 +17,10 @@ function DeliveryOptions({options, handleOptionChange}) {
                         <label htmlFor="by_time" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
                          max-xs:text-xs flex flex-wrap items-center self-center">
                             Ко времени
-                            <span className={`sm:translate-y-0.5 text-red-600 text-sm`}>9:00-16:00</span>
+                            <span className={`ml-1 sm:translate-y-0.5 text-red-600 text-sm`}>9:00-16:00</span>
                         </label>
                     </div>
+
                     <div className="flex flex-row items-start">
                         <input
                             type="checkbox"
@@ -50,9 +50,9 @@ function DeliveryOptions({options, handleOptionChange}) {
                 </div>
             </div>
             {/* Time options */}
-
+            <hr/>
             {/* Price options */}
-            <div className="max-sm:px-2 max-sm:py-2 mb-2 p-4 bg-gray-100 rounded-lg">
+            <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
                 <div className="flex flex-row auto-cols-auto max-sm:gap-x-3 gap-x-10">
                     <div className="flex flex-row items-start">
                         <input
@@ -62,9 +62,10 @@ function DeliveryOptions({options, handleOptionChange}) {
                             onChange={() => handleOptionChange('price')}
                             className="self-center"
                         />
-                        <label htmlFor="price" className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-1 items-center self-center">
+                        <label htmlFor="price"
+                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-1 items-center self-center">
                             Сумма покупки
-                            <span className="font-semibold">{options.opt ? "≥ 15,000 руб" : "≥ 10,000 руб"}</span>
+                            <span className="">{options.opt ? "≥ 15,000 руб" : "≥ 10,000 руб"}</span>
                         </label>
                     </div>
                     <div className="flex flex-row items-start">
@@ -75,16 +76,17 @@ function DeliveryOptions({options, handleOptionChange}) {
                             onChange={() => handleOptionChange('opt')}
                             className="self-center"
                         />
-                        <label htmlFor="price_opt" className="self-center ml-2 max-sm:ml-1  flex flex-wrap gap-x-2 items-center">
+                        <label htmlFor="price_opt"
+                               className="self-center ml-2 max-sm:ml-1  flex flex-wrap gap-x-2 items-center">
                             Опт
                         </label>
                     </div>
                 </div>
             </div>
             {/* Price options */}
-
+            <hr/>
             {/* Cement options */}
-            <div className="max-sm:px-2 max-sm:py-2 p-4 bg-gray-100 rounded-lg">
+            <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
                 <div className="grid grid-flow-col auto-cols-auto gap-x-1">
                     <div className="flex flex-row items-start">
                         <input
@@ -94,7 +96,8 @@ function DeliveryOptions({options, handleOptionChange}) {
                             onChange={() => handleOptionChange('cement')}
                             className="self-center"
                         />
-                        <label htmlFor="cement" className="flex  ml-2 max-sm:ml-1  flex-wrap gap-x-2 items-center self-center">
+                        <label htmlFor="cement"
+                               className="flex  ml-2 max-sm:ml-1  flex-wrap gap-x-2 items-center self-center">
                             Цемент/ЦПС
                             <span className="text-nowrap text-gray-500 text-sm">
                                 более 15 штук
@@ -104,6 +107,7 @@ function DeliveryOptions({options, handleOptionChange}) {
                 </div>
             </div>
             {/* Cement options */}
+            <hr/>
         </div>
     );
 }

@@ -39,27 +39,9 @@ function WeightDistanceInput({
     };
 
     return (
-        <div className={`max-sm:text-lg text-xl`}>
-            {/* WEIGHT */}
-            <div className="relative mt-1  ">
-                <label htmlFor="weight" className="font-semibold">Вес (кг):</label>
-                <div className="flex items-center border border-gray-300 rounded-md mt-1">
-                    <input
-                        type="number"
-                        id="weight"
-                        min={1}
-                        max={100000}
-                        step={10}
-                        placeholder="Введите вес"
-                        value={displayWeight}
-                        onChange={handleWeightChange}
-                        className="min-sm:text-lg w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                    />
-                    <span className="pointer-events-none absolute text-gray-400" style={kgLabelStyle}>кг</span>
-                </div>
-            </div>
+        <div className={`max-sm:text-lg text-xl grid grid-cols-[2fr_2.2fr] gap-12`}>
             {/* DISTANCE */}
-            <div className="relative mt-2">
+            <div className="relative mt-1">
                 <div className={`relative`}>
                     {/*<div className={`absolute inset-0 w-[9.5rem] -left-0.5 rounded-sm ${vehiclesConfig[vehicle].heavy ? "animate-pulseOutline ring-2 ring-red-500 ring-opacity-100" : ""}`}></div>*/}
                     <label htmlFor="distance" className="font-semibold">
@@ -81,6 +63,26 @@ function WeightDistanceInput({
                     <span className="pointer-events-none absolute text-gray-400" style={kmLabelStyle}>км</span>
                 </div>
             </div>
+            {/* WEIGHT */}
+            <div className="relative mt-1">
+                <label htmlFor="weight" className="font-semibold">Вес (кг):</label>
+                <div className="flex items-center border border-gray-300 rounded-md mt-1">
+                    <input
+                        type="number"
+                        id="weight"
+                        min={1}
+                        max={100000}
+                        step={10}
+                        placeholder="Введите вес"
+                        value={displayWeight}
+                        onChange={handleWeightChange}
+                        className="min-sm:text-lg w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    />
+                    <span className="pointer-events-none absolute text-gray-400" style={kgLabelStyle}>кг</span>
+                </div>
+            </div>
+
+
             {/* PURCHASE AMOUNT */}
         </div>
     );

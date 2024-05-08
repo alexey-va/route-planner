@@ -3,9 +3,9 @@ import React from 'react';
 function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
 
     return (
-        <div className="max-sm:px-0 max-sm:ml-0 ml-2 mt-2 pb-3">
+        <div className="max-sm:px-0 max-sm:ml-0 ml-2 ">
             {/* VEHICLE SELECTION */}
-            <div className={`max-sm:px-2 max-sm:py-2  p-4 bg-gray-100 gap-12 max-sm:gap-4 rounded-lg flex flex-row flex-wrap w-full`}>
+            <div className={`max-sm:px-2 max-sm:py-2 px-4 py-2 gap-12 max-sm:gap-4 rounded-lg flex flex-row flex-wrap w-full`}>
                 {Object.entries(vehiclesConfig).map(([key, value]) => {
                     let isDisabled = weight > value.max_weight;
                     //console.log(vehiclesConfig[key].heavy, vehiclesConfig[key])
