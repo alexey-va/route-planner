@@ -76,7 +76,7 @@ export function calculate(params) {
     }
 
     // if not in city add comment
-    if (params.region !== "Киров") comments.push(["За пределами города"]);
+    //if (params.region !== "Киров") comments.push(["За пределами города"]);
 
     // calculate price
 
