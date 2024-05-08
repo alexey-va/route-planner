@@ -29,7 +29,6 @@ function ResultDisplay({distance, duration, region, address, price, weight, mapD
                     <span className="font-semibold">Район:</span>
                     <span>
                         <span>{region || "Неизвестно"}</span>
-                        <span className={`${bridge ? "ml-2" : ""} opacity-70`}>{bridge ? "(За мостом)" : ""}</span>
                     </span>
 
                 </div>
