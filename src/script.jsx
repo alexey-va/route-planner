@@ -65,12 +65,12 @@ export function calculate(params) {
 
     // add comments for paid city delivery
     else if (inCity && inCityWeight && fixedTime) {
-        comments.push("Платно в пределах города при выборе времени доставки");
+        comments.push("Платно при выборе времени доставки");
     } else if (inCity && inCityWeight && !enoughPrice) {
-        if (params.options.opt) comments.push("Платно в пределах города при покупке менее 15,000 рублей (оптом)")
-        else comments.push("Платно в пределах города при покупке менее 10,000 рублей")
+        if (params.options.opt) comments.push("Платно при покупке менее 15,000 рублей (оптом)")
+        else comments.push("Платно при покупке менее 10,000 рублей")
     } else if (inCity && inCityWeight && enoughPrice && onGazel) {
-        comments.push("Платно в пределах города при доставке не на Газели")
+        comments.push("Платно при доставке не на Газели")
     } else if (inCity && isCement) {
         comments.push("Платно при доставке цемента или ЦПС более 15 шт")
     }
@@ -81,8 +81,8 @@ export function calculate(params) {
     // calculate price
 
     if (vehiclesConfig[params.vehicle].heavy && params.bridge) {
-        comments.push("Доставка за мостом на грузовом транспорте. Расстояние увеличено на " + config.bridge_distance_add + " км.");
-        params.distance += config.bridge_distance_add * 1000;
+        //comments.push("Доставка за мостом на грузовом транспорте. Расстояние увеличено на " + config.bridge_distance_add + " км.");
+        //params.distance += config.bridge_distance_add * 1000;
     }
 
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
