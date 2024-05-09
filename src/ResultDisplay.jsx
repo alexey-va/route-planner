@@ -1,4 +1,4 @@
-function ResultDisplay({distance, duration, region, address, price, weight, mapDistance, bridge, reset}) {
+function ResultDisplay({distance, duration, region, address, price, weight, mapDistance, regions, reset}) {
     // Convert the function to use Tailwind for consistency and improved design
     const formatPrice = (priceValue) => {
         if (priceValue === 0) {
@@ -27,6 +27,7 @@ function ResultDisplay({distance, duration, region, address, price, weight, mapD
                     <span className="font-semibold">Район:</span>
                     <span>
                         <span>{region || "Неизвестно"}</span>
+                        {/*<span>{regions && regions.length > 0 ? ` (${regions.join(', ')})` : ""}</span>*/}
                     </span>
 
                 </div>

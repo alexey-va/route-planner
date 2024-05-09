@@ -11,6 +11,10 @@ export function calculate(params) {
         comments.push("Нулевой вес");
     }
 
+
+
+
+
     // check if weight is too heavy for any vehicle
     let atLeastOneFit = false;
     for (let key in vehiclesConfig) {
@@ -28,11 +32,16 @@ export function calculate(params) {
         };
     }
 
+
+
+
+
     let inCity = params.region === "Киров";
     let inCityWeight = params.weight <= config.free_city_weight;
     let fixedTime = params.options.by_time;
     let enoughPrice = params.options.price;
     let onGazel = params.vehicle === 0;
+    let onKamaz = params.vehicle === 3;
     let isCement = params.options.cement;
 
     // check for free city delivery
@@ -79,20 +88,37 @@ export function calculate(params) {
 
     // calculate price
 
-    if (vehiclesConfig[params.vehicle].heavy && params.bridge) {
+/*    if (vehiclesConfig[params.vehicle].heavy && params.bridge) {
         //comments.push("Доставка за мостом на грузовом транспорте. Расстояние увеличено на " + config.bridge_distance_add + " км.");
         //params.distance += config.bridge_distance_add * 1000;
-    }
+    }*/
+
+
 
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
-    comments.push("Базовая цена: " +vehiclesConfig[params.vehicle].price + " руб/км × "+ (params.distance / 1000).toFixed(1) + " км" +  " = " + price.toFixed() + " руб");
-    //comments.push("Машина: " + vehiclesConfig[params.vehicle].name);
+    console.log(params.options)
+    if(params.regions && params.regions.includes("Коминтерн")){
+        price = 700;
+        comments.push("Доставка в Коминтерн: 700 руб");
+    } else{
+        if(onKamaz){
+            price = 1500 + params.distance / 1000 * vehiclesConfig[params.vehicle].price;
+            comments.push("Базовая цена: 1500 руб + " + vehiclesConfig[params.vehicle].price + " руб/км × "+ (params.distance / 1000).toFixed(1) + " км" +  " = " + price.toFixed() + " руб");
+        } else{
+            comments.push("Базовая цена: " +vehiclesConfig[params.vehicle].price + " руб/км × "+ (params.distance / 1000).toFixed(1) + " км" +  " = " + price.toFixed() + " руб");
 
-    // minimal price adjustments
-    if (price < vehiclesConfig[params.vehicle].minimal_city_price) {
-        price = vehiclesConfig[params.vehicle].minimal_city_price;
-        comments.push("Минимальная стоимость доставки " + vehiclesConfig[params.vehicle].minimal_city_price + " руб");
+            // minimal price adjustments before time adjustment
+            if (price < vehiclesConfig[params.vehicle].minimal_city_price) {
+                price = vehiclesConfig[params.vehicle].minimal_city_price;
+                comments.push("Минимальная стоимость доставки " + vehiclesConfig[params.vehicle].minimal_city_price + " руб");
+            }
+        }
     }
+
+
+
+
+
 
     // by time adjustments
     if (params.options.by_time) {
@@ -150,10 +176,10 @@ export const vehiclesConfig = {
     },
     3: {
         name: "Камаз",
-        price: 65,
+        price: 100,
         price_hour: 1200,
         max_weight: 10000,
-        minimal_city_price: 3000,
+        minimal_city_price: 1500,
         heavy: true
     }
 }

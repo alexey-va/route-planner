@@ -25,7 +25,7 @@ function App() {
     const [time, setTime] = useState(getFromLocalStorageOrDefault('time', 'day'))
     const [distance, setDistance] = useState(getFromLocalStorageOrDefault('distance', 0));
     const [region, setRegion] = useState(getFromLocalStorageOrDefault('region', ''));
-    const [bridge, setBridge] = useState(getFromLocalStorageOrDefault('bridge', false))
+    const [regions, setRegions] = useState(getFromLocalStorageOrDefault('regions', []))
     const [address, setAddress] = useState(getFromLocalStorageOrDefault('address', ''))
     const [duration, setDuration] = useState(getFromLocalStorageOrDefault('duration', 0));
     const [weight, setWeight] = useState(getFromLocalStorageOrDefault('weight', 100));
@@ -64,12 +64,12 @@ function App() {
             options: options,
             vehicle: vehicle,
             region: region,
-            bridge: bridge,
+            regions: regions,
             time: time
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [distance, duration, weight, options, vehicle, region, time]);
+    }, [regions, distance, duration, weight, options, vehicle, region, time]);
 
     const handleOptionChange = (option) => {
         if (option === 'opt' && !options[option]) {
@@ -121,7 +121,7 @@ function App() {
 
     const reset = () => {
         setDistance(0);
-        setRegion('');
+        setRegion([]);
         setDuration(0);
         setWeight(100);
         setOptions({
@@ -136,7 +136,7 @@ function App() {
         });
         setAddress('')
         setMapDistance(0)
-        setBridge(false)
+        setRegions(false)
         if (routePanelControl) {
             routePanelControl.routePanel.state.set({
                 fromEnabled: false,
@@ -162,7 +162,7 @@ function App() {
                               vehicle={vehicle}
                               setAddress={setAddress}
                               setMapDistance={setMapDistance}
-                              setBridge={setBridge}
+                              setRegions={setRegions}
                         />
                         {/*                    {vehiclesConfig[vehicle].heavy ? <div
                         className="transition-all animate-pulseOutline left-1 bottom-1 absolute w-[8.75rem] h-[2rem]
@@ -196,7 +196,7 @@ function App() {
                                        region={region}
                                        price={price}
                                        address={address}
-                                       bridge={bridge}
+                                       regions={regions}
                                        weight={weight}
                                        reset={reset}
                         />

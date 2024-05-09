@@ -2,7 +2,7 @@ import {useEffect} from "react";
 
 export let routePanelControl; // Move this to the outer scope
 
-function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, setBridge}) {
+function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, setRegions}) {
     useEffect(() => {
         ymaps.ready(init);
     }, []);
@@ -77,13 +77,18 @@ function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, 
 
                     // check that at least one polygon is За Мостом
                     let bridge = false;
+                    let comintern = false;
                     polygons.each(function (obj) {
                         if (obj.properties.get('description') === "За мостом") {
                             bridge = true;
+                        } else if (obj.properties.get('description') === "Коминтерн") {
+                            comintern = true;
                         }
                     });
-
-                    setBridge(bridge)
+                    let regions = []
+                    if(bridge) regions.push("За мостом")
+                    if(comintern) regions.push("Коминтерн")
+                    setRegions(regions)
                     var polygon = polygons.get(0);
                     var region = !polygon ? "Область" : polygon.properties.get('description');
                     if(region === 'За мостом') region = 'Область'
