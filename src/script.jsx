@@ -97,9 +97,18 @@ export function calculate(params) {
 
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
     console.log(params.options)
-    if(params.regions && params.regions.includes("Коминтерн")){
-        price = 700;
-        comments.push("Доставка в Коминтерн: 700 руб");
+    if(params.regions && params.regions.includes("Коминтерн") ){
+        if(params.vehicle === 0 || params.vehicle === 1) {
+            price = 700;
+            comments.push("Доставка в Коминтерн на газели: 700 руб");
+        }
+        else if(params.vehicle === 2) {
+            price = 800;
+            comments.push("Доставка в Коминтерн на газоне: 1000 руб");
+        } else if(params.vehicle === 3) {
+            price = 1200;
+            comments.push("Доставка в Коминтерн на камазе: 1200 руб");
+        }
     } else{
         if(onKamaz){
             price = 1500 + params.distance / 1000 * vehiclesConfig[params.vehicle].price;
