@@ -27,11 +27,11 @@ export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
 
     return (
         <>
-            <div className={`relative overflow-hidden transition-all`}
+            <div className={`relative overflow-hidden transition-all mb-1`}
                  style={{height: show ? `${containerHeight}px` : '0px'}}>
                 <div ref={contentRef} className=" absolute flex w-full  flex-col max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
                     <label className="font-semibold max-sm:text-lg text-xl">Дополнительно</label>
-                    <div className="mt-3 mx-4">
+                    <div className="mt-2 mx-4 flex flex-row  items-center">
                         <input type="checkbox"
                                id="right_time_kom"
                                name="right_time_kom"
@@ -40,7 +40,7 @@ export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
                                onChange={() => handleOptionChange('right_time_kom')}
                         />
                         <label htmlFor="right_time_kom" className={`mx-2`}>
-                            Доставка в Коминтерн в среду или пятницу
+                            Коминтерн - доставка в среду или пятницу
                         </label>
                     </div>
                 </div>
