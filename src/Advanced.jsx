@@ -1,6 +1,22 @@
-export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
+import {useEffect, useRef, useState} from "react";
 
+export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
+    const contentRef = useRef(null);
+    const [containerHeight, setContainerHeight] = useState(0);
     let show = regions && regions.includes("Коминтерн");
+
+    const updateHeight = () => {
+        if (show && contentRef.current) {
+            const actualHeight = contentRef.current.clientHeight;
+            setContainerHeight(actualHeight);
+        } else {
+            setContainerHeight(0);
+        }
+    };
+
+    useEffect(() => {
+        updateHeight();
+    }, [regions, advanced]);
 
     const handleOptionChange = (option) => {
         setAdvanced(prevOptions => ({
@@ -11,19 +27,20 @@ export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
 
     return (
         <>
-            <div className={`relative overflow-hidden ${(show ? "h-[5rem]" : "h-0")} transition-all`}>
-                <div className="absolute flex  w-full h-full flex-col
-                max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
+            <div className={`relative overflow-hidden transition-all`}
+                 style={{height: show ? `${containerHeight}px` : '0px'}}>
+                <div ref={contentRef} className=" absolute flex w-full  flex-col max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
                     <label className="font-semibold max-sm:text-lg text-xl">Дополнительно</label>
                     <div className="mt-3 mx-4">
                         <input type="checkbox"
                                id="right_time_kom"
                                name="right_time_kom"
                                checked={advanced.right_time_kom || false}
+                               disabled={vehicle && (vehicle !== 0 && vehicle !== 1)}
                                onChange={() => handleOptionChange('right_time_kom')}
                         />
                         <label htmlFor="right_time_kom" className={`mx-2`}>
-                            Доставка в среду или пятницу
+                            Доставка в Коминтерн в среду или пятницу
                         </label>
                     </div>
                 </div>

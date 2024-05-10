@@ -1,7 +1,9 @@
 import React from 'react';
 
-function DeliveryOptions({options, handleOptionChange, advanced, regions}) {
-    let hideTime = advanced && advanced.right_time_kom && regions && regions.includes("Коминтерн");
+function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle}) {
+    let hideTime = advanced && advanced.right_time_kom
+        && regions && regions.includes("Коминтерн")
+        && (vehicle === 0 || vehicle === 1);
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}

@@ -191,11 +191,13 @@ function App() {
                                                  handleTimeChange={(value) => setTime(value)}
                                                  advanced={advanced}
                                                  regions={regions}
+                                                 vehicle={vehicle}
                                 />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>
                             </div>
-                            <Advanced regions={regions} vehicle={vehicle} advanced={advanced} setAdvanced={setAdvanced}/>
+                            <Advanced regions={regions} vehicle={vehicle} advanced={advanced}
+                                      setAdvanced={setAdvanced}/>
                         </div>
                         <ResultDisplay distance={distance}
                                        mapDistance={mapDistance}
