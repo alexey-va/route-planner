@@ -97,7 +97,7 @@ export function calculate(params) {
 
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
     console.log(params.options)
-    if(params.regions && params.regions.includes("Коминтерн") ){
+    if((1 == 2) && params.regions && params.regions.includes("Коминтерн") ){
         if(params.vehicle === 0 || params.vehicle === 1) {
             price = 700;
             comments.push("Доставка в Коминтерн на газели: 700 руб");
