@@ -23,7 +23,7 @@ export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
                                onChange={() => handleOptionChange('right_time_kom')}
                         />
                         <label htmlFor="right_time_kom" className={`mx-2`}>
-                            Доставка в Коминтерн в среду или пятницу
+                            Доставка в среду или пятницу
                         </label>
                     </div>
                 </div>

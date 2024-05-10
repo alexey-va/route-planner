@@ -107,11 +107,15 @@ export function calculate(params) {
     }
 
     if (kominternDiscount) {
-        price *= 0.5;
-        comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
-        return {
-            price: price,
-            description: comments
+        if(params.vehicle == 0 || params.vehicle == 1) {
+            price *= 0.5;
+            comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
+            return {
+                price: price,
+                description: comments
+            }
+        } else {
+            comments.push("Скидка в Коминтерн не применяется к данному транспорту");
         }
     }
 

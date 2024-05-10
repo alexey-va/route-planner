@@ -44,7 +44,7 @@ function WeightDistanceInput({
             <div className="relative mt-1">
                 <div className={`relative`}>
                     {/*<div className={`absolute inset-0 w-[9.5rem] -left-0.5 rounded-sm ${vehiclesConfig[vehicle].heavy ? "animate-pulseOutline ring-2 ring-red-500 ring-opacity-100" : ""}`}></div>*/}
-                    <label htmlFor="distance" className="font-semibold">
+                    <label htmlFor="distance" className="font-semibold overflow-hidden whitespace-nowrap">
                         Расстояние (км):
                     </label>
                 </div>
@@ -65,7 +65,7 @@ function WeightDistanceInput({
             </div>
             {/* WEIGHT */}
             <div className="relative mt-1">
-                <label htmlFor="weight" className="font-semibold">Вес (кг):</label>
+                <label htmlFor="weight" className="font-semibold  overflow-clip">Вес (кг):</label>
                 <div className="flex items-center border border-gray-300 rounded-md mt-1">
                     <input
                         type="number"

@@ -17,9 +17,8 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions}) {
                             className="self-center"
                         />
                         <label htmlFor="by_time" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center">
-                            Ко времени
-                            <span className={`ml-1 sm:translate-y-0.5 text-red-600 text-sm`}>9:00-16:00</span>
+                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
+                            Ко времени (9:00-16:00)
                         </label>
                     </div>
 
@@ -33,7 +32,7 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions}) {
                             className="self-center"
                         />
                         <label htmlFor="morning"
-                               className="max-sm:ml-1 ml-2 max-xs:text-xs flex flex-wrap items-center self-center">
+                               className="whitespace-nowrap max-sm:ml-1 ml-2 max-xs:text-xs flex flex-wrap items-center self-center">
                             9:00-12:00
                         </label>
                     </div>
@@ -47,7 +46,7 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions}) {
                             className="self-center"
                         />
                         <label htmlFor="evening"
-                               className="ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
+                               className="whitespace-nowrap ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
                             12:00-16:00
                         </label>
                     </div>
