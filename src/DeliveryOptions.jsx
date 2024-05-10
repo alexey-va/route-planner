@@ -1,7 +1,7 @@
 import React from 'react';
 
-function DeliveryOptions({options, handleOptionChange, advanced}) {
-    let hideTime = advanced && advanced.right_time_kom;
+function DeliveryOptions({options, handleOptionChange, advanced, regions}) {
+    let hideTime = advanced && advanced.right_time_kom && regions && regions.includes("Коминтерн");
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}

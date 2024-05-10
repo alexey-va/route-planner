@@ -190,6 +190,7 @@ function App() {
                                                  handleOptionChange={handleOptionChange}
                                                  handleTimeChange={(value) => setTime(value)}
                                                  advanced={advanced}
+                                                 regions={regions}
                                 />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>
