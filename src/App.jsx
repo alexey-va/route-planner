@@ -5,6 +5,7 @@ import {calculate, vehiclesConfig} from "./script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
+import Advanced from "./Advanced.jsx";
 
 function App() {
     const getFromLocalStorageOrDefault = (key, defaultValue) => {
@@ -42,6 +43,7 @@ function App() {
         price: 0,
         description: [""]
     }));
+    const [advanced, setAdvanced] = useState(getFromLocalStorageOrDefault('advanced', {}))
 
     useEffect(() => {
         localStorage.setItem('last_updated', Date.now());
@@ -55,6 +57,8 @@ function App() {
         localStorage.setItem('address', JSON.stringify(address));
         localStorage.setItem('mapDistance', JSON.stringify(mapDistance));
         localStorage.setItem('time', JSON.stringify(time));
+        localStorage.setItem('regions', JSON.stringify(regions));
+        localStorage.setItem('advanced', JSON.stringify(advanced));
 
         // Calculate price whenever distance, duration, or weight changes
         let params = {
@@ -65,11 +69,12 @@ function App() {
             vehicle: vehicle,
             region: region,
             regions: regions,
-            time: time
+            time: time,
+            advanced: advanced
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [regions, distance, duration, weight, options, vehicle, region, time]);
+    }, [regions, distance, duration, weight, options, vehicle, region, time, advanced]);
 
     const handleOptionChange = (option) => {
         if (option === 'opt' && !options[option]) {
@@ -137,6 +142,7 @@ function App() {
         setAddress('')
         setMapDistance(0)
         setRegions(false)
+        setAdvanced({})
         if (routePanelControl) {
             routePanelControl.routePanel.state.set({
                 fromEnabled: false,
@@ -149,13 +155,13 @@ function App() {
     };
 
     return (
-        <div className="w-full h-full flex justify-center items-center max-md:p-0">
-            <div className="max-md:p-0 max-md:w-full max-md:h-full min-w-[40rem] max-sm:min-w-[20rem] bg-white flex justify-center
-             items-center max-md:drop-shadow-none max-md:rounded-none drop-shadow-xl rounded-md max-md:my-0 ">
-                <div className="w-full flex flex-col self-start h-full">
+        <div className="w-full h-full flex justify-center items-center max-md:p-0 md:mt-4 no-scrollbar">
+            <div className="max-md:p-0 max-md:w-full max-md:h-full min-w-[50rem] max-sm:min-w-[20rem] bg-white
+             max-md:drop-shadow-none max-md:rounded-none drop-shadow-xl rounded-md max-md:my-0 ">
+                <div className="w-full flex flex-col self-start h-full ">
                     {/* Map container */}
                     <div className="relative w-full h-[500px] min-h-[500px] min-w-[400px]
-                     md:min-h-[500px] md:min-w-[350px] max-sm:min-w-[20rem] grow">
+                     md:min-h-[500px] md:min-w-[350px] max-sm:min-w-[20rem] grow md:px-1 md:pt-1 ">
                         <Test setDistance={setDistance}
                               setDuration={setDuration}
                               setRegion={setRegion}
@@ -164,9 +170,7 @@ function App() {
                               setMapDistance={setMapDistance}
                               setRegions={setRegions}
                         />
-                        {/*                    {vehiclesConfig[vehicle].heavy ? <div
-                        className="transition-all animate-pulseOutline left-1 bottom-1 absolute w-[8.75rem] h-[2rem]
-                         ring-2 ring-red-500 ring-opacity-100 rounded-sm pointer-events-none"></div> : ""}*/}
+
 
                     </div>
                     {/* Content container */}
@@ -185,10 +189,12 @@ function App() {
                                 <DeliveryOptions options={options}
                                                  handleOptionChange={handleOptionChange}
                                                  handleTimeChange={(value) => setTime(value)}
+                                                 advanced={advanced}
                                 />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>
                             </div>
+                            <Advanced regions={regions} vehicle={vehicle} advanced={advanced} setAdvanced={setAdvanced}/>
                         </div>
                         <ResultDisplay distance={distance}
                                        mapDistance={mapDistance}

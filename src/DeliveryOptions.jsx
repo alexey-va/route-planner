@@ -1,6 +1,7 @@
 import React from 'react';
 
-function DeliveryOptions({options, handleOptionChange}) {
+function DeliveryOptions({options, handleOptionChange, advanced}) {
+    let hideTime = advanced && advanced.right_time_kom;
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}
@@ -10,6 +11,7 @@ function DeliveryOptions({options, handleOptionChange}) {
                         <input
                             type="checkbox"
                             id="by_time"
+                            disabled={hideTime}
                             checked={options.by_time || false}
                             onChange={() => handleOptionChange('by_time')}
                             className="self-center"
@@ -25,6 +27,7 @@ function DeliveryOptions({options, handleOptionChange}) {
                         <input
                             type="checkbox"
                             id="morning"
+                            disabled={hideTime}
                             checked={options.morning || false}
                             onChange={() => handleOptionChange('morning')}
                             className="self-center"
@@ -38,6 +41,7 @@ function DeliveryOptions({options, handleOptionChange}) {
                         <input
                             type="checkbox"
                             id="evening"
+                            disabled={hideTime}
                             checked={options.evening || false}
                             onChange={() => handleOptionChange('evening')}
                             className="self-center"
