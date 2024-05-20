@@ -83,11 +83,12 @@ function App() {
                 [option]: !prevOptions[option],
                 price: false
             }));
-        } else if (option === 'by_time' || option === 'morning' || option === 'evening') {
+        } else if (option === 'by_time' || option === 'morning' || option === 'evening' || option === 'today') {
             let newOptions = {
                 by_time: false,
                 morning: false,
                 evening: false,
+                today: false,
             };
             newOptions[option] = !options[option];
             setOptions(prevOptions => ({

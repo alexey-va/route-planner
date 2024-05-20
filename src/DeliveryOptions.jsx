@@ -8,7 +8,7 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}
             <div className="max-sm:px-2 max-sm:py-2  px-4 py-2  rounded-lg relative">
-                <div className="flex flex-row auto-cols-auto max-sm:gap-x-3 gap-x-10">
+                <div className="grid grid-rows-2 grid-cols-2 gap-x-2 gap-y-2 max-sm:gap-x-16">
                     <div className="flex flex-row items-start">
                         <input
                             type="checkbox"
@@ -21,6 +21,21 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         <label htmlFor="by_time" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
                          max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
                             Ко времени (9:00-16:00)
+                        </label>
+                    </div>
+
+                    <div className="flex flex-row items-start">
+                        <input
+                            type="checkbox"
+                            id="today"
+                            disabled={hideTime}
+                            checked={options.today || false}
+                            onChange={() => handleOptionChange('today')}
+                            className="self-center"
+                        />
+                        <label htmlFor="today" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
+                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
+                            Сегодня
                         </label>
                     </div>
 

@@ -89,14 +89,16 @@ export function calculate(params) {
 
 
     let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
-    //console.log(params.options)
     let kominternDiscount = params.regions && params.regions.includes("Коминтерн") &&
         params.advanced.right_time_kom;
 
+    // kamaz has base minimal price of 1500
     if (onKamaz) {
         price = 1500 + params.distance / 1000 * vehiclesConfig[params.vehicle].price;
         comments.push("Базовая цена: 1500 руб + " + vehiclesConfig[params.vehicle].price + " руб/км × " + (params.distance / 1000).toFixed(1) + " км" + " = " + price.toFixed() + " руб");
-    } else {
+    }
+    // other vehicles have 0 base price and check for minimal price after distance calculation
+    else {
         comments.push("Базовая цена: " + vehiclesConfig[params.vehicle].price + " руб/км × " + (params.distance / 1000).toFixed(1) + " км" + " = " + price.toFixed() + " руб");
 
         // minimal price adjustments before time adjustment
@@ -107,9 +109,13 @@ export function calculate(params) {
     }
 
     if (kominternDiscount) {
-        if(params.vehicle == 0 || params.vehicle == 1) {
+        if(params.vehicle === 0 || params.vehicle === 1) {
             price *= 0.5;
             comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
+            if(price < config.kominter_min_price){
+                price = config.kominter_min_price;
+                comments.push("Минимальная стоимость доставки в Коминтерн " + config.kominter_min_price + " руб");
+            }
             return {
                 price: price,
                 description: comments
@@ -129,6 +135,9 @@ export function calculate(params) {
     } else if (params.options.evening) {
         comments.push("Доставка вечером. Надбавка: " + config.evening_add + " руб");
         price += config.evening_add;
+    } else if(params.options.today){
+        comments.push("Доставка сегодня. Цена: " + price.toFixed() + " руб × " + config.today + " = " + (price * config.today).toFixed() + " руб");
+        price *= config.today;
     }
 
 
@@ -140,8 +149,10 @@ export function calculate(params) {
 
 export const config = {
     by_time: 1.7,
+    today: 2.0,
     morning_add: 500,
     evening_add: 300,
+    kominter_min_price: 800,
     right_now: 2,
     free_city_weight: 1500,
     city_max_distance: 100,
