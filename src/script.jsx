@@ -173,7 +173,7 @@ export const vehiclesConfig = {
         price: 45,
         price_hour: 1200,
         max_weight: 2000,
-        minimal_city_price: 900,
+        minimal_city_price: 1000,
         heavy: false
     },
     2: {
@@ -181,7 +181,7 @@ export const vehiclesConfig = {
         price: 50,
         price_hour: 1200,
         max_weight: 5000,
-        minimal_city_price: 1500,
+        minimal_city_price: 1600,
         heavy: true
     },
     3: {
