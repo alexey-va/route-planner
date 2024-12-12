@@ -85,7 +85,7 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         <label htmlFor="price"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-1 items-center self-center">
                             Сумма покупки
-                            <span className="">{options.opt ? "≥ 20,000 руб" : "≥ 10,000 руб"}</span>
+                            <span className="">{options.opt ? "≥ 20,000 руб" : "≥ 15,000 руб"}</span>
                         </label>
                     </div>
                     <div className="flex flex-row items-start">
