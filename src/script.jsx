@@ -107,7 +107,7 @@ export function calculate(params) {
 
     // kamaz has base minimal price of 1500
     if (onKamaz) {
-        price = 1500 + params.distance / 1000 * vehiclesConfig[params.vehicle].price;
+        price = 1500 + params.distance / 1000 * vehiclesConfig[params.vehicle].price  * 2;
         comments.push("Базовая цена: 1500 руб + " + vehiclesConfig[params.vehicle].price + " руб/км × " + (params.distance / 1000).toFixed(1) + " км × 2 (в две стороны)" + " = " + price.toFixed() + " руб");
     }
     // other vehicles have 0 base price and check for minimal price after distance calculation
