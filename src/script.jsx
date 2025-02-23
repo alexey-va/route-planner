@@ -203,7 +203,7 @@ export const vehiclesConfig = {
     },
     3: {
         name: "Камаз",
-        price: 100,
+        price: 50,
         price_hour: 1200,
         max_weight: 10000,
         minimal_city_price: 1500,
