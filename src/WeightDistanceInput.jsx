@@ -90,7 +90,7 @@ function WeightDistanceInput({
 
                 {isWeekend && displayWeight > 500 && (
                     <p className="text-red-500 text-sm font-semibold mt-1 animate-pulse">
-                        Не более 500кг в выходные дни
+                        Более 500кг в выходние дни +100%
                     </p>
                 )}
             </div>
