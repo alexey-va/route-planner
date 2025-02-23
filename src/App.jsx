@@ -35,7 +35,8 @@ function App() {
         morning: false,
         evening: false,
         price: false,
-        opt: false
+        opt: false,
+        day_of_week: "monday"
     }));
     const [vehicle, setVehicle] = useState(getFromLocalStorageOrDefault('vehicle', 0));
     const [mapDistance, setMapDistance] = useState(getFromLocalStorageOrDefault('mapDistance', 0))
@@ -77,6 +78,7 @@ function App() {
     }, [regions, distance, duration, weight, options, vehicle, region, time, advanced]);
 
     const handleOptionChange = (option) => {
+        console.log(option)
         if (option === 'opt' && !options[option]) {
             setOptions(prevOptions => ({
                 ...prevOptions,
@@ -95,7 +97,15 @@ function App() {
                 ...prevOptions,
                 ...newOptions
             }));
-        } else {
+        }
+        else if (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].includes(option)) {
+            console.log(123)
+            setOptions(prevOptions => ({
+                ...prevOptions,
+                day_of_week: option
+            }));
+        }
+        else {
             setOptions(prevOptions => ({
                 ...prevOptions,
                 [option]: !prevOptions[option]
@@ -182,6 +192,7 @@ function App() {
                             distance={distance}
                             setDistance={setDistance}
                             vehicle={vehicle}
+                            options={options}
                         />
 
                         <div className="mt-1">

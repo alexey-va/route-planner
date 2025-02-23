@@ -6,6 +6,7 @@ function WeightDistanceInput({
                                  handleWeightChange,
                                  distance,
                                  setDistance,
+                                 options,
                                  vehicle
                              }) {
 
@@ -28,6 +29,8 @@ function WeightDistanceInput({
     const kmLabelStyle = {
         left: `${Math.max(1, displayDistance.length - (displayDistance.includes('.') ? 0.4 : 0)) / 1.6 + 1.0}rem`,
     };
+
+    const isWeekend = ['sunday', 'saturday'].includes(options.day_of_week);
 
 
     const handleDistanceChange = (e) => {
@@ -65,8 +68,12 @@ function WeightDistanceInput({
             </div>
             {/* WEIGHT */}
             <div className="relative mt-1">
-                <label htmlFor="weight" className="font-semibold  overflow-clip">Вес (кг):</label>
-                <div className="flex items-center border border-gray-300 rounded-md mt-1">
+                <label htmlFor="weight" className="font-semibold overflow-clip">
+                    Вес (кг):
+                </label>
+                <div className={`flex items-center border rounded-md mt-1 transition-all duration-300
+        ${isWeekend && displayWeight > 500 ? "border-4 border-red-500 animate-pulse" : "border-gray-300"}`}
+                >
                     <input
                         type="number"
                         id="weight"
@@ -80,7 +87,14 @@ function WeightDistanceInput({
                     />
                     <span className="pointer-events-none absolute text-gray-400" style={kgLabelStyle}>кг</span>
                 </div>
+
+                {isWeekend && displayWeight > 500 && (
+                    <p className="text-red-500 text-sm font-semibold mt-1 animate-pulse">
+                        Не более 500кг в выходные дни
+                    </p>
+                )}
             </div>
+
 
 
             {/* PURCHASE AMOUNT */}
