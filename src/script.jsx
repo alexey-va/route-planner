@@ -11,6 +11,14 @@ export function calculate(params) {
         comments.push("Нулевой вес");
     }
 
+    if(params.options.day_of_week === "none") {
+        comments.push("Не выбран день недели");
+        return {
+            price: -1,
+            description: comments
+        };
+    }
+
 
     // check if weight is too heavy for any vehicle
     let atLeastOneFit = false;

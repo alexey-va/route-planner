@@ -36,7 +36,7 @@ function App() {
         evening: false,
         price: false,
         opt: false,
-        day_of_week: "monday"
+        day_of_week: "none"
     }));
     const [vehicle, setVehicle] = useState(getFromLocalStorageOrDefault('vehicle', 0));
     const [mapDistance, setMapDistance] = useState(getFromLocalStorageOrDefault('mapDistance', 0))
