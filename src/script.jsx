@@ -90,8 +90,8 @@ export function calculate(params) {
     } else if (isHeavyOnWeekend) {
         comments.push("Доставка свыше 500 кг в выходные дни всегда платная");
     } else if (inCity && inCityWeight && !enoughPrice) {
-        if (params.options.opt) comments.push("Платно при покупке менее 15,000 рублей (оптом)")
-        else comments.push("Платно при покупке менее 10,000 рублей")
+        if (params.options.opt) comments.push("Платно при покупке менее 20,000 рублей (оптом)")
+        else comments.push("Платно при покупке менее 15,000 рублей")
     } else if (inCity && inCityWeight && enoughPrice && !onGazel) {
         comments.push("Платно при доставке не на Газели")
     } else if (inCity && isCement) {
