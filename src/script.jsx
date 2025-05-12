@@ -55,7 +55,15 @@ export function calculate(params) {
     let onGazel = params.vehicle === 0;
     let onKamaz = params.vehicle === 3;
     let isCement = params.options.cement;
-    let isHeavyOnWeekend = params.weight > 500 && ['sunday', 'saturday'].includes(params.options.day_of_week);
+    let isHeavyOnWeekend = params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week);
+
+    if (isHeavyOnWeekend) {
+        comments = ["Нельзя доставлять груз больше 800 кг в выходной день."]
+        return {
+            price: -2,
+            description: comments
+        };
+    }
 
     // check for free city delivery
     if (inCity && inCityWeight && !fixedTime && enoughPrice && onGazel && !isCement && !isHeavyOnWeekend) {
@@ -159,11 +167,6 @@ export function calculate(params) {
     } else if(params.options.today){
         comments.push("Доставка сегодня. Цена: " + price.toFixed() + " руб × " + config.today + " = " + (price * config.today).toFixed() + " руб");
         price *= config.today;
-    }
-
-    if (isHeavyOnWeekend) {
-        comments.push("Доставка в выходные дни свыше 500 кг. Цена: " + price.toFixed() + " руб × 2 = " + (price * 2).toFixed() + " руб");
-        price *= 2;
     }
 
     return {
