@@ -57,14 +57,6 @@ export function calculate(params) {
     let isCement = params.options.cement;
     let isHeavyOnWeekend = params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week);
 
-    if (isHeavyOnWeekend) {
-        comments = ["Нельзя доставлять груз больше 800 кг в выходной день."]
-        return {
-            price: -2,
-            description: comments
-        };
-    }
-
     // check for free city delivery
     if (inCity && inCityWeight && !fixedTime && enoughPrice && onGazel && !isCement && !isHeavyOnWeekend) {
         if (params.distance > config.city_max_distance * 1000) {
@@ -169,6 +161,12 @@ export function calculate(params) {
         price *= config.today;
     }
 
+    // weekend adjustments
+    if (isHeavyOnWeekend) {
+        comments.push("Доставка в выходные дни с весом более 800 кг. Цена: " + price.toFixed() + " руб × " + config.weekend_multiplier + " = " + (price * config.weekend_multiplier).toFixed() + " руб");
+        price *= config.weekend_multiplier;
+    }
+
     return {
         price: price,
         description: comments
@@ -182,6 +180,7 @@ export const config = {
     evening_add: 300,
     kominter_min_price: 800,
     right_now: 2,
+    weekend_multiplier: 1.5,
     free_city_weight: 1500,
     city_max_distance: 100,
     bridge_distance_add: 10
