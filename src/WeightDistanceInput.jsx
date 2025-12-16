@@ -1,27 +1,21 @@
 import React from 'react';
-import {vehiclesConfig} from "./script.jsx";
+import { formatDistance, formatWeight } from './utils/formatters';
+
+const MAX_DISTANCE_KM = 10000;
+const WEEKEND_WEIGHT_WARNING_THRESHOLD = 500;
 
 function WeightDistanceInput({
-                                 weight,
-                                 handleWeightChange,
-                                 distance,
-                                 setDistance,
-                                 options,
-                                 vehicle
-                             }) {
+    weight,
+    handleWeightChange,
+    distance,
+    setDistance,
+    options,
+    vehicle
+}) {
+    const displayDistance = formatDistance(distance);
+    const displayWeight = formatWeight(weight);
 
-    let displayDistance = (distance / 1000).toString();
-    if (displayDistance.includes('.')) {
-        displayDistance = displayDistance.slice(0, displayDistance.indexOf('.') + 2);
-    }
-
-
-    let displayWeight = (weight).toString();
-    if (displayWeight.includes('.')) {
-        displayWeight = displayWeight.slice(0, displayWeight.indexOf('.'));
-    }
-
-    // Calculate left offset based on the content length
+    // Calculate label positions based on content length
     const kgLabelStyle = {
         left: `${Math.max(1, displayWeight.length) / 1.6 + 1.0}rem`,
     };
@@ -31,14 +25,17 @@ function WeightDistanceInput({
     };
 
     const isWeekend = ['sunday', 'saturday'].includes(options.day_of_week);
-
+    const showWeekendWarning = isWeekend && parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD;
 
     const handleDistanceChange = (e) => {
-        let km = parseFloat(e.target.value); // Convert input from string to float
-        //if (km < 0) return; // Do not update distance if input is invalid
-        if (km >= 10000) km = 10000;
+        let km = parseFloat(e.target.value);
+        
+        // Clamp to valid range
+        if (km >= MAX_DISTANCE_KM) km = MAX_DISTANCE_KM;
         if (km < 0 || isNaN(km)) km = 0;
-        setDistance(km * 1000); // Convert kilometers back to meters for internal state
+        
+        // Convert kilometers to meters for internal state
+        setDistance(km * 1000);
     };
 
     return (
@@ -56,7 +53,7 @@ function WeightDistanceInput({
                         type="number"
                         id="distance"
                         min={0}
-                        max={10000}
+                        max={MAX_DISTANCE_KM}
                         placeholder="0"
                         step="any"
                         value={displayDistance}
@@ -72,7 +69,7 @@ function WeightDistanceInput({
                     Вес (кг):
                 </label>
                 <div className={`flex items-center border rounded-md mt-1 transition-all duration-300
-        ${isWeekend && displayWeight > 500 ? "border-4 border-red-500 animate-pulse" : "border-gray-300"}`}
+                    ${showWeekendWarning ? "border-4 border-red-500 animate-pulse" : "border-gray-300"}`}
                 >
                     <input
                         type="number"
@@ -88,16 +85,15 @@ function WeightDistanceInput({
                     <span className="pointer-events-none absolute text-gray-400" style={kgLabelStyle}>кг</span>
                 </div>
 
-                {isWeekend && displayWeight > 500 && (
+                {showWeekendWarning && (
                     <p className="text-red-500 text-sm font-semibold mt-1 animate-pulse">
-                        Более 800кг в выходние дни +50%
+                        Более 800кг в выходные дни +50%
                     </p>
                 )}
             </div>
 
 
 
-            {/* PURCHASE AMOUNT */}
         </div>
     );
 }

@@ -1,168 +1,104 @@
-import Test, {routePanelControl} from "./Test.jsx";
-import WeightDistanceInput from "./WeightDistanceInput"; // Import the new component at the top
-import {useEffect, useState} from "react";
-import {calculate, vehiclesConfig} from "./script.jsx";
+import Test, { routePanelControl } from "./Test.jsx";
+import WeightDistanceInput from "./WeightDistanceInput";
+import { useEffect, useMemo } from "react";
+import { calculate, vehiclesConfig } from "./script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
 import Advanced from "./Advanced.jsx";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import { handleOptionChange, findNextAvailableVehicle } from "./utils/optionHandlers";
+
+const DEFAULT_OPTIONS = {
+    by_time: false,
+    morning: false,
+    evening: false,
+    price: false,
+    opt: false,
+    day_of_week: "none"
+};
+
+const DEFAULT_PRICE = {
+    price: 0,
+    description: [""]
+};
 
 function App() {
-    const getFromLocalStorageOrDefault = (key, defaultValue) => {
-        let lastUpdateDate = localStorage.getItem('last_updated');
-        if (lastUpdateDate) {
-            let currentDate = Date.now();
-            let diff = currentDate - lastUpdateDate;
-            if (diff > 1000 * 60 * 30) {
-                localStorage.clear();
-            }
-        }
-        const storedValue = localStorage.getItem(key);
-        return storedValue ? JSON.parse(storedValue) : defaultValue;
-    };
+    // State with localStorage persistence
+    const [time, setTime] = useLocalStorage('time', 'day');
+    const [distance, setDistance] = useLocalStorage('distance', 0);
+    const [region, setRegion] = useLocalStorage('region', '');
+    const [regions, setRegions] = useLocalStorage('regions', []);
+    const [address, setAddress] = useLocalStorage('address', '');
+    const [duration, setDuration] = useLocalStorage('duration', 0);
+    const [weight, setWeight] = useLocalStorage('weight', 100);
+    const [options, setOptions] = useLocalStorage('options', DEFAULT_OPTIONS);
+    const [vehicle, setVehicle] = useLocalStorage('vehicle', 0);
+    const [mapDistance, setMapDistance] = useLocalStorage('mapDistance', 0);
+    const [price, setPrice] = useLocalStorage('price', DEFAULT_PRICE);
+    const [advanced, setAdvanced] = useLocalStorage('advanced', {});
 
-
-    // Initial state values retrieved from localStorage or default values
-    const [time, setTime] = useState(getFromLocalStorageOrDefault('time', 'day'))
-    const [distance, setDistance] = useState(getFromLocalStorageOrDefault('distance', 0));
-    const [region, setRegion] = useState(getFromLocalStorageOrDefault('region', ''));
-    const [regions, setRegions] = useState(getFromLocalStorageOrDefault('regions', []))
-    const [address, setAddress] = useState(getFromLocalStorageOrDefault('address', ''))
-    const [duration, setDuration] = useState(getFromLocalStorageOrDefault('duration', 0));
-    const [weight, setWeight] = useState(getFromLocalStorageOrDefault('weight', 100));
-    const [options, setOptions] = useState(getFromLocalStorageOrDefault('options', {
-        by_time: false,
-        morning: false,
-        evening: false,
-        price: false,
-        opt: false,
-        day_of_week: "none"
-    }));
-    const [vehicle, setVehicle] = useState(getFromLocalStorageOrDefault('vehicle', 0));
-    const [mapDistance, setMapDistance] = useState(getFromLocalStorageOrDefault('mapDistance', 0))
-    const [price, setPrice] = useState(getFromLocalStorageOrDefault('price', {
-        price: 0,
-        description: [""]
-    }));
-    const [advanced, setAdvanced] = useState(getFromLocalStorageOrDefault('advanced', {}))
-
+    // Calculate price whenever relevant parameters change
     useEffect(() => {
-        localStorage.setItem('last_updated', Date.now());
-        localStorage.setItem('distance', JSON.stringify(distance));
-        localStorage.setItem('region', JSON.stringify(region));
-        localStorage.setItem('duration', JSON.stringify(duration));
-        localStorage.setItem('weight', JSON.stringify(weight));
-        localStorage.setItem('options', JSON.stringify(options));
-        localStorage.setItem('vehicle', JSON.stringify(vehicle));
-        localStorage.setItem('price', JSON.stringify(price));
-        localStorage.setItem('address', JSON.stringify(address));
-        localStorage.setItem('mapDistance', JSON.stringify(mapDistance));
-        localStorage.setItem('time', JSON.stringify(time));
-        localStorage.setItem('regions', JSON.stringify(regions));
-        localStorage.setItem('advanced', JSON.stringify(advanced));
-
-        // Calculate price whenever distance, duration, or weight changes
-        let params = {
-            distance: distance,
-            duration: duration,
-            weight: weight,
-            options: options,
-            vehicle: vehicle,
-            region: region,
-            regions: regions,
-            time: time,
-            advanced: advanced
+        const params = {
+            distance,
+            duration,
+            weight,
+            options,
+            vehicle,
+            region,
+            regions,
+            time,
+            advanced
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [regions, distance, duration, weight, options, vehicle, region, time, advanced]);
+    }, [distance, duration, weight, options, vehicle, region, regions, time, advanced, setPrice]);
 
-    const handleOptionChange = (option) => {
-        console.log(option)
-        if (option === 'opt' && !options[option]) {
-            setOptions(prevOptions => ({
-                ...prevOptions,
-                [option]: !prevOptions[option],
-                price: false
-            }));
-        } else if (option === 'by_time' || option === 'morning' || option === 'evening' || option === 'today') {
-            let newOptions = {
-                by_time: false,
-                morning: false,
-                evening: false,
-                today: false,
-            };
-            newOptions[option] = !options[option];
-            setOptions(prevOptions => ({
-                ...prevOptions,
-                ...newOptions
-            }));
-        }
-        else if (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].includes(option)) {
-            console.log(123)
-            setOptions(prevOptions => ({
-                ...prevOptions,
-                day_of_week: option
-            }));
-        }
-        else {
-            setOptions(prevOptions => ({
-                ...prevOptions,
-                [option]: !prevOptions[option]
-            }));
-        }
+    const onOptionChange = (option) => {
+        handleOptionChange(option, options, setOptions);
     };
 
     const handleWeightChange = (e) => {
         let newWeight = parseFloat(e.target.value);
-        let amount = newWeight;
-        if (amount >= 100000) amount = 100000;
-        if (amount === '' || isNaN(amount)) amount = 0;
-        setWeight(amount);
+        
+        // Clamp weight to valid range
+        if (newWeight >= 100000) newWeight = 100000;
+        if (newWeight === '' || isNaN(newWeight)) newWeight = 0;
+        
+        setWeight(newWeight);
 
-        // Check if weight exceeds max weight of selected vehicle
+        // Auto-select appropriate vehicle if weight exceeds current vehicle capacity
         const selectedVehicleConfig = vehiclesConfig[vehicle];
-        if (selectedVehicleConfig && amount > selectedVehicleConfig.max_weight) {
-            // Find the next available vehicle
-            let nextAvailableVehicle = 0;
-            for (const [key, value] of Object.entries(vehiclesConfig)) {
-                if (value.max_weight >= amount) {
-                    nextAvailableVehicle = parseInt(key);
-                    break;
-                }
-            }
+        if (selectedVehicleConfig && newWeight > selectedVehicleConfig.max_weight) {
+            const nextAvailableVehicle = findNextAvailableVehicle(newWeight, vehiclesConfig);
             setVehicle(nextAvailableVehicle);
         }
     };
 
     const reset = () => {
         setDistance(0);
-        setRegion([]);
+        setRegion(''); // Fixed: was setRegion([]), should be empty string
         setDuration(0);
         setWeight(100);
-        setOptions({
-            by_time: false,
-            right_now: false,
-            price: false
-        });
+        setOptions(DEFAULT_OPTIONS);
         setVehicle(0);
-        setPrice({
-            price: 0,
-            description: [""],
-        });
-        setAddress('')
-        setMapDistance(0)
-        setRegions(false)
-        setAdvanced({})
+        setPrice(DEFAULT_PRICE);
+        setAddress('');
+        setMapDistance(0);
+        setRegions([]); // Fixed: was setRegions(false), should be empty array
+        setAdvanced({});
+        setTime('day');
+        
+        // Reset map if available
         if (routePanelControl) {
             routePanelControl.routePanel.state.set({
                 fromEnabled: false,
                 from: routePanelControl.routePanel.state.get("from"),
                 to: "",
                 type: "auto"
-            })
+            });
         }
-        setTime('day')
     };
 
     return (
@@ -198,12 +134,13 @@ function App() {
                         <div className="mt-1">
                             <label className="font-semibold max-sm:text-lg text-xl">Настройки</label>
                             <div className="mt-0 flex flex-col">
-                                <DeliveryOptions options={options}
-                                                 handleOptionChange={handleOptionChange}
-                                                 handleTimeChange={(value) => setTime(value)}
-                                                 advanced={advanced}
-                                                 regions={regions}
-                                                 vehicle={vehicle}
+                                <DeliveryOptions 
+                                    options={options}
+                                    handleOptionChange={onOptionChange}
+                                    handleTimeChange={setTime}
+                                    advanced={advanced}
+                                    regions={regions}
+                                    vehicle={vehicle}
                                 />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>

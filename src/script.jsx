@@ -1,17 +1,19 @@
 export function calculate(params) {
-    let comments = [];
+    const comments = [];
 
-    // If distance is 0, return -1
-    if (params.distance === 0) return {
-        price: -1,
-        description: ["Не установлено расстояние"]
-    };
+    // Early validation checks
+    if (params.distance === 0) {
+        return {
+            price: -1,
+            description: ["Не установлено расстояние"]
+        };
+    }
 
     if (params.weight === 0) {
         comments.push("Нулевой вес");
     }
 
-    if(params.options.day_of_week === "none") {
+    if (params.options.day_of_week === "none") {
         comments.push("Не выбран день недели");
         return {
             price: -1,
@@ -19,17 +21,8 @@ export function calculate(params) {
         };
     }
 
-
-    // check if weight is too heavy for any vehicle
-    let atLeastOneFit = false;
-    for (let key in vehiclesConfig) {
-        if (params.weight <= vehiclesConfig[key].max_weight) {
-            atLeastOneFit = true;
-            break;
-        }
-    }
-
-    if (!atLeastOneFit) {
+    // Check if weight exceeds all vehicles
+    if (!canFitInAnyVehicle(params.weight)) {
         comments.push("Вес превышает грузоподъемность всех доступных машин");
         return {
             price: -2,
@@ -37,140 +30,190 @@ export function calculate(params) {
         };
     }
 
-/*    if(params.options.day_of_week === "sunday" || params.options.day_of_week === "saturday"){
-        if(params.weight > 500) {
-            comments.push("Доставка в выходные дни только до 500 кг");
-            return {
-                price: -1,
-                description: comments
-            };
-        }
-    }*/
+    // Extract conditions
+    const conditions = extractConditions(params);
+    const vehicleConfig = vehiclesConfig[params.vehicle];
 
-
-    let inCity = params.region === "Киров";
-    let inCityWeight = params.weight <= config.free_city_weight;
-    let fixedTime = params.options.by_time;
-    let enoughPrice = params.options.price;
-    let onGazel = params.vehicle === 0;
-    let onKamaz = params.vehicle === 3;
-    let isCement = params.options.cement;
-    let isHeavyOnWeekend = params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week);
-
-    // check for free city delivery
-    if (inCity && inCityWeight && !fixedTime && enoughPrice && onGazel && !isCement && !isHeavyOnWeekend) {
-        if (params.distance > config.city_max_distance * 1000) {
-            comments.push("Расстояние в пределах города больше 100км. Нет бесплатной доставки");
-        } else {
-            let price = 0;
-            if (params.options.opt) {
-                price = 0;
-                comments.push("Бесплатно в пределах города (до 1.5 тонн) при покупке от 15,000 рублей (оптом)");
-            } else {
-                price = 0;
-                comments.push("Бесплатно в пределах города (до 1.5 тонн) при покупке от 10,000 рублей");
-            }
-            if (params.options.morning) {
-                price += config.morning_add;
-                comments.push("Доставка утром. Надбавка: " + price.toFixed() + " руб");
-            } else if (params.options.evening) {
-                price += config.evening_add;
-                comments.push("Доставка вечером. Надбавка: " + price.toFixed() + " руб");
-            }
-            return {
-                price: price,
-                description: comments
-            };
-        }
+    // Check for free city delivery
+    const freeDeliveryResult = checkFreeCityDelivery(params, conditions, comments);
+    if (freeDeliveryResult !== null) {
+        return freeDeliveryResult;
     }
 
-    // add comments for paid city delivery
-    else if (inCity && inCityWeight && fixedTime) {
-        comments.push("Платно при выборе времени доставки");
-    } else if (isHeavyOnWeekend) {
-        comments.push("Доставка свыше 500 кг в выходные дни всегда платная");
-    } else if (inCity && inCityWeight && !enoughPrice) {
-        if (params.options.opt) comments.push("Платно при покупке менее 20,000 рублей (оптом)")
-        else comments.push("Платно при покупке менее 15,000 рублей")
-    } else if (inCity && inCityWeight && enoughPrice && !onGazel) {
-        comments.push("Платно при доставке не на Газели")
-    } else if (inCity && isCement) {
-        comments.push("Платно при доставке цемента или ЦПС более 15 шт")
+    // Add comments for paid city delivery conditions
+    addPaidCityDeliveryComments(params, conditions, comments);
+
+    // Calculate base price
+    let price = calculateBasePrice(params, vehicleConfig, comments);
+
+    // Apply Komintern discount (returns early if applied)
+    const kominternResult = applyKominternDiscount(params, price, comments);
+    if (kominternResult !== null) {
+        return kominternResult;
     }
 
-    // if not in city add comment
-    //if (params.region !== "Киров") comments.push(["За пределами города"]);
+    // Apply time-based adjustments
+    price = applyTimeAdjustments(params, price, comments);
 
-    // calculate price
-
-    /*    if (vehiclesConfig[params.vehicle].heavy && params.bridge) {
-            //comments.push("Доставка за мостом на грузовом транспорте. Расстояние увеличено на " + config.bridge_distance_add + " км.");
-            //params.distance += config.bridge_distance_add * 1000;
-        }*/
-
-
-    let price = params.distance / 1000 * vehiclesConfig[params.vehicle].price * 2;
-    let kominternDiscount = params.regions && params.regions.includes("Коминтерн") &&
-        params.advanced.right_time_kom;
-
-    // kamaz has base minimal price of 1500
-    if (onKamaz) {
-        price = 1500 + params.distance / 1000 * vehiclesConfig[params.vehicle].price  * 2;
-        comments.push("Базовая цена: 1500 руб + " + vehiclesConfig[params.vehicle].price + " руб/км × " + (params.distance / 1000).toFixed(1) + " км × 2 (в две стороны)" + " = " + price.toFixed() + " руб");
-    }
-    // other vehicles have 0 base price and check for minimal price after distance calculation
-    else {
-        comments.push("Базовая цена: " + vehiclesConfig[params.vehicle].price + " руб/км × " + (params.distance / 1000).toFixed(1) + " км × 2 (в две стороны)" + " = " + price.toFixed() + " руб");
-
-        // minimal price adjustments before time adjustment
-        if (price < vehiclesConfig[params.vehicle].minimal_city_price) {
-            price = vehiclesConfig[params.vehicle].minimal_city_price;
-            comments.push("Минимальная стоимость доставки " + vehiclesConfig[params.vehicle].minimal_city_price + " руб");
-        }
-    }
-
-    if (kominternDiscount) {
-        if(params.vehicle === 0 || params.vehicle === 1) {
-            price *= 0.5;
-            comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
-            if(price < config.kominter_min_price){
-                price = config.kominter_min_price;
-                comments.push("Минимальная стоимость доставки в Коминтерн " + config.kominter_min_price + " руб");
-            }
-            return {
-                price: price,
-                description: comments
-            }
-        } else {
-            comments.push("Скидка в Коминтерн не применяется к данному транспорту");
-        }
-    }
-
-    // by time adjustments
-    if (params.options.by_time) {
-        comments.push("Доставка к конкретному времени. Цена: " + price.toFixed() + " руб × " + config.by_time + " = " + (price * config.by_time).toFixed() + " руб");
-        price *= config.by_time;
-    } else if (params.options.morning) {
-        comments.push("Доставка утром. Надбавка: " + config.morning_add + " руб");
-        price += config.morning_add;
-    } else if (params.options.evening) {
-        comments.push("Доставка вечером. Надбавка: " + config.evening_add + " руб");
-        price += config.evening_add;
-    } else if(params.options.today){
-        comments.push("Доставка сегодня. Цена: " + price.toFixed() + " руб × " + config.today + " = " + (price * config.today).toFixed() + " руб");
-        price *= config.today;
-    }
-
-    // weekend adjustments
-    if (isHeavyOnWeekend) {
-        comments.push("Доставка в выходные дни с весом более 800 кг. Цена: " + price.toFixed() + " руб × " + config.weekend_multiplier + " = " + (price * config.weekend_multiplier).toFixed() + " руб");
-        price *= config.weekend_multiplier;
-    }
+    // Apply weekend adjustments
+    price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
     return {
         price: price,
         description: comments
     };
+}
+
+// Helper functions
+function canFitInAnyVehicle(weight) {
+    return Object.values(vehiclesConfig).some(vehicle => weight <= vehicle.max_weight);
+}
+
+function extractConditions(params) {
+    return {
+        inCity: params.region === "Киров",
+        inCityWeight: params.weight <= config.free_city_weight,
+        fixedTime: params.options.by_time,
+        enoughPrice: params.options.price,
+        onGazel: params.vehicle === 0,
+        onKamaz: params.vehicle === 3,
+        isCement: params.options.cement,
+        isHeavyOnWeekend: params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week)
+    };
+}
+
+function checkFreeCityDelivery(params, conditions, comments) {
+    const { inCity, inCityWeight, fixedTime, enoughPrice, onGazel, isCement, isHeavyOnWeekend } = conditions;
+
+    if (!inCity || !inCityWeight || fixedTime || !enoughPrice || !onGazel || isCement || isHeavyOnWeekend) {
+        return null;
+    }
+
+    if (params.distance > config.city_max_distance * 1000) {
+        comments.push("Расстояние в пределах города больше 100км. Нет бесплатной доставки");
+        return null;
+    }
+
+    let price = 0;
+    const optText = params.options.opt 
+        ? "при покупке от 15,000 рублей (оптом)"
+        : "при покупке от 10,000 рублей";
+    comments.push(`Бесплатно в пределах города (до 1.5 тонн) ${optText}`);
+
+    if (params.options.morning) {
+        price += config.morning_add;
+        comments.push(`Доставка утром. Надбавка: ${price.toFixed(0)} руб`);
+    } else if (params.options.evening) {
+        price += config.evening_add;
+        comments.push(`Доставка вечером. Надбавка: ${price.toFixed(0)} руб`);
+    }
+
+    return { price, description: comments };
+}
+
+function addPaidCityDeliveryComments(params, conditions, comments) {
+    const { inCity, inCityWeight, fixedTime, enoughPrice, onGazel, isCement, isHeavyOnWeekend } = conditions;
+
+    if (inCity && inCityWeight && fixedTime) {
+        comments.push("Платно при выборе времени доставки");
+    } else if (isHeavyOnWeekend) {
+        comments.push("Доставка свыше 500 кг в выходные дни всегда платная");
+    } else if (inCity && inCityWeight && !enoughPrice) {
+        const priceText = params.options.opt 
+            ? "Платно при покупке менее 20,000 рублей (оптом)"
+            : "Платно при покупке менее 15,000 рублей";
+        comments.push(priceText);
+    } else if (inCity && inCityWeight && enoughPrice && !onGazel) {
+        comments.push("Платно при доставке не на Газели");
+    } else if (inCity && isCement) {
+        comments.push("Платно при доставке цемента или ЦПС более 15 шт");
+    }
+}
+
+function calculateBasePrice(params, vehicleConfig, comments) {
+    const distanceKm = params.distance / 1000;
+    let price;
+
+    if (params.vehicle === 3) {
+        // Камаз has base price of 2000
+        const basePrice = 2000;
+        price = basePrice + distanceKm * vehicleConfig.price * 2;
+        comments.push(
+            `Базовая цена: ${basePrice} руб + ${vehicleConfig.price} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
+        );
+    } else {
+        price = distanceKm * vehicleConfig.price * 2;
+        comments.push(
+            `Базовая цена: ${vehicleConfig.price} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
+        );
+
+        // Apply minimal price if needed
+        if (price < vehicleConfig.minimal_city_price) {
+            price = vehicleConfig.minimal_city_price;
+            comments.push(`Минимальная стоимость доставки ${vehicleConfig.minimal_city_price} руб`);
+        }
+    }
+
+    return price;
+}
+
+function applyKominternDiscount(params, price, comments) {
+    const hasKominternDiscount = params.regions?.includes("Коминтерн") && params.advanced?.right_time_kom;
+
+    if (!hasKominternDiscount) {
+        return null;
+    }
+
+    if (params.vehicle === 0 || params.vehicle === 1) {
+        price *= 0.5;
+        comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
+        
+        if (price < config.kominter_min_price) {
+            price = config.kominter_min_price;
+            comments.push(`Минимальная стоимость доставки в Коминтерн ${config.kominter_min_price} руб`);
+        }
+
+        return { price, description: comments };
+    } else {
+        comments.push("Скидка в Коминтерн не применяется к данному транспорту");
+        return null;
+    }
+}
+
+function applyTimeAdjustments(params, price, comments) {
+    if (params.options.by_time) {
+        const newPrice = price * config.by_time;
+        comments.push(
+            `Доставка к конкретному времени. Цена: ${price.toFixed(0)} руб × ${config.by_time} = ${newPrice.toFixed(0)} руб`
+        );
+        return newPrice;
+    } else if (params.options.morning) {
+        comments.push(`Доставка утром. Надбавка: ${config.morning_add} руб`);
+        return price + config.morning_add;
+    } else if (params.options.evening) {
+        comments.push(`Доставка вечером. Надбавка: ${config.evening_add} руб`);
+        return price + config.evening_add;
+    } else if (params.options.today) {
+        const newPrice = price * config.today;
+        comments.push(
+            `Доставка сегодня. Цена: ${price.toFixed(0)} руб × ${config.today} = ${newPrice.toFixed(0)} руб`
+        );
+        return newPrice;
+    }
+
+    return price;
+}
+
+function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
+    if (isHeavyOnWeekend) {
+        const newPrice = price * config.weekend_multiplier;
+        comments.push(
+            `Доставка в выходные дни с весом более 800 кг. Цена: ${price.toFixed(0)} руб × ${config.weekend_multiplier} = ${newPrice.toFixed(0)} руб`
+        );
+        return newPrice;
+    }
+
+    return price;
 }
 
 export const config = {
@@ -184,20 +227,20 @@ export const config = {
     free_city_weight: 1500,
     city_max_distance: 100,
     bridge_distance_add: 10
-}
+};
 
 export const vehiclesConfig = {
     0: {
         name: "Газель",
-        price: 40,
+        price: 45,  // было 40, +5
         price_hour: 1200,
         max_weight: 1500,
-        minimal_city_price: 900,
+        minimal_city_price: 1000,  // было 900, стало 1000
         heavy: false
     },
     1: {
         name: "Газель",
-        price: 45,
+        price: 50,  // было 45, +5
         price_hour: 1200,
         max_weight: 2000,
         minimal_city_price: 1200,
@@ -205,18 +248,18 @@ export const vehiclesConfig = {
     },
     2: {
         name: "Газон",
-        price: 50,
+        price: 55,  // было 50, +5
         price_hour: 1200,
         max_weight: 4300,
-        minimal_city_price: 1800,
+        minimal_city_price: 2000,  // было 1800, стало 2000
         heavy: true
     },
     3: {
         name: "Камаз",
-        price: 50,
+        price: 55,  // было 50, +5
         price_hour: 1200,
         max_weight: 10000,
-        minimal_city_price: 1500,
+        minimal_city_price: 2000,  // было 1500, стало 2000 (+500)
         heavy: true
     }
-}
+};

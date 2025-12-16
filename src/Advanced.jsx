@@ -1,22 +1,23 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 
-export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
+const KOMINTERN_REGION = "Коминтерн";
+const ALLOWED_VEHICLES_FOR_KOMINTERN = [0, 1];
+
+export default function Advanced({ regions, vehicle, advanced, setAdvanced }) {
     const contentRef = useRef(null);
     const [containerHeight, setContainerHeight] = useState(0);
-    let show = regions && regions.includes("Коминтерн");
+    
+    const show = regions && regions.includes(KOMINTERN_REGION);
+    const isVehicleAllowed = ALLOWED_VEHICLES_FOR_KOMINTERN.includes(vehicle);
 
-    const updateHeight = () => {
+    useEffect(() => {
         if (show && contentRef.current) {
             const actualHeight = contentRef.current.clientHeight;
             setContainerHeight(actualHeight);
         } else {
             setContainerHeight(0);
         }
-    };
-
-    useEffect(() => {
-        updateHeight();
-    }, [regions, advanced]);
+    }, [show, advanced]);
 
     const handleOptionChange = (option) => {
         setAdvanced(prevOptions => ({
@@ -32,12 +33,13 @@ export default function Advanced({regions, vehicle, advanced, setAdvanced}) {
                 <div ref={contentRef} className=" absolute flex w-full  flex-col max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
                     <label className="font-semibold max-sm:text-lg text-xl">Дополнительно</label>
                     <div className="mt-2 mx-4 flex flex-row  items-center">
-                        <input type="checkbox"
-                               id="right_time_kom"
-                               name="right_time_kom"
-                               checked={advanced.right_time_kom || false}
-                               disabled={vehicle && (vehicle !== 0 && vehicle !== 1)}
-                               onChange={() => handleOptionChange('right_time_kom')}
+                        <input 
+                            type="checkbox"
+                            id="right_time_kom"
+                            name="right_time_kom"
+                            checked={advanced.right_time_kom || false}
+                            disabled={!isVehicleAllowed}
+                            onChange={() => handleOptionChange('right_time_kom')}
                         />
                         <label htmlFor="right_time_kom" className={`mx-2`}>
                             Коминтерн - доставка в среду или пятницу

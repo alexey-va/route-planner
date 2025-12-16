@@ -7,18 +7,19 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
             {/* VEHICLE SELECTION */}
             <div className={`max-sm:px-2 max-sm:py-2 px-4 py-2 gap-12 max-sm:gap-4 rounded-lg flex flex-row flex-wrap w-full`}>
                 {Object.entries(vehiclesConfig).map(([key, value]) => {
-                    let isDisabled = weight > value.max_weight;
-                    //console.log(vehiclesConfig[key].heavy, vehiclesConfig[key])
+                    const isDisabled = weight > value.max_weight;
+                    const vehicleKey = parseInt(key, 10);
+                    
                     return (
                         <div key={key} className="flex flex-col space-y-2 max-sm:text-sm text-md">
                             <div className="flex items-center space-x-[0.4rem]">
                                 <input
                                     type="radio"
-                                    id={`vehicle-${key}`} // Ensuring unique ID
-                                    name="vehicleSelection" // Same name for proper radio group behavior
+                                    id={`vehicle-${key}`}
+                                    name="vehicleSelection"
                                     disabled={isDisabled}
-                                    checked={vehicle === parseInt(key)}
-                                    onChange={() => setVehicle(parseInt(key))}
+                                    checked={vehicle === vehicleKey}
+                                    onChange={() => setVehicle(vehicleKey)}
                                 />
                                 <label
                                     className={`flex flex-row`}
