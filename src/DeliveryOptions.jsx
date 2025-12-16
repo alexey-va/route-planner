@@ -1,6 +1,8 @@
 import React from 'react';
+import { getFieldValidationClass } from './utils/validation';
+import Tooltip from './components/Tooltip';
 
-function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle}) {
+function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle, validationErrors = {}, validationWarnings = {}}) {
     let hideTime = advanced && advanced.right_time_kom
         && regions && regions.includes("Коминтерн")
         && (vehicle === 0 || vehicle === 1);
@@ -20,7 +22,12 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="by_time" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
                          max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                            Ко времени (9:00-16:00)
+                            <Tooltip text="Доставка к конкретному времени в указанном диапазоне. Увеличивает стоимость на 70%">
+                                <span className="flex items-center gap-1">
+                                    Ко времени (9:00-16:00)
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </span>
+                            </Tooltip>
                         </label>
                     </div>
 
@@ -50,7 +57,12 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="morning"
                                className="whitespace-nowrap max-sm:ml-1 ml-2 max-xs:text-xs flex flex-wrap items-center self-center">
-                            9:00-12:00
+                            <Tooltip text="Доставка в утреннее время. Надбавка +500 руб">
+                                <span className="flex items-center gap-1">
+                                    9:00-12:00
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </span>
+                            </Tooltip>
                         </label>
                     </div>
                     <div className="flex flex-row items-start">
@@ -64,7 +76,12 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="evening"
                                className="whitespace-nowrap ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
-                            12:00-16:00
+                            <Tooltip text="Доставка в вечернее время. Надбавка +300 руб">
+                                <span className="flex items-center gap-1">
+                                    12:00-16:00
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </span>
+                            </Tooltip>
                         </label>
                     </div>
                 </div>
@@ -72,7 +89,9 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
             {/* Time options */}
             <hr/>
             {/* Day options */}
-            <div className="max-sm:px-2 max-sm:py-2  px-4 py-2 grid grid-cols-2  rounded-lg relative">
+            <div className={`max-sm:px-2 max-sm:py-2  px-4 py-2 grid grid-cols-2 rounded-lg relative ${
+                validationErrors.day_of_week ? 'border-2 border-red-500 bg-red-50' : ''
+            }`}>
                 <div className="flex flex-row items-start">
                     <input
                         type="radio"
@@ -166,6 +185,13 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         Воскресенье
                     </label>
                 </div>
+                {validationErrors.day_of_week && (
+                    <div className="col-span-2 mt-2">
+                        <p className="text-red-500 text-sm font-semibold">
+                            ⚠️ {validationErrors.day_of_week}
+                        </p>
+                    </div>
+                )}
             </div>
             {/* Day options */}
             <hr/>
@@ -182,8 +208,15 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="price"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-1 items-center self-center">
-                            Сумма покупки
-                            <span className="">{options.opt ? "≥ 20,000 руб" : "≥ 15,000 руб"}</span>
+                            <span>Сумма покупки</span>
+                            <span className="flex items-center gap-1">
+                                {options.opt ? "≥ 20,000 руб" : "≥ 15,000 руб"}
+                                <Tooltip text={options.opt 
+                                    ? "При покупке от 20,000 руб (оптом) в пределах города Киров до 1.5 тонн на Газели - доставка бесплатная"
+                                    : "При покупке от 15,000 руб в пределах города Киров до 1.5 тонн на Газели - доставка бесплатная"}>
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </Tooltip>
+                            </span>
                         </label>
                     </div>
                     <div className="flex flex-row items-start">
@@ -196,7 +229,12 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="price_opt"
                                className="self-center ml-2 max-sm:ml-1  flex flex-wrap gap-x-2 items-center">
-                            Опт
+                            <Tooltip text="Оптовая покупка. Минимальная сумма для бесплатной доставки увеличивается до 20,000 руб">
+                                <span className="flex items-center gap-1">
+                                    Опт
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </span>
+                            </Tooltip>
                         </label>
                     </div>
                 </div>
@@ -216,7 +254,12 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="cement"
                                className="flex  ml-2 max-sm:ml-1  flex-wrap gap-x-2 items-center self-center">
-                            Цемент/ЦПС
+                            <Tooltip text="Доставка цемента или ЦПС более 15 штук. Бесплатная доставка не применяется">
+                                <span className="flex items-center gap-1">
+                                    Цемент/ЦПС
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </span>
+                            </Tooltip>
                             <span className="text-nowrap text-gray-500 text-sm">
                                 более 15 штук
                             </span>

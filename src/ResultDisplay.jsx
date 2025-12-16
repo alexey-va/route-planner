@@ -3,7 +3,7 @@ import { formatPrice } from './utils/formatters';
 const MANUAL_DISTANCE_THRESHOLD = 99.9; // meters
 const MIN_COMMENTS_DISPLAY = 3;
 
-function ResultDisplay({ distance, duration, region, address, price, weight, mapDistance, regions, reset }) {
+function ResultDisplay({ distance, duration, region, address, price, weight, mapDistance, regions, reset, validationErrors = {}, validationWarnings = {} }) {
     const isManualDistance = Boolean(
         distance != null && 
         mapDistance != null && 
@@ -26,11 +26,7 @@ function ResultDisplay({ distance, duration, region, address, price, weight, map
                 </div>
                 <div className="flex justify-between">
                     <span className="font-semibold">Район:</span>
-                    <span>
-                        <span>{region || "Неизвестно"}</span>
-                        {/*<span>{regions && regions.length > 0 ? ` (${regions.join(', ')})` : ""}</span>*/}
-                    </span>
-
+                    <span>{region || "Неизвестно"}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="font-semibold">Адрес:</span>

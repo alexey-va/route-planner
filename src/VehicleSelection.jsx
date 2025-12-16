@@ -1,4 +1,5 @@
 import React from 'react';
+import Tooltip from './components/Tooltip';
 
 function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
 
@@ -22,11 +23,14 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle}) {
                                     onChange={() => setVehicle(vehicleKey)}
                                 />
                                 <label
-                                    className={`flex flex-row`}
+                                    className={`flex flex-row items-center gap-1`}
                                     htmlFor={`vehicle-${key}`}>
                                     {value.name}
                                     <span
                                         className="md:translate-y-0.5 ml-1 text-gray-500 text-sm self-center">{value.max_weight / 1000}т</span>
+                                    <Tooltip text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${value.price} руб/км. Минимальная стоимость: ${value.minimal_city_price} руб`}>
+                                        <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                    </Tooltip>
                                 </label>
 
                             </div>

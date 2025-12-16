@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Tooltip from "./components/Tooltip";
 
 const KOMINTERN_REGION = "Коминтерн";
 const ALLOWED_VEHICLES_FOR_KOMINTERN = [0, 1];
@@ -41,8 +42,13 @@ export default function Advanced({ regions, vehicle, advanced, setAdvanced }) {
                             disabled={!isVehicleAllowed}
                             onChange={() => handleOptionChange('right_time_kom')}
                         />
-                        <label htmlFor="right_time_kom" className={`mx-2`}>
-                            Коминтерн - доставка в среду или пятницу
+                        <label htmlFor="right_time_kom" className={`mx-2 flex items-center gap-1`}>
+                            <Tooltip text="При доставке в район Коминтерн в среду или пятницу на Газели (1.5т или 2т) применяется скидка 50%. Минимальная стоимость доставки 800 руб">
+                                <span className="flex items-center gap-1">
+                                    Коминтерн - доставка в среду или пятницу
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </span>
+                            </Tooltip>
                         </label>
                     </div>
                 </div>

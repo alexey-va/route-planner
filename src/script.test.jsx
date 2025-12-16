@@ -259,7 +259,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 50000,
         weight: 1000,
-        vehicle: 1, // Not Gazel (vehicle 0)
+        vehicle: 2, // Газон (не Газель)
         region: 'Киров',
         options: {
           by_time: false,

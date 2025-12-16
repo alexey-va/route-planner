@@ -1,13 +1,16 @@
 import Test, { routePanelControl } from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput";
-import { useEffect, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { calculate, vehiclesConfig } from "./script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
 import Advanced from "./Advanced.jsx";
+import CalculationHistory from "./components/CalculationHistory";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useCalculationHistory } from "./hooks/useCalculationHistory";
 import { handleOptionChange, findNextAvailableVehicle } from "./utils/optionHandlers";
+import { validateFields } from "./utils/validation";
 
 const DEFAULT_OPTIONS = {
     by_time: false,
@@ -38,6 +41,12 @@ function App() {
     const [price, setPrice] = useLocalStorage('price', DEFAULT_PRICE);
     const [advanced, setAdvanced] = useLocalStorage('advanced', {});
 
+    // History management
+    const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
+
+    // Validation
+    const validation = validateFields(distance, weight, options, region, mapDistance);
+
     // Calculate price whenever relevant parameters change
     useEffect(() => {
         const params = {
@@ -54,6 +63,7 @@ function App() {
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
     }, [distance, duration, weight, options, vehicle, region, regions, time, advanced, setPrice]);
+
 
     const onOptionChange = (option) => {
         handleOptionChange(option, options, setOptions);
@@ -77,6 +87,30 @@ function App() {
     };
 
     const reset = () => {
+        // Save current calculation to history before resetting (if valid)
+        // Расстояние может быть введено вручную или выбрано на карте
+        const hasDistance = (distance > 0) || (mapDistance > 0);
+        const isValid = price.price >= 0 && 
+                       hasDistance && 
+                       options.day_of_week !== "none";
+        
+        if (isValid) {
+            addToHistory({
+                distance,
+                region,
+                regions,
+                address,
+                duration,
+                weight,
+                options,
+                vehicle,
+                mapDistance,
+                advanced,
+                time,
+                price
+            });
+        }
+        
         setDistance(0);
         setRegion(''); // Fixed: was setRegion([]), should be empty string
         setDuration(0);
@@ -122,6 +156,15 @@ function App() {
                     </div>
                     {/* Content container */}
                     <div className="px-4 py-2 text-lg font-sans flex flex-col border-t-2 grow">
+                        {/* History button */}
+                        <div className="flex justify-end mb-2">
+                            <CalculationHistory
+                                history={history}
+                                onRemove={removeFromHistory}
+                                onClear={clearHistory}
+                            />
+                        </div>
+                        
                         <WeightDistanceInput
                             weight={weight}
                             handleWeightChange={handleWeightChange}
@@ -129,6 +172,8 @@ function App() {
                             setDistance={setDistance}
                             vehicle={vehicle}
                             options={options}
+                            validationErrors={validation.errors}
+                            validationWarnings={validation.warnings}
                         />
 
                         <div className="mt-1">
@@ -141,6 +186,8 @@ function App() {
                                     advanced={advanced}
                                     regions={regions}
                                     vehicle={vehicle}
+                                    validationErrors={validation.errors}
+                                    validationWarnings={validation.warnings}
                                 />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>
@@ -157,6 +204,8 @@ function App() {
                                        regions={regions}
                                        weight={weight}
                                        reset={reset}
+                                       validationErrors={validation.errors}
+                                       validationWarnings={validation.warnings}
                         />
 
 

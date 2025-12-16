@@ -75,7 +75,7 @@ function extractConditions(params) {
         inCityWeight: params.weight <= config.free_city_weight,
         fixedTime: params.options.by_time,
         enoughPrice: params.options.price,
-        onGazel: params.vehicle === 0,
+        onGazel: params.vehicle === 0 || params.vehicle === 1, // Обе Газели (1.5т и 2т)
         onKamaz: params.vehicle === 3,
         isCement: params.options.cement,
         isHeavyOnWeekend: params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week)
