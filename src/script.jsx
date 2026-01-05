@@ -75,8 +75,8 @@ function extractConditions(params) {
         inCityWeight: params.weight <= config.free_city_weight,
         fixedTime: params.options.by_time,
         enoughPrice: params.options.price,
-        onGazel: params.vehicle === 0 || params.vehicle === 1, // Обе Газели (1.5т и 2т)
-        onKamaz: params.vehicle === 3,
+        onGazel: params.vehicle >= 0 && params.vehicle <= 3, // Все Газели (0.5т, 1т, 1.5т, 2т)
+        onKamaz: params.vehicle === 5,
         isCement: params.options.cement,
         isHeavyOnWeekend: params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week)
     };
@@ -118,11 +118,6 @@ function addPaidCityDeliveryComments(params, conditions, comments) {
         comments.push("Платно при выборе времени доставки");
     } else if (isHeavyOnWeekend) {
         comments.push("Доставка свыше 500 кг в выходные дни всегда платная");
-    } else if (inCity && inCityWeight && !enoughPrice) {
-        const priceText = params.options.opt 
-            ? "Платно при покупке менее 20,000 рублей (оптом)"
-            : "Платно при покупке менее 15,000 рублей";
-        comments.push(priceText);
     } else if (inCity && inCityWeight && enoughPrice && !onGazel) {
         comments.push("Платно при доставке не на Газели");
     } else if (inCity && isCement) {
@@ -134,7 +129,7 @@ function calculateBasePrice(params, vehicleConfig, comments) {
     const distanceKm = params.distance / 1000;
     let price;
 
-    if (params.vehicle === 3) {
+    if (params.vehicle === 5) {
         // Камаз has base price of 2000
         const basePrice = 2000;
         price = basePrice + distanceKm * vehicleConfig.price * 2;
@@ -164,7 +159,8 @@ function applyKominternDiscount(params, price, comments) {
         return null;
     }
 
-    if (params.vehicle === 0 || params.vehicle === 1) {
+    // Скидка применяется ко всем Газелям (0.5т, 1т, 1.5т, 2т)
+    if (params.vehicle >= 0 && params.vehicle <= 3) {
         price *= 0.5;
         comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
         
@@ -232,34 +228,50 @@ export const config = {
 export const vehiclesConfig = {
     0: {
         name: "Газель",
-        price: 45,  // было 40, +5
+        price: 40,
         price_hour: 1200,
-        max_weight: 1500,
-        minimal_city_price: 1000,  // было 900, стало 1000
+        max_weight: 500,
+        minimal_city_price: 500,  // 0.5т - мин 500
         heavy: false
     },
     1: {
         name: "Газель",
-        price: 50,  // было 45, +5
+        price: 42,
         price_hour: 1200,
-        max_weight: 2000,
-        minimal_city_price: 1200,
+        max_weight: 1000,
+        minimal_city_price: 1000,  // 1т - мин 1000
         heavy: false
     },
     2: {
-        name: "Газон",
-        price: 55,  // было 50, +5
+        name: "Газель",
+        price: 45,
         price_hour: 1200,
-        max_weight: 4300,
-        minimal_city_price: 2000,  // было 1800, стало 2000
-        heavy: true
+        max_weight: 1500,
+        minimal_city_price: 1200,  // 1.5т - мин 1200
+        heavy: false
     },
     3: {
+        name: "Газель",
+        price: 50,
+        price_hour: 1200,
+        max_weight: 2000,
+        minimal_city_price: 1500,  // 2т - мин 1500
+        heavy: false
+    },
+    4: {
+        name: "Газон",
+        price: 55,
+        price_hour: 1200,
+        max_weight: 4300,
+        minimal_city_price: 2000,
+        heavy: true
+    },
+    5: {
         name: "Камаз",
-        price: 55,  // было 50, +5
+        price: 55,
         price_hour: 1200,
         max_weight: 10000,
-        minimal_city_price: 2000,  // было 1500, стало 2000 (+500)
+        minimal_city_price: 2000,
         heavy: true
     }
 };

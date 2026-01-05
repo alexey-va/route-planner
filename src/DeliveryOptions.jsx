@@ -3,9 +3,10 @@ import { getFieldValidationClass } from './utils/validation';
 import Tooltip from './components/Tooltip';
 
 function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle, validationErrors = {}, validationWarnings = {}}) {
+    // Все Газели (0.5т, 1т, 1.5т, 2т) - индексы 0-3
     let hideTime = advanced && advanced.right_time_kom
         && regions && regions.includes("Коминтерн")
-        && (vehicle === 0 || vehicle === 1);
+        && (vehicle >= 0 && vehicle <= 3);
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}
@@ -211,9 +212,8 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                             <span>Сумма покупки</span>
                             <span className="flex items-center gap-1">
                                 {options.opt ? "≥ 20,000 руб" : "≥ 15,000 руб"}
-                                <Tooltip text={options.opt 
-                                    ? "При покупке от 20,000 руб (оптом) в пределах города Киров до 1.5 тонн на Газели - доставка бесплатная"
-                                    : "При покупке от 15,000 руб в пределах города Киров до 1.5 тонн на Газели - доставка бесплатная"}>
+                                <span className="text-orange-500 text-xs font-semibold">(устарело)</span>
+                                <Tooltip text="Устарело. Минимальная стоимость доставки теперь всегда от 500 руб">
                                     <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
                                 </Tooltip>
                             </span>
