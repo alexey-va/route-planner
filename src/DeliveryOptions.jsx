@@ -196,51 +196,6 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
             </div>
             {/* Day options */}
             <hr/>
-            {/* Price options */}
-            <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
-                <div className="flex flex-row auto-cols-auto max-sm:gap-x-3 gap-x-10">
-                    <div className="flex flex-row items-start">
-                        <input
-                            type="checkbox"
-                            id="price"
-                            checked={options.price || false}
-                            onChange={() => handleOptionChange('price')}
-                            className="self-center"
-                        />
-                        <label htmlFor="price"
-                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-1 items-center self-center">
-                            <span>Сумма покупки</span>
-                            <span className="flex items-center gap-1">
-                                {options.opt ? "≥ 20,000 руб" : "≥ 15,000 руб"}
-                                <span className="text-orange-500 text-xs font-semibold">(устарело)</span>
-                                <Tooltip text="Устарело. Минимальная стоимость доставки теперь всегда от 500 руб">
-                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
-                                </Tooltip>
-                            </span>
-                        </label>
-                    </div>
-                    <div className="flex flex-row items-start">
-                        <input
-                            type="checkbox"
-                            id="price_opt"
-                            checked={options.opt || false}
-                            onChange={() => handleOptionChange('opt')}
-                            className="self-center"
-                        />
-                        <label htmlFor="price_opt"
-                               className="self-center ml-2 max-sm:ml-1  flex flex-wrap gap-x-2 items-center">
-                            <Tooltip text="Оптовая покупка. Минимальная сумма для бесплатной доставки увеличивается до 20,000 руб">
-                                <span className="flex items-center gap-1">
-                                    Опт
-                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
-                                </span>
-                            </Tooltip>
-                        </label>
-                    </div>
-                </div>
-            </div>
-            {/* Price options */}
-            <hr/>
             {/* Cement options */}
             <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
                 <div className="grid grid-flow-col auto-cols-auto gap-x-1">

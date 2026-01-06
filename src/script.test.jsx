@@ -13,8 +13,6 @@ describe('calculate function', () => {
       morning: false,
       evening: false,
       today: false,
-      price: true,
-      opt: false,
       cement: false,
       day_of_week: 'monday'
     },
@@ -58,245 +56,27 @@ describe('calculate function', () => {
     });
   });
 
-  describe('Free City Delivery', () => {
-    it('should return free delivery for city, weight <= 1500, no fixed time, enough price, Gazel, no cement, not heavy on weekend', () => {
+  describe('Global Minimum Price', () => {
+    it('should always have minimum price of 500 rubles', () => {
       const params = createDefaultParams({
-        distance: 50000, // 50 km (within city limit)
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: false,
-          price: true,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
+        distance: 100, // Very short distance
+        vehicle: 0, // Газель 0.5т (minimal price 500)
+        region: 'Киров'
       });
       const result = calculate(params);
       
-      expect(result.price).toBe(0);
-      expect(result.description.some(desc => 
-        desc.includes('Бесплатно в пределах города') && desc.includes('от 10,000 рублей')
-      )).toBe(true);
+      expect(result.price).toBeGreaterThanOrEqual(500);
     });
 
-    it('should return free delivery with opt option', () => {
+    it('should apply global minimum even for short distances', () => {
       const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: false,
-          price: true,
-          opt: true,
-          cement: false,
-          day_of_week: 'monday'
-        }
+        distance: 500, // 0.5 km
+        region: 'Другой город'
       });
       const result = calculate(params);
       
-      expect(result.price).toBe(0);
-      expect(result.description.some(desc => 
-        desc.includes('Бесплатно в пределах города') && desc.includes('от 15,000 рублей') && desc.includes('оптом')
-      )).toBe(true);
-    });
-
-    it('should add morning surcharge to free delivery', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: true,
-          evening: false,
-          price: true,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.price).toBe(config.morning_add);
-      expect(result.description.some(desc => 
-        desc.includes('Доставка утром') && desc.includes('Надбавка')
-      )).toBe(true);
-    });
-
-    it('should add evening surcharge to free delivery', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: true,
-          price: true,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.price).toBe(config.evening_add);
-      expect(result.description.some(desc => 
-        desc.includes('Доставка вечером') && desc.includes('Надбавка')
-      )).toBe(true);
-    });
-
-    it('should not be free when distance exceeds 100km in city', () => {
-      const params = createDefaultParams({
-        distance: 101000, // 101 km
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: false,
-          price: true,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.description).toContain('Расстояние в пределах города больше 100км. Нет бесплатной доставки');
-      expect(result.price).toBeGreaterThan(0);
-    });
-  });
-
-  describe('Paid City Delivery Conditions', () => {
-    it('should add comment when fixed time is selected', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: true,
-          morning: false,
-          evening: false,
-          price: true,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.description).toContain('Платно при выборе времени доставки');
-    });
-
-    it('should add comment for heavy delivery on weekend', () => {
-      const params = createDefaultParams({
-        weight: 900, // > 800
-        options: {
-          ...createDefaultParams().options,
-          day_of_week: 'saturday'
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.description).toContain('Доставка свыше 500 кг в выходные дни всегда платная');
-    });
-
-    it('should calculate price when price flag is not set (retail)', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: false,
-          price: false,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      // Теперь всегда платная доставка, минимум 500 руб
-      expect(result.price).toBeGreaterThan(0);
-    });
-
-    it('should calculate price when price flag is not set (opt)', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: false,
-          price: false,
-          opt: true,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      // Теперь всегда платная доставка, минимум 500 руб
-      expect(result.price).toBeGreaterThan(0);
-    });
-
-    it('should add comment when not using Gazel', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 4, // Газон (не Газель)
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: false,
-          price: true,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.description).toContain('Платно при доставке не на Газели');
-    });
-
-    it('should add comment when delivering cement', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: false,
-          evening: false,
-          price: true,
-          opt: false,
-          cement: true,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.description).toContain('Платно при доставке цемента или ЦПС более 15 шт');
+      // Минимум должен быть не менее 500 руб
+      expect(result.price).toBeGreaterThanOrEqual(config.global_min_price);
     });
   });
 
@@ -834,75 +614,29 @@ describe('calculate function', () => {
   });
 
   describe('Boundary Conditions', () => {
-    it('should handle weight exactly at free_city_weight (1500kg)', () => {
+    it('should handle heavy weight (1500kg)', () => {
       const params = createDefaultParams({
         distance: 50000,
-        weight: config.free_city_weight, // Exactly 1500
+        weight: 1500,
         vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          ...createDefaultParams().options,
-          price: true
-        }
+        region: 'Киров'
       });
       const result = calculate(params);
       
-      expect(result.price).toBe(0);
-      expect(result.description.some(desc => 
-        desc.includes('Бесплатно в пределах города')
-      )).toBe(true);
+      // Теперь всегда платно, минимум 500 руб
+      expect(result.price).toBeGreaterThanOrEqual(config.global_min_price);
     });
 
-    it('should handle weight just over free_city_weight (1501kg)', () => {
+    it('should handle long distance delivery (100km)', () => {
       const params = createDefaultParams({
-        distance: 50000,
-        weight: config.free_city_weight + 1, // 1501
-        vehicle: 3, // Газель 2т (нужен больший грузоподъем)
-        region: 'Киров',
-        options: {
-          ...createDefaultParams().options,
-          price: true
-        }
-      });
-      const result = calculate(params);
-      
-      // Should not be free
-      expect(result.price).toBeGreaterThan(0);
-    });
-
-    it('should handle distance exactly at city_max_distance (100km)', () => {
-      const params = createDefaultParams({
-        distance: config.city_max_distance * 1000, // Exactly 100km
+        distance: 100000, // 100km
         weight: 1000,
         vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          ...createDefaultParams().options,
-          price: true
-        }
+        region: 'Киров'
       });
       const result = calculate(params);
       
-      expect(result.price).toBe(0);
-      expect(result.description.some(desc => 
-        desc.includes('Бесплатно в пределах города')
-      )).toBe(true);
-    });
-
-    it('should handle distance just over city_max_distance (100.1km)', () => {
-      const params = createDefaultParams({
-        distance: config.city_max_distance * 1000 + 100, // 100.1km
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          ...createDefaultParams().options,
-          price: true
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.description).toContain('Расстояние в пределах города больше 100км. Нет бесплатной доставки');
+      // Цена должна быть рассчитана
       expect(result.price).toBeGreaterThan(0);
     });
 
@@ -1126,69 +860,6 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       expect(result.price).toBeGreaterThanOrEqual(0);
-    });
-  });
-
-  describe('Free Delivery Edge Cases', () => {
-    it('should not be free if both morning and evening are selected (should only apply one)', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1000,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          by_time: false,
-          morning: true,
-          evening: true, // Both selected
-          price: true,
-          opt: false,
-          cement: false,
-          day_of_week: 'monday'
-        }
-      });
-      const result = calculate(params);
-      
-      // The logic uses else-if, so only one should apply
-      // But in free delivery, it checks morning first, then evening
-      // So morning should apply
-      expect(result.price).toBe(config.morning_add);
-    });
-
-    it('should handle free delivery with weight exactly at 1500kg and distance exactly at 100km', () => {
-      const params = createDefaultParams({
-        distance: config.city_max_distance * 1000,
-        weight: config.free_city_weight,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          ...createDefaultParams().options,
-          price: true
-        }
-      });
-      const result = calculate(params);
-      
-      expect(result.price).toBe(0);
-    });
-
-    it('should not be free if weight is 1500kg but on weekend with heavy weight', () => {
-      const params = createDefaultParams({
-        distance: 50000,
-        weight: 1500,
-        vehicle: 2, // Газель 1.5т
-        region: 'Киров',
-        options: {
-          ...createDefaultParams().options,
-          price: true,
-          day_of_week: 'saturday'
-        }
-      });
-      // Weight is 1500, which is <= 1500, but day is saturday
-      // isHeavyOnWeekend = weight > 800 && weekend, so 1500 > 800 && saturday = true
-      // So !isHeavyOnWeekend = false, so free delivery condition fails
-      const result = calculate(params);
-      
-      // Should not be free because isHeavyOnWeekend is true
-      expect(result.price).toBeGreaterThan(0);
     });
   });
 

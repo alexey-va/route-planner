@@ -34,15 +34,6 @@ export function calculate(params) {
     const conditions = extractConditions(params);
     const vehicleConfig = vehiclesConfig[params.vehicle];
 
-    // Check for free city delivery
-    const freeDeliveryResult = checkFreeCityDelivery(params, conditions, comments);
-    if (freeDeliveryResult !== null) {
-        return freeDeliveryResult;
-    }
-
-    // Add comments for paid city delivery conditions
-    addPaidCityDeliveryComments(params, conditions, comments);
-
     // Calculate base price
     let price = calculateBasePrice(params, vehicleConfig, comments);
 
@@ -58,6 +49,12 @@ export function calculate(params) {
     // Apply weekend adjustments
     price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
+    // Apply global minimum price
+    if (price < config.global_min_price) {
+        price = config.global_min_price;
+        comments.push(`Минимальная стоимость доставки ${config.global_min_price} руб`);
+    }
+
     return {
         price: price,
         description: comments
@@ -71,58 +68,10 @@ function canFitInAnyVehicle(weight) {
 
 function extractConditions(params) {
     return {
-        inCity: params.region === "Киров",
-        inCityWeight: params.weight <= config.free_city_weight,
-        fixedTime: params.options.by_time,
-        enoughPrice: params.options.price,
         onGazel: params.vehicle >= 0 && params.vehicle <= 3, // Все Газели (0.5т, 1т, 1.5т, 2т)
         onKamaz: params.vehicle === 5,
-        isCement: params.options.cement,
         isHeavyOnWeekend: params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week)
     };
-}
-
-function checkFreeCityDelivery(params, conditions, comments) {
-    const { inCity, inCityWeight, fixedTime, enoughPrice, onGazel, isCement, isHeavyOnWeekend } = conditions;
-
-    if (!inCity || !inCityWeight || fixedTime || !enoughPrice || !onGazel || isCement || isHeavyOnWeekend) {
-        return null;
-    }
-
-    if (params.distance > config.city_max_distance * 1000) {
-        comments.push("Расстояние в пределах города больше 100км. Нет бесплатной доставки");
-        return null;
-    }
-
-    let price = 0;
-    const optText = params.options.opt 
-        ? "при покупке от 15,000 рублей (оптом)"
-        : "при покупке от 10,000 рублей";
-    comments.push(`Бесплатно в пределах города (до 1.5 тонн) ${optText}`);
-
-    if (params.options.morning) {
-        price += config.morning_add;
-        comments.push(`Доставка утром. Надбавка: ${price.toFixed(0)} руб`);
-    } else if (params.options.evening) {
-        price += config.evening_add;
-        comments.push(`Доставка вечером. Надбавка: ${price.toFixed(0)} руб`);
-    }
-
-    return { price, description: comments };
-}
-
-function addPaidCityDeliveryComments(params, conditions, comments) {
-    const { inCity, inCityWeight, fixedTime, enoughPrice, onGazel, isCement, isHeavyOnWeekend } = conditions;
-
-    if (inCity && inCityWeight && fixedTime) {
-        comments.push("Платно при выборе времени доставки");
-    } else if (isHeavyOnWeekend) {
-        comments.push("Доставка свыше 500 кг в выходные дни всегда платная");
-    } else if (inCity && inCityWeight && enoughPrice && !onGazel) {
-        comments.push("Платно при доставке не на Газели");
-    } else if (inCity && isCement) {
-        comments.push("Платно при доставке цемента или ЦПС более 15 шт");
-    }
 }
 
 function calculateBasePrice(params, vehicleConfig, comments) {
@@ -164,9 +113,11 @@ function applyKominternDiscount(params, price, comments) {
         price *= 0.5;
         comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
         
-        if (price < config.kominter_min_price) {
-            price = config.kominter_min_price;
-            comments.push(`Минимальная стоимость доставки в Коминтерн ${config.kominter_min_price} руб`);
+        // Применяем максимум из минимума Коминтерн и глобального минимума
+        const minPrice = Math.max(config.kominter_min_price, config.global_min_price);
+        if (price < minPrice) {
+            price = minPrice;
+            comments.push(`Минимальная стоимость доставки ${minPrice} руб`);
         }
 
         return { price, description: comments };
@@ -220,15 +171,14 @@ export const config = {
     kominter_min_price: 800,
     right_now: 2,
     weekend_multiplier: 1.5,
-    free_city_weight: 1500,
-    city_max_distance: 100,
+    global_min_price: 500,  // Глобальный минимум для всех доставок
     bridge_distance_add: 10
 };
 
 export const vehiclesConfig = {
     0: {
         name: "Газель",
-        price: 40,
+        price: 45,
         price_hour: 1200,
         max_weight: 500,
         minimal_city_price: 500,  // 0.5т - мин 500
@@ -236,7 +186,7 @@ export const vehiclesConfig = {
     },
     1: {
         name: "Газель",
-        price: 42,
+        price: 45,
         price_hour: 1200,
         max_weight: 1000,
         minimal_city_price: 1000,  // 1т - мин 1000

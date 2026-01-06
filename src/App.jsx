@@ -16,8 +16,7 @@ const DEFAULT_OPTIONS = {
     by_time: false,
     morning: false,
     evening: false,
-    price: false,
-    opt: false,
+    cement: false,
     day_of_week: "none"
 };
 
