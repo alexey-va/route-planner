@@ -33,7 +33,7 @@ function App() {
     const [regions, setRegions] = useLocalStorage('regions', []);
     const [address, setAddress] = useLocalStorage('address', '');
     const [duration, setDuration] = useLocalStorage('duration', 0);
-    const [weight, setWeight] = useLocalStorage('weight', 100);
+    const [weight, setWeight] = useLocalStorage('weight', 1);
     const [options, setOptions] = useLocalStorage('options', DEFAULT_OPTIONS);
     const [vehicle, setVehicle] = useLocalStorage('vehicle', 0);
     const [mapDistance, setMapDistance] = useLocalStorage('mapDistance', 0);
@@ -113,7 +113,7 @@ function App() {
         setDistance(0);
         setRegion(''); // Fixed: was setRegion([]), should be empty string
         setDuration(0);
-        setWeight(100);
+        setWeight(1);
         setOptions(DEFAULT_OPTIONS);
         setVehicle(0);
         setPrice(DEFAULT_PRICE);

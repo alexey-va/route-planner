@@ -56,7 +56,7 @@ export function useCalculationHistory() {
             regions: historyItem.regions || [],
             address: historyItem.address || '',
             duration: historyItem.duration || 0,
-            weight: historyItem.weight || 100,
+            weight: historyItem.weight || 1,
             options: historyItem.options || {
                 by_time: false,
                 morning: false,

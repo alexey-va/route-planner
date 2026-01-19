@@ -177,7 +177,7 @@ describe('useCalculationHistory', () => {
             regions: [],
             address: '',
             duration: 0,
-            weight: 100,
+            weight: 1,
             options: {
                 by_time: false,
                 morning: false,

@@ -15,8 +15,8 @@ export const validateFields = (distance, weight, options, region, mapDistance = 
 
     if (!weight || weight <= 0) {
         errors.weight = 'Укажите вес груза';
-    } else if (weight < 100) {
-        warnings.weight = 'Минимальный вес 100 кг';
+    } else if (weight < 1) {
+        warnings.weight = 'Минимальный вес 1 кг';
     }
 
     if (!options.day_of_week || options.day_of_week === 'none') {

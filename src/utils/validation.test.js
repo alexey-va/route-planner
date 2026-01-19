@@ -51,11 +51,11 @@ describe('validateFields', () => {
         expect(result.errors.day_of_week).toBe('Выберите день недели');
     });
 
-    it('should return warning for weight less than 100', () => {
-        const result = validateFields(5000, 50, { day_of_week: 'monday' }, 'Киров');
+    it('should return warning for weight less than 1', () => {
+        const result = validateFields(5000, 0.5, { day_of_week: 'monday' }, 'Киров');
         
         expect(result.isValid).toBe(true);
-        expect(result.warnings.weight).toBe('Минимальный вес 100 кг');
+        expect(result.warnings.weight).toBe('Минимальный вес 1 кг');
     });
 
     it('should return warning for distance less than 1km (manual)', () => {
@@ -89,7 +89,7 @@ describe('validateFields', () => {
     });
 
     it('should return both errors and warnings', () => {
-        const result = validateFields(0, 50, { day_of_week: 'none' }, '');
+        const result = validateFields(0, 0.5, { day_of_week: 'none' }, '');
         
         expect(result.isValid).toBe(false);
         expect(result.errors.distance).toBeDefined();
