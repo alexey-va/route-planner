@@ -172,8 +172,10 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
 }
 
 // Бесплатная доставка при оплате наличными/СБП
-// Наличные: от 45000 руб и вес до 1500 кг и машина до 1.5т и без опций времени
-// СБП: от 55000 руб и вес до 1500 кг и машина до 1.5т и без опций времени
+// Наличные: от 45000 руб и вес до 1500 кг и машина до 1.5т
+// СБП: от 55000 руб и вес до 1500 кг и машина до 1.5т
+// При выборе времени (утро/вечер) - бесплатно, но надбавка за время сохраняется
+// При выборе "ко времени" или "сегодня" - бесплатная доставка не применяется
 function applyFreeDeliveryForPayment(params, price, comments) {
     const maxWeightForFreeDelivery = 1500; // 1.5 тонны
     
@@ -188,31 +190,51 @@ function applyFreeDeliveryForPayment(params, price, comments) {
         return null;
     }
     
-    // Бесплатная доставка не применяется если выбрана опция времени
-    // (бесплатно = доставка когда получится)
-    if (params.options.by_time || params.options.morning || params.options.evening || params.options.today) {
+    // Бесплатная доставка не применяется для "ко времени" и "сегодня"
+    if (params.options.by_time || params.options.today) {
         return null;
     }
     
     const orderTotal = params.orderTotal || 0;
     
-    if (params.options.pay_cash && orderTotal >= config.free_delivery_cash_min) {
-        // Очищаем предыдущие комментарии - доставка бесплатная
+    // Проверяем условия бесплатной доставки
+    const isCashFree = params.options.pay_cash && orderTotal >= config.free_delivery_cash_min;
+    const isSbpFree = params.options.pay_sbp && orderTotal >= config.free_delivery_sbp_min;
+    
+    if (!isCashFree && !isSbpFree) {
+        return null;
+    }
+    
+    const paymentType = isCashFree ? 'наличными' : 'СБП';
+    const minOrderSum = isCashFree ? config.free_delivery_cash_min : config.free_delivery_sbp_min;
+    
+    // Если выбрано утро (9:00-12:00) - цена = надбавка за утро
+    if (params.options.morning) {
         return { 
-            price: 0, 
-            description: [`Бесплатная доставка: оплата наличными, заказ от ${config.free_delivery_cash_min} руб, вес до 1.5 т, машина до 1.5 т`] 
+            price: config.morning_add, 
+            description: [
+                `Бесплатная доставка: оплата ${paymentType}, заказ от ${minOrderSum} руб`,
+                `Доставка утром (9:00-12:00). Надбавка: ${config.morning_add} руб`
+            ] 
         };
     }
     
-    if (params.options.pay_sbp && orderTotal >= config.free_delivery_sbp_min) {
-        // Очищаем предыдущие комментарии - доставка бесплатная
+    // Если выбран вечер (12:00-16:00) - цена = надбавка за вечер
+    if (params.options.evening) {
         return { 
-            price: 0, 
-            description: [`Бесплатная доставка: оплата СБП, заказ от ${config.free_delivery_sbp_min} руб, вес до 1.5 т, машина до 1.5 т`] 
+            price: config.evening_add, 
+            description: [
+                `Бесплатная доставка: оплата ${paymentType}, заказ от ${minOrderSum} руб`,
+                `Доставка днём (12:00-16:00). Надбавка: ${config.evening_add} руб`
+            ] 
         };
     }
     
-    return null;
+    // Полностью бесплатная доставка (без опций времени)
+    return { 
+        price: 0, 
+        description: [`Бесплатная доставка: оплата ${paymentType}, заказ от ${minOrderSum} руб, вес до 1.5 т, машина до 1.5 т`] 
+    };
 }
 
 export const config = {

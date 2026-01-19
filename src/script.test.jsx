@@ -1253,7 +1253,7 @@ describe('calculate function', () => {
       expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
     });
 
-    it('should NOT apply free delivery when morning option is selected', () => {
+    it('should apply free delivery with morning surcharge (500 rub) when morning option is selected', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 500,
@@ -1268,11 +1268,12 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      expect(result.price).toBeGreaterThan(0);
-      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
+      expect(result.price).toBe(config.morning_add); // 500 руб
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(true);
+      expect(result.description.some(d => d.includes('Надбавка: 500 руб'))).toBe(true);
     });
 
-    it('should NOT apply free delivery when evening option is selected', () => {
+    it('should apply free delivery with evening surcharge (300 rub) when evening option is selected', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 500,
@@ -1283,6 +1284,26 @@ describe('calculate function', () => {
           ...createDefaultParams().options,
           pay_cash: true,
           evening: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBe(config.evening_add); // 300 руб
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(true);
+      expect(result.description.some(d => d.includes('Надбавка: 300 руб'))).toBe(true);
+    });
+
+    it('should NOT apply free delivery when today option is selected', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 500,
+        vehicle: 0,
+        region: 'Другой город',
+        orderTotal: 50000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true,
+          today: true
         }
       });
       const result = calculate(params);
