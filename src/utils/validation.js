@@ -2,7 +2,7 @@
  * Валидация полей формы расчета
  */
 
-export const validateFields = (distance, weight, options, region, mapDistance = 0) => {
+export const validateFields = (distance, weight, options, region, mapDistance = 0, orderTotal = 0) => {
     const errors = {};
     const warnings = {};
 
@@ -21,6 +21,11 @@ export const validateFields = (distance, weight, options, region, mapDistance = 
 
     if (!options.day_of_week || options.day_of_week === 'none') {
         errors.day_of_week = 'Выберите день недели';
+    }
+
+    // Сумма заказа обязательна при выборе оплаты наличными или СБП
+    if ((options.pay_cash || options.pay_sbp) && (!orderTotal || orderTotal <= 0)) {
+        errors.orderTotal = 'Укажите сумму заказа';
     }
 
     // Предупреждения

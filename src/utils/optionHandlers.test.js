@@ -45,15 +45,54 @@ describe('optionHandlers', () => {
 
     it('should toggle other options', () => {
       const setOptions = vi.fn();
-      const currentOptions = { cement: false, price: true };
+      const currentOptions = { someOption: false, price: true };
 
-      handleOptionChange('cement', currentOptions, setOptions);
+      handleOptionChange('someOption', currentOptions, setOptions);
 
       expect(setOptions).toHaveBeenCalled();
       const updateFn = setOptions.mock.calls[0][0];
       const result = updateFn(currentOptions);
-      expect(result.cement).toBe(true);
+      expect(result.someOption).toBe(true);
       expect(result.price).toBe(true); // Should remain unchanged
+    });
+
+    it('should handle payment options - mutually exclusive (pay_cash)', () => {
+      const setOptions = vi.fn();
+      const currentOptions = { pay_cash: false, pay_sbp: true };
+
+      handleOptionChange('pay_cash', currentOptions, setOptions);
+
+      expect(setOptions).toHaveBeenCalled();
+      const updateFn = setOptions.mock.calls[0][0];
+      const result = updateFn(currentOptions);
+      expect(result.pay_cash).toBe(true);
+      expect(result.pay_sbp).toBe(false);
+    });
+
+    it('should handle payment options - mutually exclusive (pay_sbp)', () => {
+      const setOptions = vi.fn();
+      const currentOptions = { pay_cash: true, pay_sbp: false };
+
+      handleOptionChange('pay_sbp', currentOptions, setOptions);
+
+      expect(setOptions).toHaveBeenCalled();
+      const updateFn = setOptions.mock.calls[0][0];
+      const result = updateFn(currentOptions);
+      expect(result.pay_cash).toBe(false);
+      expect(result.pay_sbp).toBe(true);
+    });
+
+    it('should allow unchecking payment option', () => {
+      const setOptions = vi.fn();
+      const currentOptions = { pay_cash: true, pay_sbp: false };
+
+      handleOptionChange('pay_cash', currentOptions, setOptions);
+
+      expect(setOptions).toHaveBeenCalled();
+      const updateFn = setOptions.mock.calls[0][0];
+      const result = updateFn(currentOptions);
+      expect(result.pay_cash).toBe(false);
+      expect(result.pay_sbp).toBe(false);
     });
   });
 

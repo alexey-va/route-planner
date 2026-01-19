@@ -13,11 +13,13 @@ describe('calculate function', () => {
       morning: false,
       evening: false,
       today: false,
-      cement: false,
+      pay_cash: false,
+      pay_sbp: false,
       day_of_week: 'monday'
     },
     regions: [],
     advanced: {},
+    orderTotal: 0,
     ...overrides
   });
 
@@ -1071,6 +1073,141 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       expect(result.description.length).toBeGreaterThan(0);
+    });
+  });
+
+  // Бесплатная доставка при оплате наличными/СБП
+  // Наличные: от 45000 руб и вес до 1500 кг
+  // СБП: от 55000 руб и вес до 1500 кг
+  describe('Free Delivery with Payment Options', () => {
+    it('should apply free delivery for cash payment with order >= 45000 and weight <= 1500', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 1500, // Exactly 1.5т
+        region: 'Другой город',
+        orderTotal: 45000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBe(0);
+      expect(result.description).toEqual(['Бесплатная доставка: оплата наличными, заказ от 45000 руб, вес до 1.5 т']);
+    });
+
+    it('should apply free delivery for SBP payment with order >= 55000 and weight <= 1500', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 1500,
+        region: 'Другой город',
+        orderTotal: 55000,
+        options: {
+          ...createDefaultParams().options,
+          pay_sbp: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBe(0);
+      expect(result.description).toEqual(['Бесплатная доставка: оплата СБП, заказ от 55000 руб, вес до 1.5 т']);
+    });
+
+    it('should NOT apply free delivery for cash payment when order < 45000', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 1000,
+        region: 'Другой город',
+        orderTotal: 44999,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description).not.toContain('Бесплатная доставка');
+    });
+
+    it('should NOT apply free delivery for SBP payment when order < 55000', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 1000,
+        region: 'Другой город',
+        orderTotal: 54999,
+        options: {
+          ...createDefaultParams().options,
+          pay_sbp: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description).not.toContain('Бесплатная доставка');
+    });
+
+    it('should NOT apply free delivery when weight > 1500 kg even with sufficient order', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 1501, // Exceeds 1.5т
+        region: 'Другой город',
+        orderTotal: 50000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description).not.toContain('Бесплатная доставка');
+    });
+
+    it('should NOT apply free delivery without payment option selected', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 1000,
+        region: 'Другой город',
+        orderTotal: 60000
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description).not.toContain('Бесплатная доставка');
+    });
+
+    it('should apply free delivery for cash payment at exactly 45000 order total', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 500,
+        region: 'Другой город',
+        orderTotal: 45000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBe(0);
+    });
+
+    it('should apply free delivery for SBP payment at exactly 55000 order total', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 500,
+        region: 'Другой город',
+        orderTotal: 55000,
+        options: {
+          ...createDefaultParams().options,
+          pay_sbp: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBe(0);
     });
   });
 });

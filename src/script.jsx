@@ -49,6 +49,14 @@ export function calculate(params) {
     // Apply weekend adjustments
     price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
+    // Check for free delivery with payment options
+    // Бесплатная доставка при оплате наличными от 45000 руб и весе до 1500 кг
+    // Бесплатная доставка при оплате СБП от 55000 руб и весе до 1500 кг
+    const freeDeliveryResult = applyFreeDeliveryForPayment(params, price, comments);
+    if (freeDeliveryResult !== null) {
+        return freeDeliveryResult;
+    }
+
     // Apply global minimum price
     if (price < config.global_min_price) {
         price = config.global_min_price;
@@ -163,6 +171,37 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
     return price;
 }
 
+// Бесплатная доставка при оплате наличными/СБП
+// Наличные: от 45000 руб и вес до 1500 кг
+// СБП: от 55000 руб и вес до 1500 кг
+function applyFreeDeliveryForPayment(params, price, comments) {
+    const maxWeightForFreeDelivery = 1500; // 1.5 тонны
+    
+    if (params.weight > maxWeightForFreeDelivery) {
+        return null;
+    }
+    
+    const orderTotal = params.orderTotal || 0;
+    
+    if (params.options.pay_cash && orderTotal >= config.free_delivery_cash_min) {
+        // Очищаем предыдущие комментарии - доставка бесплатная
+        return { 
+            price: 0, 
+            description: [`Бесплатная доставка: оплата наличными, заказ от ${config.free_delivery_cash_min} руб, вес до 1.5 т`] 
+        };
+    }
+    
+    if (params.options.pay_sbp && orderTotal >= config.free_delivery_sbp_min) {
+        // Очищаем предыдущие комментарии - доставка бесплатная
+        return { 
+            price: 0, 
+            description: [`Бесплатная доставка: оплата СБП, заказ от ${config.free_delivery_sbp_min} руб, вес до 1.5 т`] 
+        };
+    }
+    
+    return null;
+}
+
 export const config = {
     by_time: 1.7,
     today: 2.0,
@@ -172,7 +211,9 @@ export const config = {
     right_now: 2,
     weekend_multiplier: 1.5,
     global_min_price: 500,  // Глобальный минимум для всех доставок
-    bridge_distance_add: 10
+    bridge_distance_add: 10,
+    free_delivery_cash_min: 45000,  // Мин. сумма заказа для бесплатной доставки при оплате наличными
+    free_delivery_sbp_min: 55000    // Мин. сумма заказа для бесплатной доставки при оплате СБП
 };
 
 export const vehiclesConfig = {

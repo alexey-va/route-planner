@@ -16,7 +16,8 @@ const DEFAULT_OPTIONS = {
     by_time: false,
     morning: false,
     evening: false,
-    cement: false,
+    pay_cash: false,
+    pay_sbp: false,
     day_of_week: "none"
 };
 
@@ -39,12 +40,13 @@ function App() {
     const [mapDistance, setMapDistance] = useLocalStorage('mapDistance', 0);
     const [price, setPrice] = useLocalStorage('price', DEFAULT_PRICE);
     const [advanced, setAdvanced] = useLocalStorage('advanced', {});
+    const [orderTotal, setOrderTotal] = useLocalStorage('orderTotal', 0);
 
     // History management
     const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
 
     // Validation
-    const validation = validateFields(distance, weight, options, region, mapDistance);
+    const validation = validateFields(distance, weight, options, region, mapDistance, orderTotal);
 
     // Calculate price whenever relevant parameters change
     useEffect(() => {
@@ -57,11 +59,12 @@ function App() {
             region,
             regions,
             time,
-            advanced
+            advanced,
+            orderTotal
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [distance, duration, weight, options, vehicle, region, regions, time, advanced, setPrice]);
+    }, [distance, duration, weight, options, vehicle, region, regions, time, advanced, orderTotal, setPrice]);
 
 
     const onOptionChange = (option) => {
@@ -122,6 +125,7 @@ function App() {
         setRegions([]); // Fixed: was setRegions(false), should be empty array
         setAdvanced({});
         setTime('day');
+        setOrderTotal(0);
         
         // Reset map if available
         if (routePanelControl) {
@@ -187,6 +191,8 @@ function App() {
                                     vehicle={vehicle}
                                     validationErrors={validation.errors}
                                     validationWarnings={validation.warnings}
+                                    orderTotal={orderTotal}
+                                    setOrderTotal={setOrderTotal}
                                 />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>

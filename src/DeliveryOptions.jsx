@@ -2,7 +2,7 @@ import React from 'react';
 import { getFieldValidationClass } from './utils/validation';
 import Tooltip from './components/Tooltip';
 
-function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle, validationErrors = {}, validationWarnings = {}}) {
+function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle, validationErrors = {}, validationWarnings = {}, orderTotal = 0, setOrderTotal}) {
     // Все Газели (0.5т, 1т, 1.5т, 2т) - индексы 0-3
     let hideTime = advanced && advanced.right_time_kom
         && regions && regions.includes("Коминтерн")
@@ -196,33 +196,76 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
             </div>
             {/* Day options */}
             <hr/>
-            {/* Cement options */}
+            {/* Payment options */}
             <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
-                <div className="grid grid-flow-col auto-cols-auto gap-x-1">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                     <div className="flex flex-row items-start">
                         <input
                             type="checkbox"
-                            id="cement"
-                            checked={options.cement || false}
-                            onChange={() => handleOptionChange('cement')}
+                            id="pay_cash"
+                            checked={options.pay_cash || false}
+                            onChange={() => handleOptionChange('pay_cash')}
                             className="self-center"
                         />
-                        <label htmlFor="cement"
-                               className="flex  ml-2 max-sm:ml-1  flex-wrap gap-x-2 items-center self-center">
-                            <Tooltip text="Доставка цемента или ЦПС более 15 штук. Бесплатная доставка не применяется">
+                        <label htmlFor="pay_cash"
+                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center">
+                            <Tooltip text="Оплата наличными. При заказе от 45 000 руб и весе до 1.5 т — бесплатная доставка">
                                 <span className="flex items-center gap-1">
-                                    Цемент/ЦПС
+                                    Оплата наличными
                                     <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
                                 </span>
                             </Tooltip>
-                            <span className="text-nowrap text-gray-500 text-sm">
-                                более 15 штук
-                            </span>
+                        </label>
+                    </div>
+                    <div className="flex flex-row items-start">
+                        <input
+                            type="checkbox"
+                            id="pay_sbp"
+                            checked={options.pay_sbp || false}
+                            onChange={() => handleOptionChange('pay_sbp')}
+                            className="self-center"
+                        />
+                        <label htmlFor="pay_sbp"
+                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center">
+                            <Tooltip text="Оплата по СБП. При заказе от 55 000 руб и весе до 1.5 т — бесплатная доставка">
+                                <span className="flex items-center gap-1">
+                                    Оплата СБП
+                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                                </span>
+                            </Tooltip>
                         </label>
                     </div>
                 </div>
+                {/* Order total input - shown when payment option is selected */}
+                {(options.pay_cash || options.pay_sbp) && (
+                    <div className="mt-3">
+                        <div className="flex items-center gap-2">
+                            <label htmlFor="orderTotal" className="text-sm text-gray-600">
+                                Сумма заказа:
+                            </label>
+                            <input
+                                type="number"
+                                id="orderTotal"
+                                value={orderTotal || ''}
+                                onChange={(e) => setOrderTotal(parseFloat(e.target.value) || 0)}
+                                placeholder="0"
+                                className={`w-32 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 ${
+                                    validationErrors.orderTotal 
+                                        ? 'border-red-500 border-2 focus:ring-red-500' 
+                                        : 'border-gray-300 focus:ring-blue-500'
+                                }`}
+                            />
+                            <span className="text-sm text-gray-500">руб</span>
+                        </div>
+                        {validationErrors.orderTotal && (
+                            <p className="text-red-500 text-xs mt-1 ml-0">
+                                ⚠️ {validationErrors.orderTotal}
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
-            {/* Cement options */}
+            {/* Payment options */}
             <hr/>
         </div>
     );
