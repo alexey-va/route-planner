@@ -1233,6 +1233,63 @@ describe('calculate function', () => {
       
       expect(result.price).toBe(0);
     });
+
+    it('should NOT apply free delivery when by_time option is selected', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 500,
+        vehicle: 0,
+        region: 'Другой город',
+        orderTotal: 50000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true,
+          by_time: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
+    });
+
+    it('should NOT apply free delivery when morning option is selected', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 500,
+        vehicle: 0,
+        region: 'Другой город',
+        orderTotal: 50000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true,
+          morning: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
+    });
+
+    it('should NOT apply free delivery when evening option is selected', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 500,
+        vehicle: 0,
+        region: 'Другой город',
+        orderTotal: 50000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true,
+          evening: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
+    });
   });
 });
 

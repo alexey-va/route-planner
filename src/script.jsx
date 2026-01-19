@@ -172,8 +172,8 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
 }
 
 // Бесплатная доставка при оплате наличными/СБП
-// Наличные: от 45000 руб и вес до 1500 кг и машина до 1.5т
-// СБП: от 55000 руб и вес до 1500 кг и машина до 1.5т
+// Наличные: от 45000 руб и вес до 1500 кг и машина до 1.5т и без опций времени
+// СБП: от 55000 руб и вес до 1500 кг и машина до 1.5т и без опций времени
 function applyFreeDeliveryForPayment(params, price, comments) {
     const maxWeightForFreeDelivery = 1500; // 1.5 тонны
     
@@ -185,6 +185,12 @@ function applyFreeDeliveryForPayment(params, price, comments) {
     // Грузоподъемность машины должна быть до 1.5т (включительно)
     const vehicleConfig = vehiclesConfig[params.vehicle];
     if (vehicleConfig && vehicleConfig.max_weight > maxWeightForFreeDelivery) {
+        return null;
+    }
+    
+    // Бесплатная доставка не применяется если выбрана опция времени
+    // (бесплатно = доставка когда получится)
+    if (params.options.by_time || params.options.morning || params.options.evening || params.options.today) {
         return null;
     }
     
