@@ -172,12 +172,19 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
 }
 
 // Бесплатная доставка при оплате наличными/СБП
-// Наличные: от 45000 руб и вес до 1500 кг
-// СБП: от 55000 руб и вес до 1500 кг
+// Наличные: от 45000 руб и вес до 1500 кг и машина до 1.5т
+// СБП: от 55000 руб и вес до 1500 кг и машина до 1.5т
 function applyFreeDeliveryForPayment(params, price, comments) {
     const maxWeightForFreeDelivery = 1500; // 1.5 тонны
     
+    // Вес груза должен быть до 1.5т
     if (params.weight > maxWeightForFreeDelivery) {
+        return null;
+    }
+    
+    // Грузоподъемность машины должна быть до 1.5т (включительно)
+    const vehicleConfig = vehiclesConfig[params.vehicle];
+    if (vehicleConfig && vehicleConfig.max_weight > maxWeightForFreeDelivery) {
         return null;
     }
     
@@ -187,7 +194,7 @@ function applyFreeDeliveryForPayment(params, price, comments) {
         // Очищаем предыдущие комментарии - доставка бесплатная
         return { 
             price: 0, 
-            description: [`Бесплатная доставка: оплата наличными, заказ от ${config.free_delivery_cash_min} руб, вес до 1.5 т`] 
+            description: [`Бесплатная доставка: оплата наличными, заказ от ${config.free_delivery_cash_min} руб, вес до 1.5 т, машина до 1.5 т`] 
         };
     }
     
@@ -195,7 +202,7 @@ function applyFreeDeliveryForPayment(params, price, comments) {
         // Очищаем предыдущие комментарии - доставка бесплатная
         return { 
             price: 0, 
-            description: [`Бесплатная доставка: оплата СБП, заказ от ${config.free_delivery_sbp_min} руб, вес до 1.5 т`] 
+            description: [`Бесплатная доставка: оплата СБП, заказ от ${config.free_delivery_sbp_min} руб, вес до 1.5 т, машина до 1.5 т`] 
         };
     }
     
@@ -219,7 +226,7 @@ export const config = {
 export const vehiclesConfig = {
     0: {
         name: "Газель",
-        price: 45,
+        price: 50,
         price_hour: 1200,
         max_weight: 500,
         minimal_city_price: 500,  // 0.5т - мин 500
@@ -227,7 +234,7 @@ export const vehiclesConfig = {
     },
     1: {
         name: "Газель",
-        price: 45,
+        price: 50,
         price_hour: 1200,
         max_weight: 1000,
         minimal_city_price: 1000,  // 1т - мин 1000
@@ -235,7 +242,7 @@ export const vehiclesConfig = {
     },
     2: {
         name: "Газель",
-        price: 45,
+        price: 50,
         price_hour: 1200,
         max_weight: 1500,
         minimal_city_price: 1200,  // 1.5т - мин 1200
@@ -243,7 +250,7 @@ export const vehiclesConfig = {
     },
     3: {
         name: "Газель",
-        price: 50,
+        price: 55,
         price_hour: 1200,
         max_weight: 2000,
         minimal_city_price: 1500,  // 2т - мин 1500
@@ -251,7 +258,7 @@ export const vehiclesConfig = {
     },
     4: {
         name: "Газон",
-        price: 55,
+        price: 60,
         price_hour: 1200,
         max_weight: 4300,
         minimal_city_price: 2000,
@@ -259,7 +266,7 @@ export const vehiclesConfig = {
     },
     5: {
         name: "Камаз",
-        price: 55,
+        price: 60,
         price_hour: 1200,
         max_weight: 10000,
         minimal_city_price: 2000,

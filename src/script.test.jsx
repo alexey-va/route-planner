@@ -98,7 +98,7 @@ describe('calculate function', () => {
       }
       expect(result.price).toBe(expectedPrice);
       expect(result.description.some(desc => 
-        desc.includes('Базовая цена') && desc.includes('45 руб/км')
+        desc.includes('Базовая цена') && desc.includes('50 руб/км')
       )).toBe(true);
     });
 
@@ -114,7 +114,7 @@ describe('calculate function', () => {
       // May be adjusted to minimal price
       expect(result.price).toBeGreaterThanOrEqual(Math.min(expectedPrice, vehiclesConfig[3].minimal_city_price));
       expect(result.description.some(desc => 
-        desc.includes('Базовая цена') && desc.includes('50 руб/км')
+        desc.includes('Базовая цена') && desc.includes('55 руб/км')
       )).toBe(true);
     });
 
@@ -712,15 +712,15 @@ describe('calculate function', () => {
 
     it('should handle distance exactly at minimal price threshold', () => {
       // For vehicle 2 (1.5т): minimal is 1200, so need distance where price = 1200
-      // 1200 = (distance/1000) * 45 * 2 => distance = 13333.33...
+      // 1200 = (distance/1000) * 50 * 2 => distance = 12000
       const params = createDefaultParams({
-        distance: 13333, // Exactly at minimal threshold (rounded)
+        distance: 12000, // Exactly at minimal threshold
         vehicle: 2, // Газель 1.5т
         region: 'Другой город'
       });
       const result = calculate(params);
       
-      const calculatedPrice = (13333 / 1000) * vehiclesConfig[2].price * 2;
+      const calculatedPrice = (12000 / 1000) * vehiclesConfig[2].price * 2;
       // Should be close to minimal (might be slightly off due to rounding)
       expect(result.price).toBeGreaterThanOrEqual(vehiclesConfig[2].minimal_city_price - 1);
       expect(result.price).toBeLessThanOrEqual(vehiclesConfig[2].minimal_city_price + 1);
@@ -728,13 +728,13 @@ describe('calculate function', () => {
 
     it('should handle distance just below minimal price threshold', () => {
       const params = createDefaultParams({
-        distance: 13332, // Just below minimal threshold
+        distance: 11999, // Just below minimal threshold
         vehicle: 2, // Газель 1.5т
         region: 'Другой город'
       });
       const result = calculate(params);
       
-      // Calculated: 13332/1000 * 45 * 2 = 1199.88, which is < 1200, so minimal applies
+      // Calculated: 11999/1000 * 50 * 2 = 1199.9, which is < 1200, so minimal applies
       expect(result.price).toBe(vehiclesConfig[2].minimal_city_price);
       // Check if any description contains minimal price info
       const hasMinimalComment = result.description.some(desc => 
@@ -1080,10 +1080,11 @@ describe('calculate function', () => {
   // Наличные: от 45000 руб и вес до 1500 кг
   // СБП: от 55000 руб и вес до 1500 кг
   describe('Free Delivery with Payment Options', () => {
-    it('should apply free delivery for cash payment with order >= 45000 and weight <= 1500', () => {
+    it('should apply free delivery for cash payment with order >= 45000, weight <= 1500 and vehicle <= 1.5t', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1500, // Exactly 1.5т
+        vehicle: 2, // Газель 1.5т
         region: 'Другой город',
         orderTotal: 45000,
         options: {
@@ -1094,13 +1095,14 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       expect(result.price).toBe(0);
-      expect(result.description).toEqual(['Бесплатная доставка: оплата наличными, заказ от 45000 руб, вес до 1.5 т']);
+      expect(result.description).toEqual(['Бесплатная доставка: оплата наличными, заказ от 45000 руб, вес до 1.5 т, машина до 1.5 т']);
     });
 
-    it('should apply free delivery for SBP payment with order >= 55000 and weight <= 1500', () => {
+    it('should apply free delivery for SBP payment with order >= 55000, weight <= 1500 and vehicle <= 1.5t', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1500,
+        vehicle: 2, // Газель 1.5т
         region: 'Другой город',
         orderTotal: 55000,
         options: {
@@ -1111,7 +1113,7 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       expect(result.price).toBe(0);
-      expect(result.description).toEqual(['Бесплатная доставка: оплата СБП, заказ от 55000 руб, вес до 1.5 т']);
+      expect(result.description).toEqual(['Бесплатная доставка: оплата СБП, заказ от 55000 руб, вес до 1.5 т, машина до 1.5 т']);
     });
 
     it('should NOT apply free delivery for cash payment when order < 45000', () => {
@@ -1152,6 +1154,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1501, // Exceeds 1.5т
+        vehicle: 3, // Газель 2т (needed for this weight)
         region: 'Другой город',
         orderTotal: 50000,
         options: {
@@ -1162,26 +1165,46 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       expect(result.price).toBeGreaterThan(0);
-      expect(result.description).not.toContain('Бесплатная доставка');
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
+    });
+
+    it('should NOT apply free delivery when vehicle > 1.5t even with suitable weight', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 1000, // Weight is fine
+        vehicle: 3, // Газель 2т - exceeds 1.5т limit
+        region: 'Другой город',
+        orderTotal: 50000,
+        options: {
+          ...createDefaultParams().options,
+          pay_cash: true
+        }
+      });
+      const result = calculate(params);
+      
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
     });
 
     it('should NOT apply free delivery without payment option selected', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1000,
+        vehicle: 2,
         region: 'Другой город',
         orderTotal: 60000
       });
       const result = calculate(params);
       
       expect(result.price).toBeGreaterThan(0);
-      expect(result.description).not.toContain('Бесплатная доставка');
+      expect(result.description.some(d => d.includes('Бесплатная доставка'))).toBe(false);
     });
 
     it('should apply free delivery for cash payment at exactly 45000 order total', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 500,
+        vehicle: 0, // Газель 0.5т
         region: 'Другой город',
         orderTotal: 45000,
         options: {
@@ -1198,6 +1221,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 500,
+        vehicle: 0, // Газель 0.5т
         region: 'Другой город',
         orderTotal: 55000,
         options: {
