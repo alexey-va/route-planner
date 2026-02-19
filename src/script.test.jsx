@@ -6,7 +6,7 @@ describe('calculate function', () => {
   const createDefaultParams = (overrides = {}) => ({
     distance: 10000, // 10 km
     weight: 500,
-    vehicle: 2, // Газель 1.5т (основная для тестов)
+    vehicle: 0, // Газель 1.5т (основная для тестов)
     region: 'Киров',
     options: {
       by_time: false,
@@ -62,7 +62,7 @@ describe('calculate function', () => {
     it('should always have minimum price of 500 rubles', () => {
       const params = createDefaultParams({
         distance: 100, // Very short distance
-        vehicle: 0, // Газель 0.5т (minimal price 500)
+        vehicle: 0, // Газель 1.5т
         region: 'Киров'
       });
       const result = calculate(params);
@@ -86,15 +86,15 @@ describe('calculate function', () => {
     it('should calculate price based on distance for Gazel (vehicle 2 - 1.5т)', () => {
       const params = createDefaultParams({
         distance: 10000, // 10 km
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город' // Not Киров to avoid free delivery
       });
       const result = calculate(params);
       
-      let expectedPrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let expectedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (expectedPrice < vehiclesConfig[2].minimal_city_price) {
-        expectedPrice = vehiclesConfig[2].minimal_city_price;
+      if (expectedPrice < vehiclesConfig[0].minimal_city_price) {
+        expectedPrice = vehiclesConfig[0].minimal_city_price;
       }
       expect(result.price).toBe(expectedPrice);
       expect(result.description.some(desc => 
@@ -105,14 +105,14 @@ describe('calculate function', () => {
     it('should calculate price based on distance for vehicle 3 (Газель 2т)', () => {
       const params = createDefaultParams({
         distance: 10000, // 10 km
-        vehicle: 3, // Газель 2т
+        vehicle: 1, // Газель 2т
         region: 'Другой город' // Not Киров to avoid free delivery
       });
       const result = calculate(params);
       
-      const expectedPrice = (10000 / 1000) * vehiclesConfig[3].price * 2;
+      const expectedPrice = (10000 / 1000) * vehiclesConfig[1].price * 2;
       // May be adjusted to minimal price
-      expect(result.price).toBeGreaterThanOrEqual(Math.min(expectedPrice, vehiclesConfig[3].minimal_city_price));
+      expect(result.price).toBeGreaterThanOrEqual(Math.min(expectedPrice, vehiclesConfig[1].minimal_city_price));
       expect(result.description.some(desc => 
         desc.includes('Базовая цена') && desc.includes('55 руб/км')
       )).toBe(true);
@@ -121,11 +121,11 @@ describe('calculate function', () => {
     it('should calculate price with base price for Kamaz', () => {
       const params = createDefaultParams({
         distance: 10000, // 10 km
-        vehicle: 5 // Камаз
+        vehicle: 3 // Камаз
       });
       const result = calculate(params);
       
-      const expectedPrice = 2000 + (10000 / 1000) * vehiclesConfig[5].price * 2;
+      const expectedPrice = 2000 + (10000 / 1000) * vehiclesConfig[3].price * 2;
       expect(result.price).toBe(expectedPrice);
       expect(result.description.some(desc => 
         desc.includes('Базовая цена: 2000 руб')
@@ -135,12 +135,12 @@ describe('calculate function', () => {
     it('should apply minimal city price for non-Kamaz vehicles', () => {
       const params = createDefaultParams({
         distance: 1000, // 1 km - very short distance
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город' // Not Киров to avoid free delivery
       });
       const result = calculate(params);
       
-      expect(result.price).toBe(vehiclesConfig[2].minimal_city_price);
+      expect(result.price).toBe(vehiclesConfig[0].minimal_city_price);
       expect(result.description.some(desc => 
         desc.includes('Минимальная стоимость доставки') && desc.includes('1200 руб')
       )).toBe(true);
@@ -149,14 +149,14 @@ describe('calculate function', () => {
     it('should not apply minimal price if calculated price is higher', () => {
       const params = createDefaultParams({
         distance: 50000, // 50 km - enough to exceed minimal
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город' // Not Киров to avoid free delivery
       });
       const result = calculate(params);
       
-      const expectedPrice = (50000 / 1000) * vehiclesConfig[2].price * 2;
+      const expectedPrice = (50000 / 1000) * vehiclesConfig[0].price * 2;
       expect(result.price).toBe(expectedPrice);
-      expect(result.price).toBeGreaterThan(vehiclesConfig[2].minimal_city_price);
+      expect(result.price).toBeGreaterThan(vehiclesConfig[0].minimal_city_price);
     });
   });
 
@@ -164,7 +164,7 @@ describe('calculate function', () => {
     it('should apply 50% discount for Gazel (vehicle 2 - 1.5т) in Komintern with right_time_kom', () => {
       const params = createDefaultParams({
         distance: 10000,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город', // Not Киров to avoid free delivery
         regions: ['Коминтерн'],
         advanced: {
@@ -173,10 +173,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed (before discount)
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       let expectedPrice = basePrice * 0.5;
       // Apply Komintern minimal price if needed
@@ -191,7 +191,7 @@ describe('calculate function', () => {
     it('should apply 50% discount for vehicle 3 (Газель 2т) in Komintern with right_time_kom', () => {
       const params = createDefaultParams({
         distance: 10000,
-        vehicle: 3, // Газель 2т
+        vehicle: 1, // Газель 2т
         region: 'Другой город', // Not Киров to avoid free delivery
         regions: ['Коминтерн'],
         advanced: {
@@ -200,10 +200,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[3].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[1].price * 2;
       // Apply minimal price if needed (before discount)
-      if (basePrice < vehiclesConfig[3].minimal_city_price) {
-        basePrice = vehiclesConfig[3].minimal_city_price;
+      if (basePrice < vehiclesConfig[1].minimal_city_price) {
+        basePrice = vehiclesConfig[1].minimal_city_price;
       }
       let expectedPrice = basePrice * 0.5;
       // Apply Komintern minimal price if needed
@@ -218,7 +218,7 @@ describe('calculate function', () => {
     it('should apply minimal price for Komintern discount if discounted price is too low', () => {
       const params = createDefaultParams({
         distance: 1000, // Very short distance
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город', // Not Киров to avoid free delivery
         regions: ['Коминтерн'],
         advanced: {
@@ -239,7 +239,7 @@ describe('calculate function', () => {
     it('should not apply discount for Газон (vehicle 4)', () => {
       const params = createDefaultParams({
         distance: 10000,
-        vehicle: 4, // Газон
+        vehicle: 2, // Газон
         region: 'Другой город', // Not Киров to avoid free delivery
         regions: ['Коминтерн'],
         advanced: {
@@ -248,10 +248,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let expectedPrice = (10000 / 1000) * vehiclesConfig[4].price * 2;
+      let expectedPrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
       // Apply minimal price if needed
-      if (expectedPrice < vehiclesConfig[4].minimal_city_price) {
-        expectedPrice = vehiclesConfig[4].minimal_city_price;
+      if (expectedPrice < vehiclesConfig[2].minimal_city_price) {
+        expectedPrice = vehiclesConfig[2].minimal_city_price;
       }
       expect(result.price).toBe(expectedPrice);
       expect(result.description).toContain('Скидка в Коминтерн не применяется к данному транспорту');
@@ -260,7 +260,7 @@ describe('calculate function', () => {
     it('should not apply discount without right_time_kom', () => {
       const params = createDefaultParams({
         distance: 10000,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город', // Not Киров to avoid free delivery
         regions: ['Коминтерн'],
         advanced: {
@@ -269,10 +269,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let expectedPrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let expectedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (expectedPrice < vehiclesConfig[2].minimal_city_price) {
-        expectedPrice = vehiclesConfig[2].minimal_city_price;
+      if (expectedPrice < vehiclesConfig[0].minimal_city_price) {
+        expectedPrice = vehiclesConfig[0].minimal_city_price;
       }
       expect(result.price).toBe(expectedPrice);
       expect(result.description).not.toContain('Скидка 50% на доставку в Коминтерн');
@@ -281,7 +281,7 @@ describe('calculate function', () => {
     it('should not apply discount when Komintern is not in regions', () => {
       const params = createDefaultParams({
         distance: 10000,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город', // Not Киров to avoid free delivery
         regions: ['Другой район'],
         advanced: {
@@ -290,10 +290,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let expectedPrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let expectedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (expectedPrice < vehiclesConfig[2].minimal_city_price) {
-        expectedPrice = vehiclesConfig[2].minimal_city_price;
+      if (expectedPrice < vehiclesConfig[0].minimal_city_price) {
+        expectedPrice = vehiclesConfig[0].minimal_city_price;
       }
       expect(result.price).toBe(expectedPrice);
       expect(result.description).not.toContain('Скидка 50% на доставку в Коминтерн');
@@ -312,10 +312,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * config.by_time;
       
@@ -336,10 +336,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice + config.morning_add;
       
@@ -358,10 +358,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice + config.evening_add;
       
@@ -380,10 +380,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * config.today;
       
@@ -407,10 +407,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * config.by_time;
       
@@ -437,10 +437,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * config.weekend_multiplier;
       
@@ -462,10 +462,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * config.weekend_multiplier;
       
@@ -487,10 +487,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       
       expect(result.price).toBe(basePrice);
@@ -509,10 +509,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       
       expect(result.price).toBe(basePrice);
@@ -525,7 +525,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 20000, // 20 km
         weight: 900,
-        vehicle: 5, // Камаз
+        vehicle: 3, // Камаз
         options: {
           ...createDefaultParams().options,
           by_time: true,
@@ -537,7 +537,7 @@ describe('calculate function', () => {
       // Kamaz: 2000 + (20 * 55 * 2) = 4200
       // by_time: 4200 * 1.7 = 7140
       // weekend: 7140 * 1.5 = 10710
-      let expectedPrice = 2000 + (20000 / 1000) * vehiclesConfig[5].price * 2;
+      let expectedPrice = 2000 + (20000 / 1000) * vehiclesConfig[3].price * 2;
       expectedPrice *= config.by_time;
       expectedPrice *= config.weekend_multiplier;
       
@@ -548,17 +548,17 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 50000,
         weight: 1000,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город'
       });
       const result = calculate(params);
       
-      const expectedPrice = (50000 / 1000) * vehiclesConfig[2].price * 2;
+      const expectedPrice = (50000 / 1000) * vehiclesConfig[0].price * 2;
       expect(result.price).toBe(expectedPrice);
     });
 
     it('should handle all vehicle types correctly', () => {
-      const vehicles = [0, 1, 2, 3, 4, 5];
+      const vehicles = [0, 1, 2, 3];
       const distance = 10000;
       
       vehicles.forEach(vehicle => {
@@ -569,8 +569,8 @@ describe('calculate function', () => {
         });
         const result = calculate(params);
         
-        if (vehicle === 5) {
-          // Kamaz has base price
+        if (vehicle === 3) {
+          // Камаз has base price
           const expectedPrice = 2000 + (distance / 1000) * vehiclesConfig[vehicle].price * 2;
           expect(result.price).toBe(expectedPrice);
         } else {
@@ -583,8 +583,8 @@ describe('calculate function', () => {
 
     it('should handle weight exactly at vehicle max capacity', () => {
       const params = createDefaultParams({
-        weight: vehiclesConfig[2].max_weight, // Exactly 1500
-        vehicle: 2, // Газель 1.5т
+        weight: vehiclesConfig[0].max_weight, // Exactly 1500
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город' // Not Киров to avoid free delivery
       });
       const result = calculate(params);
@@ -600,7 +600,7 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      const expectedPrice = (500000 / 1000) * vehiclesConfig[2].price * 2;
+      const expectedPrice = (500000 / 1000) * vehiclesConfig[0].price * 2;
       expect(result.price).toBe(expectedPrice);
     });
 
@@ -611,7 +611,7 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      expect(result.price).toBe(vehiclesConfig[2].minimal_city_price);
+      expect(result.price).toBe(vehiclesConfig[0].minimal_city_price);
     });
   });
 
@@ -620,7 +620,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 50000,
         weight: 1500,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Киров'
       });
       const result = calculate(params);
@@ -633,7 +633,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 100000, // 100km
         weight: 1000,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Киров'
       });
       const result = calculate(params);
@@ -655,9 +655,9 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       // Should NOT apply weekend multiplier (weight must be > 800)
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       expect(result.price).toBe(basePrice);
       expect(result.description).not.toContain('Доставка в выходные дни с весом более 800 кг');
@@ -676,9 +676,9 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       // Should apply weekend multiplier
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * config.weekend_multiplier;
       expect(result.price).toBe(expectedPrice);
@@ -692,9 +692,7 @@ describe('calculate function', () => {
         { vehicle: 0, maxWeight: vehiclesConfig[0].max_weight },
         { vehicle: 1, maxWeight: vehiclesConfig[1].max_weight },
         { vehicle: 2, maxWeight: vehiclesConfig[2].max_weight },
-        { vehicle: 3, maxWeight: vehiclesConfig[3].max_weight },
-        { vehicle: 4, maxWeight: vehiclesConfig[4].max_weight },
-        { vehicle: 5, maxWeight: vehiclesConfig[5].max_weight }
+        { vehicle: 3, maxWeight: vehiclesConfig[3].max_weight }
       ];
       
       testCases.forEach(({ vehicle, maxWeight }) => {
@@ -715,27 +713,27 @@ describe('calculate function', () => {
       // 1200 = (distance/1000) * 50 * 2 => distance = 12000
       const params = createDefaultParams({
         distance: 12000, // Exactly at minimal threshold
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город'
       });
       const result = calculate(params);
       
-      const calculatedPrice = (12000 / 1000) * vehiclesConfig[2].price * 2;
+      const calculatedPrice = (12000 / 1000) * vehiclesConfig[0].price * 2;
       // Should be close to minimal (might be slightly off due to rounding)
-      expect(result.price).toBeGreaterThanOrEqual(vehiclesConfig[2].minimal_city_price - 1);
-      expect(result.price).toBeLessThanOrEqual(vehiclesConfig[2].minimal_city_price + 1);
+      expect(result.price).toBeGreaterThanOrEqual(vehiclesConfig[0].minimal_city_price - 1);
+      expect(result.price).toBeLessThanOrEqual(vehiclesConfig[0].minimal_city_price + 1);
     });
 
     it('should handle distance just below minimal price threshold', () => {
       const params = createDefaultParams({
         distance: 11999, // Just below minimal threshold
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город'
       });
       const result = calculate(params);
       
       // Calculated: 11999/1000 * 50 * 2 = 1199.9, which is < 1200, so minimal applies
-      expect(result.price).toBe(vehiclesConfig[2].minimal_city_price);
+      expect(result.price).toBe(vehiclesConfig[0].minimal_city_price);
       // Check if any description contains minimal price info
       const hasMinimalComment = result.description.some(desc => 
         typeof desc === 'string' && desc.includes('Минимальная стоимость доставки')
@@ -797,10 +795,10 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       // Should not apply discount
-      const expectedPrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
+      const expectedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
       let basePrice = expectedPrice;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       expect(result.price).toBe(basePrice);
       expect(result.description).not.toContain('Скидка 50% на доставку в Коминтерн');
@@ -839,7 +837,7 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      const expectedPrice = (10000000 / 1000) * vehiclesConfig[2].price * 2;
+      const expectedPrice = (10000000 / 1000) * vehiclesConfig[0].price * 2;
       expect(result.price).toBe(expectedPrice);
     });
 
@@ -869,7 +867,7 @@ describe('calculate function', () => {
     it('should return early from Komintern discount (no time adjustments applied)', () => {
       const params = createDefaultParams({
         distance: 10000,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город',
         regions: ['Коминтерн'],
         advanced: {
@@ -883,9 +881,9 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * 0.5;
       let finalPrice = expectedPrice;
@@ -902,7 +900,7 @@ describe('calculate function', () => {
     it('should handle Komintern with multiple regions in array', () => {
       const params = createDefaultParams({
         distance: 10000,
-        vehicle: 2, // Газель 1.5т
+        vehicle: 0, // Газель 1.5т
         region: 'Другой город',
         regions: ['Другой район', 'Коминтерн', 'Еще район'],
         advanced: {
@@ -919,9 +917,9 @@ describe('calculate function', () => {
       expect(hasDiscountComment).toBe(true);
       
       // Verify price is discounted
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       let expectedPrice = basePrice * 0.5;
       if (expectedPrice < config.kominter_min_price) {
@@ -944,9 +942,9 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       const expectedPrice = basePrice * config.by_time;
       
@@ -976,9 +974,9 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       let price = basePrice * config.by_time;
       price *= config.weekend_multiplier;
@@ -999,9 +997,9 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      let basePrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      if (basePrice < vehiclesConfig[2].minimal_city_price) {
-        basePrice = vehiclesConfig[2].minimal_city_price;
+      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      if (basePrice < vehiclesConfig[0].minimal_city_price) {
+        basePrice = vehiclesConfig[0].minimal_city_price;
       }
       
       const comment = result.description.find(desc => 
@@ -1082,7 +1080,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1500,
-        vehicle: 2,
+        vehicle: 0,
         region: 'Киров',
         orderTotal: 20000,
         options: { ...createDefaultParams().options, retail: true }
@@ -1096,7 +1094,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1500,
-        vehicle: 2,
+        vehicle: 0,
         region: 'Другой город',
         regions: ['Коминтерн'],
         orderTotal: 25000,
@@ -1137,7 +1135,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1501,
-        vehicle: 3,
+        vehicle: 1,
         region: 'Киров',
         orderTotal: 30000,
         options: { ...createDefaultParams().options, retail: true }
@@ -1151,7 +1149,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1000,
-        vehicle: 3,
+        vehicle: 1,
         region: 'Киров',
         orderTotal: 30000,
         options: { ...createDefaultParams().options, retail: true }
@@ -1165,7 +1163,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1000,
-        vehicle: 2,
+        vehicle: 0,
         region: 'Киров',
         orderTotal: 60000
       });

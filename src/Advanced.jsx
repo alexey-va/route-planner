@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Tooltip from "./components/Tooltip";
 
 const KOMINTERN_REGION = "Коминтерн";
-const ALLOWED_VEHICLES_FOR_KOMINTERN = [0, 1, 2, 3]; // Все Газели (0.5т, 1т, 1.5т, 2т)
+const ALLOWED_VEHICLES_FOR_KOMINTERN = [0, 1]; // Газель 1.5т, 2т
 
 export default function Advanced({ regions, vehicle, advanced, setAdvanced }) {
     const contentRef = useRef(null);

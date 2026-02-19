@@ -74,8 +74,8 @@ function canFitInAnyVehicle(weight) {
 
 function extractConditions(params) {
     return {
-        onGazel: params.vehicle >= 0 && params.vehicle <= 3, // Все Газели (0.5т, 1т, 1.5т, 2т)
-        onKamaz: params.vehicle === 5,
+        onGazel: params.vehicle >= 0 && params.vehicle <= 1, // Газель 1.5т, 2т
+        onKamaz: params.vehicle === 3,
         isHeavyOnWeekend: params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week)
     };
 }
@@ -84,7 +84,7 @@ function calculateBasePrice(params, vehicleConfig, comments) {
     const distanceKm = params.distance / 1000;
     let price;
 
-    if (params.vehicle === 5) {
+    if (params.vehicle === 3) {
         // Камаз has base price of 2000
         const basePrice = 2000;
         price = basePrice + distanceKm * vehicleConfig.price * 2;
@@ -114,8 +114,8 @@ function applyKominternDiscount(params, price, comments) {
         return null;
     }
 
-    // Скидка применяется ко всем Газелям (0.5т, 1т, 1.5т, 2т)
-    if (params.vehicle >= 0 && params.vehicle <= 3) {
+    // Скидка применяется к Газелям (1.5т, 2т)
+    if (params.vehicle >= 0 && params.vehicle <= 1) {
         price *= 0.5;
         comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
         
@@ -175,15 +175,12 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
 function applyFreeDeliveryForRetailOpt(params, price, comments) {
     const maxWeightForFreeDelivery = 1500; // 1.5 тонны
 
-    // Машина должна быть газель 1.5т или меньше (индексы 0, 1, 2)
-    if (params.vehicle > 2) {
+    // Только Газель 1.5т (индекс 0)
+    if (params.vehicle !== 0) {
         return null;
     }
 
     const vehicleConfig = vehiclesConfig[params.vehicle];
-    if (vehicleConfig && vehicleConfig.max_weight > maxWeightForFreeDelivery) {
-        return null;
-    }
 
     // Вес груза до 1.5т
     if (params.weight > maxWeightForFreeDelivery) {
@@ -258,35 +255,19 @@ export const vehiclesConfig = {
         name: "Газель",
         price: 50,
         price_hour: 1200,
-        max_weight: 500,
-        minimal_city_price: 500,  // 0.5т - мин 500
+        max_weight: 1500,
+        minimal_city_price: 1200,  // 1.5т
         heavy: false
     },
     1: {
         name: "Газель",
-        price: 50,
-        price_hour: 1200,
-        max_weight: 1000,
-        minimal_city_price: 1000,  // 1т - мин 1000
-        heavy: false
-    },
-    2: {
-        name: "Газель",
-        price: 50,
-        price_hour: 1200,
-        max_weight: 1500,
-        minimal_city_price: 1200,  // 1.5т - мин 1200
-        heavy: false
-    },
-    3: {
-        name: "Газель",
         price: 55,
         price_hour: 1200,
         max_weight: 2000,
-        minimal_city_price: 1500,  // 2т - мин 1500
+        minimal_city_price: 1500,  // 2т
         heavy: false
     },
-    4: {
+    2: {
         name: "Газон",
         price: 60,
         price_hour: 1200,
@@ -294,7 +275,7 @@ export const vehiclesConfig = {
         minimal_city_price: 2000,
         heavy: true
     },
-    5: {
+    3: {
         name: "Камаз",
         price: 60,
         price_hour: 1200,

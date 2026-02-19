@@ -29,7 +29,7 @@ describe('optionHandlers', () => {
       expect(result.opt).toBe(true);
     });
 
-    it('should allow unchecking retail option', () => {
+    it('should keep retail selected when clicking retail again (radio: one always selected)', () => {
       const setOptions = vi.fn();
       const currentOptions = { retail: true, opt: false };
 
@@ -38,7 +38,7 @@ describe('optionHandlers', () => {
       expect(setOptions).toHaveBeenCalled();
       const updateFn = setOptions.mock.calls[0][0];
       const result = updateFn(currentOptions);
-      expect(result.retail).toBe(false);
+      expect(result.retail).toBe(true);
       expect(result.opt).toBe(false);
     });
 

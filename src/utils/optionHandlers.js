@@ -3,16 +3,12 @@ const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 's
 const RETAIL_OPT_OPTIONS = ['retail', 'opt'];
 
 export function handleOptionChange(option, currentOptions, setOptions) {
-    // Handle retail/opt options - mutually exclusive but can both be unchecked
+    // Handle retail/opt - radio: one always selected, switching between them
     if (RETAIL_OPT_OPTIONS.includes(option)) {
-        const newOptions = {
-            retail: false,
-            opt: false,
-        };
-        newOptions[option] = !currentOptions[option];
         setOptions(prevOptions => ({
             ...prevOptions,
-            ...newOptions
+            retail: option === 'retail',
+            opt: option === 'opt'
         }));
         return;
     }

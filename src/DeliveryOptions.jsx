@@ -3,10 +3,10 @@ import { getFieldValidationClass } from './utils/validation';
 import Tooltip from './components/Tooltip';
 
 function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle, validationErrors = {}, validationWarnings = {}, orderTotal = 0, setOrderTotal}) {
-    // Все Газели (0.5т, 1т, 1.5т, 2т) - индексы 0-3
+    // Газели (1.5т, 2т) - индексы 0-1
     let hideTime = advanced && advanced.right_time_kom
         && regions && regions.includes("Коминтерн")
-        && (vehicle >= 0 && vehicle <= 3);
+        && (vehicle >= 0 && vehicle <= 1);
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}
@@ -196,19 +196,20 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
             </div>
             {/* Day options */}
             <hr/>
-            {/* Retail / Wholesale options */}
+            {/* Retail / Wholesale options (radio: одна всегда выбрана, по умолчанию розница) */}
             <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                     <div className="flex flex-row items-start">
                         <input
-                            type="checkbox"
+                            type="radio"
                             id="retail"
-                            checked={options.retail || false}
+                            name="retail_opt"
+                            checked={options.retail !== false}
                             onChange={() => handleOptionChange('retail')}
                             className="self-center"
                         />
                         <label htmlFor="retail"
-                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center">
+                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
                             <Tooltip text="Розница. При заказе от 20 000 руб — бесплатная доставка (в пределах города или Коминтерна, без доставки к конкретному времени, машина до 1.5 т)">
                                 <span className="flex items-center gap-1">
                                     Розница
@@ -219,14 +220,15 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                     </div>
                     <div className="flex flex-row items-start">
                         <input
-                            type="checkbox"
+                            type="radio"
                             id="opt"
-                            checked={options.opt || false}
+                            name="retail_opt"
+                            checked={options.opt === true}
                             onChange={() => handleOptionChange('opt')}
                             className="self-center"
                         />
                         <label htmlFor="opt"
-                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center">
+                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
                             <Tooltip text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города или Коминтерна, без доставки к конкретному времени, машина до 1.5 т)">
                                 <span className="flex items-center gap-1">
                                     Опт
@@ -236,8 +238,8 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         </label>
                     </div>
                 </div>
-                {/* Order total input - shown when retail or opt is selected */}
-                {(options.retail || options.opt) && (
+                {/* Сумма заказа — всегда показываем (одна из retail/opt всегда выбрана) */}
+                {(
                     <div className="mt-3">
                         <div className="flex items-center gap-2">
                             <label htmlFor="orderTotal" className="text-sm text-gray-600">

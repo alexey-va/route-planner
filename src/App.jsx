@@ -16,7 +16,7 @@ const DEFAULT_OPTIONS = {
     by_time: false,
     morning: false,
     evening: false,
-    retail: false,
+    retail: true,   // по умолчанию розница (одна из retail/opt всегда выбрана)
     opt: false,
     day_of_week: "none"
 };
