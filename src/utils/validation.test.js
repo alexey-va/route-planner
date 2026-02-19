@@ -79,36 +79,36 @@ describe('validateFields', () => {
         expect(result.warnings.region).toBe('Район не указан');
     });
 
-    it('should return error for missing orderTotal when pay_cash is selected', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', pay_cash: true }, 'Киров', 0, 0);
+    it('should return error for missing orderTotal when retail is selected', () => {
+        const result = validateFields(5000, 500, { day_of_week: 'monday', retail: true }, 'Киров', 0, 0);
         
         expect(result.isValid).toBe(false);
         expect(result.errors.orderTotal).toBe('Укажите сумму заказа');
     });
 
-    it('should return error for missing orderTotal when pay_sbp is selected', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', pay_sbp: true }, 'Киров', 0, 0);
+    it('should return error for missing orderTotal when opt is selected', () => {
+        const result = validateFields(5000, 500, { day_of_week: 'monday', opt: true }, 'Киров', 0, 0);
         
         expect(result.isValid).toBe(false);
         expect(result.errors.orderTotal).toBe('Укажите сумму заказа');
     });
 
-    it('should be valid when orderTotal is provided with pay_cash', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', pay_cash: true }, 'Киров', 0, 45000);
+    it('should be valid when orderTotal is provided with retail', () => {
+        const result = validateFields(5000, 500, { day_of_week: 'monday', retail: true }, 'Киров', 0, 20000);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.orderTotal).toBeUndefined();
     });
 
-    it('should be valid when orderTotal is provided with pay_sbp', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', pay_sbp: true }, 'Киров', 0, 55000);
+    it('should be valid when orderTotal is provided with opt', () => {
+        const result = validateFields(5000, 500, { day_of_week: 'monday', opt: true }, 'Киров', 0, 25000);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.orderTotal).toBeUndefined();
     });
 
-    it('should not require orderTotal when no payment option is selected', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', pay_cash: false, pay_sbp: false }, 'Киров', 0, 0);
+    it('should not require orderTotal when no retail/opt option is selected', () => {
+        const result = validateFields(5000, 500, { day_of_week: 'monday', retail: false, opt: false }, 'Киров', 0, 0);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.orderTotal).toBeUndefined();

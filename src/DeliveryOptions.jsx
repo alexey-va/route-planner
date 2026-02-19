@@ -196,22 +196,22 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
             </div>
             {/* Day options */}
             <hr/>
-            {/* Payment options */}
+            {/* Retail / Wholesale options */}
             <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                     <div className="flex flex-row items-start">
                         <input
                             type="checkbox"
-                            id="pay_cash"
-                            checked={options.pay_cash || false}
-                            onChange={() => handleOptionChange('pay_cash')}
+                            id="retail"
+                            checked={options.retail || false}
+                            onChange={() => handleOptionChange('retail')}
                             className="self-center"
                         />
-                        <label htmlFor="pay_cash"
+                        <label htmlFor="retail"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center">
-                            <Tooltip text="Оплата наличными. При заказе от 45 000 руб и весе до 1.5 т — бесплатная доставка">
+                            <Tooltip text="Розница. При заказе от 20 000 руб — бесплатная доставка (в пределах города или Коминтерна, без доставки к конкретному времени, машина до 1.5 т)">
                                 <span className="flex items-center gap-1">
-                                    Оплата наличными
+                                    Розница
                                     <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
                                 </span>
                             </Tooltip>
@@ -220,24 +220,24 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                     <div className="flex flex-row items-start">
                         <input
                             type="checkbox"
-                            id="pay_sbp"
-                            checked={options.pay_sbp || false}
-                            onChange={() => handleOptionChange('pay_sbp')}
+                            id="opt"
+                            checked={options.opt || false}
+                            onChange={() => handleOptionChange('opt')}
                             className="self-center"
                         />
-                        <label htmlFor="pay_sbp"
+                        <label htmlFor="opt"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center">
-                            <Tooltip text="Оплата по СБП. При заказе от 55 000 руб и весе до 1.5 т — бесплатная доставка">
+                            <Tooltip text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города или Коминтерна, без доставки к конкретному времени, машина до 1.5 т)">
                                 <span className="flex items-center gap-1">
-                                    Оплата СБП
+                                    Опт
                                     <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
                                 </span>
                             </Tooltip>
                         </label>
                     </div>
                 </div>
-                {/* Order total input - shown when payment option is selected */}
-                {(options.pay_cash || options.pay_sbp) && (
+                {/* Order total input - shown when retail or opt is selected */}
+                {(options.retail || options.opt) && (
                     <div className="mt-3">
                         <div className="flex items-center gap-2">
                             <label htmlFor="orderTotal" className="text-sm text-gray-600">
@@ -265,7 +265,7 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                     </div>
                 )}
             </div>
-            {/* Payment options */}
+            {/* Retail / Wholesale options */}
             <hr/>
         </div>
     );

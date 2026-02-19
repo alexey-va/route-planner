@@ -3,17 +3,43 @@ import { handleOptionChange, findNextAvailableVehicle } from './optionHandlers';
 
 describe('optionHandlers', () => {
   describe('handleOptionChange', () => {
-    it('should toggle opt option and reset price when enabling opt', () => {
+    it('should handle retail/opt options - mutually exclusive (retail)', () => {
       const setOptions = vi.fn();
-      const currentOptions = { opt: false, price: true };
+      const currentOptions = { retail: false, opt: true };
+
+      handleOptionChange('retail', currentOptions, setOptions);
+
+      expect(setOptions).toHaveBeenCalled();
+      const updateFn = setOptions.mock.calls[0][0];
+      const result = updateFn(currentOptions);
+      expect(result.retail).toBe(true);
+      expect(result.opt).toBe(false);
+    });
+
+    it('should handle retail/opt options - mutually exclusive (opt)', () => {
+      const setOptions = vi.fn();
+      const currentOptions = { retail: true, opt: false };
 
       handleOptionChange('opt', currentOptions, setOptions);
 
-      expect(setOptions).toHaveBeenCalledWith(expect.any(Function));
+      expect(setOptions).toHaveBeenCalled();
       const updateFn = setOptions.mock.calls[0][0];
       const result = updateFn(currentOptions);
+      expect(result.retail).toBe(false);
       expect(result.opt).toBe(true);
-      expect(result.price).toBe(false);
+    });
+
+    it('should allow unchecking retail option', () => {
+      const setOptions = vi.fn();
+      const currentOptions = { retail: true, opt: false };
+
+      handleOptionChange('retail', currentOptions, setOptions);
+
+      expect(setOptions).toHaveBeenCalled();
+      const updateFn = setOptions.mock.calls[0][0];
+      const result = updateFn(currentOptions);
+      expect(result.retail).toBe(false);
+      expect(result.opt).toBe(false);
     });
 
     it('should handle time options - only one can be selected', () => {
@@ -56,44 +82,6 @@ describe('optionHandlers', () => {
       expect(result.price).toBe(true); // Should remain unchanged
     });
 
-    it('should handle payment options - mutually exclusive (pay_cash)', () => {
-      const setOptions = vi.fn();
-      const currentOptions = { pay_cash: false, pay_sbp: true };
-
-      handleOptionChange('pay_cash', currentOptions, setOptions);
-
-      expect(setOptions).toHaveBeenCalled();
-      const updateFn = setOptions.mock.calls[0][0];
-      const result = updateFn(currentOptions);
-      expect(result.pay_cash).toBe(true);
-      expect(result.pay_sbp).toBe(false);
-    });
-
-    it('should handle payment options - mutually exclusive (pay_sbp)', () => {
-      const setOptions = vi.fn();
-      const currentOptions = { pay_cash: true, pay_sbp: false };
-
-      handleOptionChange('pay_sbp', currentOptions, setOptions);
-
-      expect(setOptions).toHaveBeenCalled();
-      const updateFn = setOptions.mock.calls[0][0];
-      const result = updateFn(currentOptions);
-      expect(result.pay_cash).toBe(false);
-      expect(result.pay_sbp).toBe(true);
-    });
-
-    it('should allow unchecking payment option', () => {
-      const setOptions = vi.fn();
-      const currentOptions = { pay_cash: true, pay_sbp: false };
-
-      handleOptionChange('pay_cash', currentOptions, setOptions);
-
-      expect(setOptions).toHaveBeenCalled();
-      const updateFn = setOptions.mock.calls[0][0];
-      const result = updateFn(currentOptions);
-      expect(result.pay_cash).toBe(false);
-      expect(result.pay_sbp).toBe(false);
-    });
   });
 
   describe('findNextAvailableVehicle', () => {

@@ -16,8 +16,8 @@ const DEFAULT_OPTIONS = {
     by_time: false,
     morning: false,
     evening: false,
-    pay_cash: false,
-    pay_sbp: false,
+    retail: false,
+    opt: false,
     day_of_week: "none"
 };
 

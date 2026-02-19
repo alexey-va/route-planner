@@ -23,8 +23,8 @@ export const validateFields = (distance, weight, options, region, mapDistance = 
         errors.day_of_week = 'Выберите день недели';
     }
 
-    // Сумма заказа обязательна при выборе оплаты наличными или СБП
-    if ((options.pay_cash || options.pay_sbp) && (!orderTotal || orderTotal <= 0)) {
+    // Сумма заказа обязательна при выборе розницы или опта
+    if ((options.retail || options.opt) && (!orderTotal || orderTotal <= 0)) {
         errors.orderTotal = 'Укажите сумму заказа';
     }
 

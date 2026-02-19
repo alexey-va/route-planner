@@ -49,10 +49,8 @@ export function calculate(params) {
     // Apply weekend adjustments
     price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
-    // Check for free delivery with payment options
-    // Бесплатная доставка при оплате наличными от 45000 руб и весе до 1500 кг
-    // Бесплатная доставка при оплате СБП от 55000 руб и весе до 1500 кг
-    const freeDeliveryResult = applyFreeDeliveryForPayment(params, price, comments);
+    // Check for free delivery with retail/opt (розница 20к, опт 25к — в пределах города или Коминтерна, без доставки к времени, машина до 1.5т)
+    const freeDeliveryResult = applyFreeDeliveryForRetailOpt(params, price, comments);
     if (freeDeliveryResult !== null) {
         return freeDeliveryResult;
     }
@@ -171,69 +169,73 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
     return price;
 }
 
-// Бесплатная доставка при оплате наличными/СБП
-// Наличные: от 45000 руб и вес до 1500 кг и машина до 1.5т
-// СБП: от 55000 руб и вес до 1500 кг и машина до 1.5т
-// При выборе времени (утро/вечер) - бесплатно, но надбавка за время сохраняется
-// При выборе "ко времени" или "сегодня" - бесплатная доставка не применяется
-function applyFreeDeliveryForPayment(params, price, comments) {
+// Бесплатная доставка при рознице/опте (только газель 1.5т или меньше)
+// Розница: от 20000 руб, опт: от 25000 руб — в пределах города (Киров) или Коминтерна, без доставки к конкретному времени
+// При выборе утро/вечер — бесплатно, но надбавка за время сохраняется
+function applyFreeDeliveryForRetailOpt(params, price, comments) {
     const maxWeightForFreeDelivery = 1500; // 1.5 тонны
-    
-    // Вес груза должен быть до 1.5т
-    if (params.weight > maxWeightForFreeDelivery) {
+
+    // Машина должна быть газель 1.5т или меньше (индексы 0, 1, 2)
+    if (params.vehicle > 2) {
         return null;
     }
-    
-    // Грузоподъемность машины должна быть до 1.5т (включительно)
+
     const vehicleConfig = vehiclesConfig[params.vehicle];
     if (vehicleConfig && vehicleConfig.max_weight > maxWeightForFreeDelivery) {
         return null;
     }
-    
+
+    // Вес груза до 1.5т
+    if (params.weight > maxWeightForFreeDelivery) {
+        return null;
+    }
+
     // Бесплатная доставка не применяется для "ко времени" и "сегодня"
     if (params.options.by_time || params.options.today) {
         return null;
     }
-    
-    const orderTotal = params.orderTotal || 0;
-    
-    // Проверяем условия бесплатной доставки
-    const isCashFree = params.options.pay_cash && orderTotal >= config.free_delivery_cash_min;
-    const isSbpFree = params.options.pay_sbp && orderTotal >= config.free_delivery_sbp_min;
-    
-    if (!isCashFree && !isSbpFree) {
+
+    // Только в пределах города (Киров) или Коминтерна
+    const inCity = params.region === 'Киров';
+    const inKomintern = params.regions && params.regions.includes('Коминтерн');
+    if (!inCity && !inKomintern) {
         return null;
     }
-    
-    const paymentType = isCashFree ? 'наличными' : 'СБП';
-    const minOrderSum = isCashFree ? config.free_delivery_cash_min : config.free_delivery_sbp_min;
-    
-    // Если выбрано утро (9:00-12:00) - цена = надбавка за утро
+
+    const orderTotal = params.orderTotal || 0;
+    const isRetailFree = params.options.retail && orderTotal >= config.free_delivery_retail_min;
+    const isOptFree = params.options.opt && orderTotal >= config.free_delivery_opt_min;
+
+    if (!isRetailFree && !isOptFree) {
+        return null;
+    }
+
+    const typeLabel = isRetailFree ? 'розница' : 'опт';
+    const minOrderSum = isRetailFree ? config.free_delivery_retail_min : config.free_delivery_opt_min;
+
     if (params.options.morning) {
-        return { 
-            price: config.morning_add, 
+        return {
+            price: config.morning_add,
             description: [
-                `Бесплатная доставка: оплата ${paymentType}, заказ от ${minOrderSum} руб`,
+                `Бесплатная доставка: ${typeLabel}, заказ от ${minOrderSum} руб`,
                 `Доставка утром (9:00-12:00). Надбавка: ${config.morning_add} руб`
-            ] 
+            ]
         };
     }
-    
-    // Если выбран вечер (12:00-16:00) - цена = надбавка за вечер
+
     if (params.options.evening) {
-        return { 
-            price: config.evening_add, 
+        return {
+            price: config.evening_add,
             description: [
-                `Бесплатная доставка: оплата ${paymentType}, заказ от ${minOrderSum} руб`,
+                `Бесплатная доставка: ${typeLabel}, заказ от ${minOrderSum} руб`,
                 `Доставка днём (12:00-16:00). Надбавка: ${config.evening_add} руб`
-            ] 
+            ]
         };
     }
-    
-    // Полностью бесплатная доставка (без опций времени)
-    return { 
-        price: 0, 
-        description: [`Бесплатная доставка: оплата ${paymentType}, заказ от ${minOrderSum} руб, вес до 1.5 т, машина до 1.5 т`] 
+
+    return {
+        price: 0,
+        description: [`Бесплатная доставка: ${typeLabel}, заказ от ${minOrderSum} руб, вес до 1.5 т, машина до 1.5 т`]
     };
 }
 
@@ -247,8 +249,8 @@ export const config = {
     weekend_multiplier: 1.5,
     global_min_price: 500,  // Глобальный минимум для всех доставок
     bridge_distance_add: 10,
-    free_delivery_cash_min: 45000,  // Мин. сумма заказа для бесплатной доставки при оплате наличными
-    free_delivery_sbp_min: 55000    // Мин. сумма заказа для бесплатной доставки при оплате СБП
+    free_delivery_retail_min: 20000,  // Мин. сумма заказа для бесплатной доставки (розница)
+    free_delivery_opt_min: 25000      // Мин. сумма заказа для бесплатной доставки (опт)
 };
 
 export const vehiclesConfig = {

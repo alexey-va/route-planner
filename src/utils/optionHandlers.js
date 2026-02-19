@@ -1,14 +1,18 @@
 const TIME_OPTIONS = ['by_time', 'morning', 'evening', 'today'];
 const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-const PAYMENT_OPTIONS = ['pay_cash', 'pay_sbp'];
+const RETAIL_OPT_OPTIONS = ['retail', 'opt'];
 
 export function handleOptionChange(option, currentOptions, setOptions) {
-    // Handle opt option - resets price when enabled
-    if (option === 'opt' && !currentOptions[option]) {
+    // Handle retail/opt options - mutually exclusive but can both be unchecked
+    if (RETAIL_OPT_OPTIONS.includes(option)) {
+        const newOptions = {
+            retail: false,
+            opt: false,
+        };
+        newOptions[option] = !currentOptions[option];
         setOptions(prevOptions => ({
             ...prevOptions,
-            [option]: !prevOptions[option],
-            price: false
+            ...newOptions
         }));
         return;
     }
@@ -20,20 +24,6 @@ export function handleOptionChange(option, currentOptions, setOptions) {
             morning: false,
             evening: false,
             today: false,
-        };
-        newOptions[option] = !currentOptions[option];
-        setOptions(prevOptions => ({
-            ...prevOptions,
-            ...newOptions
-        }));
-        return;
-    }
-
-    // Handle payment options - mutually exclusive but can both be unchecked
-    if (PAYMENT_OPTIONS.includes(option)) {
-        const newOptions = {
-            pay_cash: false,
-            pay_sbp: false,
         };
         newOptions[option] = !currentOptions[option];
         setOptions(prevOptions => ({
