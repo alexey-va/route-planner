@@ -49,7 +49,7 @@ export function calculate(params) {
     // Apply weekend adjustments
     price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
-    // Check for free delivery with retail/opt (розница 20к, опт 25к — в пределах города или Коминтерна, без доставки к времени, машина до 1.5т)
+    // Check for free delivery with retail/opt (розница 20к, опт 25к — в пределах города, без доставки к времени, машина до 1.5т)
     const freeDeliveryResult = applyFreeDeliveryForRetailOpt(params, price, comments);
     if (freeDeliveryResult !== null) {
         return freeDeliveryResult;
@@ -170,7 +170,8 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
 }
 
 // Бесплатная доставка при рознице/опте (только газель 1.5т или меньше)
-// Розница: от 20000 руб, опт: от 25000 руб — в пределах города (Киров) или Коминтерна, без доставки к конкретному времени
+// Розница: от 20000 руб, опт: от 25000 руб — в пределах города (Киров), без доставки к конкретному времени
+// В зоне Коминтерн бесплатная доставка не применяется
 // При выборе утро/вечер — бесплатно, но надбавка за время сохраняется
 function applyFreeDeliveryForRetailOpt(params, price, comments) {
     const maxWeightForFreeDelivery = 1500; // 1.5 тонны
@@ -192,10 +193,10 @@ function applyFreeDeliveryForRetailOpt(params, price, comments) {
         return null;
     }
 
-    // Только в пределах города (Киров) или Коминтерна
+    // Только в пределах города (Киров), но не в зоне Коминтерн
     const inCity = params.region === 'Киров';
-    const inKomintern = params.regions && params.regions.includes('Коминтерн');
-    if (!inCity && !inKomintern) {
+    const inKomintern = params.regions?.includes('Коминтерн') || params.region === 'Коминтерн';
+    if (!inCity || inKomintern) {
         return null;
     }
 
@@ -261,7 +262,7 @@ export const vehiclesConfig = {
     },
     1: {
         name: "Газель",
-        price: 55,
+        price: 60,
         price_hour: 1200,
         max_weight: 2000,
         minimal_city_price: 1500,  // 2т
@@ -269,7 +270,7 @@ export const vehiclesConfig = {
     },
     2: {
         name: "Газон",
-        price: 60,
+        price: 65,
         price_hour: 1200,
         max_weight: 4300,
         minimal_city_price: 2000,
@@ -277,7 +278,7 @@ export const vehiclesConfig = {
     },
     3: {
         name: "Камаз",
-        price: 60,
+        price: 65,
         price_hour: 1200,
         max_weight: 10000,
         minimal_city_price: 2000,

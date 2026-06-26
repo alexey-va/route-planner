@@ -114,7 +114,7 @@ describe('calculate function', () => {
       // May be adjusted to minimal price
       expect(result.price).toBeGreaterThanOrEqual(Math.min(expectedPrice, vehiclesConfig[1].minimal_city_price));
       expect(result.description.some(desc => 
-        desc.includes('Базовая цена') && desc.includes('55 руб/км')
+        desc.includes('Базовая цена') && desc.includes('60 руб/км')
       )).toBe(true);
     });
 
@@ -1074,7 +1074,7 @@ describe('calculate function', () => {
     });
   });
 
-  // Бесплатная доставка при рознице/опте: розница от 20к, опт от 25к — в пределах города (Киров) или Коминтерна, без доставки к времени, машина до 1.5т
+  // Бесплатная доставка при рознице/опте: розница от 20к, опт от 25к — в пределах города (Киров), без доставки к времени, машина до 1.5т
   describe('Free Delivery with Retail/Opt', () => {
     it('should apply free delivery for retail with order >= 20000, weight <= 1500, vehicle <= 1.5t, in city', () => {
       const params = createDefaultParams({
@@ -1090,7 +1090,7 @@ describe('calculate function', () => {
       expect(result.description).toEqual(['Бесплатная доставка: розница, заказ от 20000 руб, вес до 1.5 т, машина до 1.5 т']);
     });
 
-    it('should apply free delivery for opt with order >= 25000, in Komintern', () => {
+    it('should NOT apply free delivery for opt with order >= 25000, in Komintern', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1500,
@@ -1101,8 +1101,8 @@ describe('calculate function', () => {
         options: { ...createDefaultParams().options, opt: true }
       });
       const result = calculate(params);
-      expect(result.price).toBe(0);
-      expect(result.description).toEqual(['Бесплатная доставка: опт, заказ от 25000 руб, вес до 1.5 т, машина до 1.5 т']);
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description.some(d => d && d.includes('Бесплатная доставка'))).toBe(false);
     });
 
     it('should NOT apply free delivery for retail when order < 20000', () => {
@@ -1200,7 +1200,7 @@ describe('calculate function', () => {
       expect(result.price).toBe(0);
     });
 
-    it('should apply free delivery for opt at exactly 25000 in Komintern', () => {
+    it('should NOT apply free delivery for opt at exactly 25000 in Komintern', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 500,
@@ -1211,7 +1211,23 @@ describe('calculate function', () => {
         options: { ...createDefaultParams().options, opt: true }
       });
       const result = calculate(params);
-      expect(result.price).toBe(0);
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description.some(d => d && d.includes('Бесплатная доставка'))).toBe(false);
+    });
+
+    it('should NOT apply free delivery in Kirov when Comintern region is included', () => {
+      const params = createDefaultParams({
+        distance: 10000,
+        weight: 500,
+        vehicle: 0,
+        region: 'Киров',
+        regions: ['Коминтерн'],
+        orderTotal: 25000,
+        options: { ...createDefaultParams().options, retail: true }
+      });
+      const result = calculate(params);
+      expect(result.price).toBeGreaterThan(0);
+      expect(result.description.some(d => d && d.includes('Бесплатная доставка'))).toBe(false);
     });
 
     it('should NOT apply free delivery when by_time option is selected', () => {

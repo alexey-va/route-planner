@@ -210,7 +210,7 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="retail"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
-                            <Tooltip text="Розница. При заказе от 20 000 руб — бесплатная доставка (в пределах города или Коминтерна, без доставки к конкретному времени, машина до 1.5 т)">
+                            <Tooltip text="Розница. При заказе от 20 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн не действует">
                                 <span className="flex items-center gap-1">
                                     Розница
                                     <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
@@ -229,7 +229,7 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         />
                         <label htmlFor="opt"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
-                            <Tooltip text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города или Коминтерна, без доставки к конкретному времени, машина до 1.5 т)">
+                            <Tooltip text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн не действует">
                                 <span className="flex items-center gap-1">
                                     Опт
                                     <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
