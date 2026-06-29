@@ -228,7 +228,7 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       // Calculate: base price = 1000/1000 * 45 * 2 = 90, but minimal is 1200
-      // So base = 1200, then 50% = 600, but Komintern minimal is 800
+      // So base = 1200, then 50% = 600, but Komintern minimal is 1000
       expect(result.price).toBe(config.kominter_min_price);
       // The description might not always include the minimal price message if it's already at minimum
       expect(result.description.some(desc => 

@@ -242,7 +242,7 @@ export const config = {
     today: 2.0,
     morning_add: 500,
     evening_add: 300,
-    kominter_min_price: 800,
+    kominter_min_price: 1000,
     right_now: 2,
     weekend_multiplier: 1.5,
     global_min_price: 500,  // Глобальный минимум для всех доставок

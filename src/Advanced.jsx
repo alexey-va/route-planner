@@ -43,7 +43,7 @@ export default function Advanced({ regions, vehicle, advanced, setAdvanced }) {
                             onChange={() => handleOptionChange('right_time_kom')}
                         />
                         <label htmlFor="right_time_kom" className={`mx-2 flex items-center gap-1`}>
-                            <Tooltip text="При доставке в район Коминтерн в среду или пятницу на Газели применяется скидка 50%. Минимальная стоимость доставки 800 руб">
+                            <Tooltip text="При доставке в район Коминтерн в среду или пятницу на Газели применяется скидка 50%. Минимальная стоимость доставки 1000 руб">
                                 <span className="flex items-center gap-1">
                                     Коминтерн - доставка в среду или пятницу
                                     <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
