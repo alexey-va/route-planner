@@ -7,6 +7,7 @@ import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
 import Advanced from "./Advanced.jsx";
 import CalculationHistory from "./components/CalculationHistory";
+import PricingRules from "./components/PricingRules";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useCalculationHistory } from "./hooks/useCalculationHistory";
 import { handleOptionChange, findNextAvailableVehicle } from "./utils/optionHandlers";
@@ -160,12 +161,13 @@ function App() {
                     {/* Content container */}
                     <div className="px-4 py-2 text-lg font-sans flex flex-col border-t-2 grow">
                         {/* History button */}
-                        <div className="flex justify-end mb-2">
+                        <div className="flex justify-end gap-2 mb-2">
                             <CalculationHistory
                                 history={history}
                                 onRemove={removeFromHistory}
                                 onClear={clearHistory}
                             />
+                            <PricingRules />
                         </div>
                         
                         <WeightDistanceInput
