@@ -1,0 +1,14 @@
+when:
+  - event: push
+    branch: master
+
+steps:
+  deploy:
+    image: docker:27-cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/freedeeml/ci:/opt/ci:ro
+    commands:
+      - apk add --no-cache bash git
+      - export WORKSPACE=$${CI_WORKSPACE}
+      - bash /opt/ci/deploy-route-planner.sh
