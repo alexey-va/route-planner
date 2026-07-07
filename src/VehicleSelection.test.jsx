@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import VehicleSelection from './VehicleSelection';
 
 const mockVehiclesConfig = {
-  0: { name: 'Газель', max_weight: 1500, price: 50, minimal_city_price: 1200 },
+  0: { name: 'Газель', max_weight: 1500, price: 50, minimal_city_price: 1000 },
   1: { name: 'Газель', max_weight: 2000, price: 55, minimal_city_price: 1500 },
   2: { name: 'Газон', max_weight: 4300, price: 60, minimal_city_price: 2000 },
   3: { name: 'Камаз', max_weight: 10000, price: 60, minimal_city_price: 2000 }

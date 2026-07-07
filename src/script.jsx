@@ -49,7 +49,7 @@ export function calculate(params) {
     // Apply weekend adjustments
     price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
-    // Check for free delivery with retail/opt (розница 20к, опт 25к — в пределах города, без доставки к времени, машина до 1.5т)
+    // Check for free delivery with retail/opt (розница/опт 25к — в пределах города, без доставки к времени, машина до 1.5т, не в выходные)
     const freeDeliveryResult = applyFreeDeliveryForRetailOpt(params, price, comments);
     if (freeDeliveryResult !== null) {
         return freeDeliveryResult;
@@ -170,8 +170,8 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
 }
 
 // Бесплатная доставка при рознице/опте (только газель 1.5т или меньше)
-// Розница: от 20000 руб, опт: от 25000 руб — в пределах города (Киров), без доставки к конкретному времени
-// В зоне Коминтерн бесплатная доставка не применяется
+// Розница и опт: от 25000 руб — в пределах города (Киров), без доставки к конкретному времени
+// В зоне Коминтерн и в выходные бесплатная доставка не применяется
 // При выборе утро/вечер — бесплатно, но надбавка за время сохраняется
 function applyFreeDeliveryForRetailOpt(params, price, comments) {
     const maxWeightForFreeDelivery = 1500; // 1.5 тонны
@@ -188,8 +188,9 @@ function applyFreeDeliveryForRetailOpt(params, price, comments) {
         return null;
     }
 
-    // Бесплатная доставка не применяется для "ко времени" и "сегодня"
-    if (params.options.by_time || params.options.today) {
+    // Бесплатная доставка не применяется для "ко времени", "сегодня" и в выходные
+    const isWeekend = ['saturday', 'sunday'].includes(params.options.day_of_week);
+    if (params.options.by_time || params.options.today || isWeekend) {
         return null;
     }
 
@@ -247,7 +248,7 @@ export const config = {
     weekend_multiplier: 1.5,
     global_min_price: 500,  // Глобальный минимум для всех доставок
     bridge_distance_add: 10,
-    free_delivery_retail_min: 20000,  // Мин. сумма заказа для бесплатной доставки (розница)
+    free_delivery_retail_min: 25000,  // Мин. сумма заказа для бесплатной доставки (розница)
     free_delivery_opt_min: 25000      // Мин. сумма заказа для бесплатной доставки (опт)
 };
 
@@ -257,7 +258,7 @@ export const vehiclesConfig = {
         price: 50,
         price_hour: 1200,
         max_weight: 1500,
-        minimal_city_price: 1200,  // 1.5т
+        minimal_city_price: 1000,  // 1.5т
         heavy: false
     },
     1: {
