@@ -83,100 +83,33 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
             {/* Time options */}
             <hr/>
             {/* Day options */}
-            <div className={`max-sm:px-2 max-sm:py-2  px-4 py-2 grid grid-cols-2 rounded-lg relative ${
+            <div className={`max-sm:px-2 max-sm:py-2 px-4 py-2 grid grid-cols-2 gap-x-4 rounded-lg relative ${
                 validationErrors.day_of_week ? 'border-2 border-red-500 bg-red-50' : ''
             }`}>
                 <div className="flex flex-row items-start">
                     <input
                         type="radio"
-                        id="monday"
-                        checked={options.day_of_week === "monday" || false}
-                        onChange={() => handleOptionChange('monday')}
+                        id="weekdays"
+                        checked={options.day_of_week === "weekdays" || false}
+                        onChange={() => handleOptionChange('weekdays')}
                         className="self-center"
                     />
-                    <label htmlFor="monday" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
+                    <label htmlFor="weekdays" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
                          max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Понедельник
+                        Понедельник–пятница
                     </label>
                 </div>
                 <div className="flex flex-row items-start">
                     <input
                         type="radio"
-                        id="tuesday"
-                        checked={options.day_of_week === "tuesday" || false}
-                        onChange={() => handleOptionChange('tuesday')}
+                        id="weekend"
+                        checked={options.day_of_week === "weekend" || false}
+                        onChange={() => handleOptionChange('weekend')}
                         className="self-center"
                     />
-                    <label htmlFor="tuesday" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
+                    <label htmlFor="weekend" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
                          max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Вторник
-                    </label>
-                </div>
-
-
-                <div className="flex flex-row items-start">
-                    <input
-                        type="radio"
-                        id="wednesday"
-                        checked={options.day_of_week === "wednesday" || false}
-                        onChange={() => handleOptionChange('wednesday')}
-                        className="self-center"
-                    />
-                    <label htmlFor="wednesday" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Среда
-                    </label>
-                </div>
-                <div className="flex flex-row items-start">
-                    <input
-                        type="radio"
-                        id="thursday"
-                        checked={options.day_of_week === "thursday" || false}
-                        onChange={() => handleOptionChange('thursday')}
-                        className="self-center"
-                    />
-                    <label htmlFor="thursday" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Четверг
-                    </label>
-                </div>
-                <div className="flex flex-row items-start">
-                    <input
-                        type="radio"
-                        id="friday"
-                        checked={options.day_of_week === "friday" || false}
-                        onChange={() => handleOptionChange('friday')}
-                        className="self-center"
-                    />
-                    <label htmlFor="friday" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Пятница
-                    </label>
-                </div>
-                <div className="flex flex-row items-start">
-                    <input
-                        type="radio"
-                        id="saturday"
-                        checked={options.day_of_week === "saturday" || false}
-                        onChange={() => handleOptionChange('saturday')}
-                        className="self-center"
-                    />
-                    <label htmlFor="saturday" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Суббота
-                    </label>
-                </div>
-                <div className="flex flex-row items-start">
-                    <input
-                        type="radio"
-                        id="sunday"
-                        checked={options.day_of_week === "sunday" || false}
-                        onChange={() => handleOptionChange('sunday')}
-                        className="self-center"
-                    />
-                    <label htmlFor="sunday" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Воскресенье
+                        Суббота–воскресенье
                     </label>
                 </div>
                 {validationErrors.day_of_week && (

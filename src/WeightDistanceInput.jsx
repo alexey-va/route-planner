@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatDistance, formatWeight } from './utils/formatters';
 import { getFieldValidationClass } from './utils/validation';
+import { isWeekend } from './utils/dayOfWeek';
 
 const MAX_DISTANCE_KM = 10000;
 const WEEKEND_WEIGHT_WARNING_THRESHOLD = 500;
@@ -27,8 +28,8 @@ function WeightDistanceInput({
         left: `${Math.max(1, displayDistance.length - (displayDistance.includes('.') ? 0.4 : 0)) / 1.6 + 1.0}rem`,
     };
 
-    const isWeekend = ['sunday', 'saturday'].includes(options.day_of_week);
-    const showWeekendWarning = isWeekend && parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD;
+    const isWeekendDay = isWeekend(options.day_of_week);
+    const showWeekendWarning = isWeekendDay && parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD;
 
     const handleDistanceChange = (e) => {
         let km = parseFloat(e.target.value);

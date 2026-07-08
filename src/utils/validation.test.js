@@ -3,42 +3,42 @@ import { validateFields, getFieldValidationClass } from './validation';
 
 describe('validateFields', () => {
     it('should return valid for all required fields filled', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday' }, 'Киров');
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays' }, 'Киров');
         
         expect(result.isValid).toBe(true);
         expect(Object.keys(result.errors)).toHaveLength(0);
     });
 
     it('should return error for missing distance', () => {
-        const result = validateFields(0, 500, { day_of_week: 'monday' }, 'Киров', 0);
+        const result = validateFields(0, 500, { day_of_week: 'weekdays' }, 'Киров', 0);
         
         expect(result.isValid).toBe(false);
         expect(result.errors.distance).toBe('Укажите расстояние или выберите точку на карте');
     });
 
     it('should return error for negative distance', () => {
-        const result = validateFields(-100, 500, { day_of_week: 'monday' }, 'Киров', 0);
+        const result = validateFields(-100, 500, { day_of_week: 'weekdays' }, 'Киров', 0);
         
         expect(result.isValid).toBe(false);
         expect(result.errors.distance).toBe('Укажите расстояние или выберите точку на карте');
     });
 
     it('should accept distance from map even if manual distance is 0', () => {
-        const result = validateFields(0, 500, { day_of_week: 'monday' }, 'Киров', 5000);
+        const result = validateFields(0, 500, { day_of_week: 'weekdays' }, 'Киров', 5000);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.distance).toBeUndefined();
     });
 
     it('should accept manual distance even if map distance is 0', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday' }, 'Киров', 0);
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays' }, 'Киров', 0);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.distance).toBeUndefined();
     });
 
     it('should return error for missing weight', () => {
-        const result = validateFields(5000, 0, { day_of_week: 'monday' }, 'Киров');
+        const result = validateFields(5000, 0, { day_of_week: 'weekdays' }, 'Киров');
         
         expect(result.isValid).toBe(false);
         expect(result.errors.weight).toBe('Укажите вес груза');
@@ -52,63 +52,63 @@ describe('validateFields', () => {
     });
 
     it('should return warning for weight less than 1', () => {
-        const result = validateFields(5000, 0.5, { day_of_week: 'monday' }, 'Киров');
+        const result = validateFields(5000, 0.5, { day_of_week: 'weekdays' }, 'Киров');
         
         expect(result.isValid).toBe(true);
         expect(result.warnings.weight).toBe('Минимальный вес 1 кг');
     });
 
     it('should return warning for distance less than 1km (manual)', () => {
-        const result = validateFields(500, 500, { day_of_week: 'monday' }, 'Киров', 0);
+        const result = validateFields(500, 500, { day_of_week: 'weekdays' }, 'Киров', 0);
         
         expect(result.isValid).toBe(true);
         expect(result.warnings.distance).toBe('Расстояние менее 1 км');
     });
 
     it('should return warning for distance less than 1km (from map)', () => {
-        const result = validateFields(0, 500, { day_of_week: 'monday' }, 'Киров', 500);
+        const result = validateFields(0, 500, { day_of_week: 'weekdays' }, 'Киров', 500);
         
         expect(result.isValid).toBe(true);
         expect(result.warnings.distance).toBe('Расстояние менее 1 км');
     });
 
     it('should return warning for missing region', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday' }, '');
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays' }, '');
         
         expect(result.isValid).toBe(true);
         expect(result.warnings.region).toBe('Район не указан');
     });
 
     it('should return error for missing orderTotal when retail is selected', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', retail: true }, 'Киров', 0, 0);
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays', retail: true }, 'Киров', 0, 0);
         
         expect(result.isValid).toBe(false);
         expect(result.errors.orderTotal).toBe('Укажите сумму заказа');
     });
 
     it('should return error for missing orderTotal when opt is selected', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', opt: true }, 'Киров', 0, 0);
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays', opt: true }, 'Киров', 0, 0);
         
         expect(result.isValid).toBe(false);
         expect(result.errors.orderTotal).toBe('Укажите сумму заказа');
     });
 
     it('should be valid when orderTotal is provided with retail', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', retail: true }, 'Киров', 0, 20000);
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays', retail: true }, 'Киров', 0, 20000);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.orderTotal).toBeUndefined();
     });
 
     it('should be valid when orderTotal is provided with opt', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', opt: true }, 'Киров', 0, 25000);
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays', opt: true }, 'Киров', 0, 25000);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.orderTotal).toBeUndefined();
     });
 
     it('should not require orderTotal when no retail/opt option is selected', () => {
-        const result = validateFields(5000, 500, { day_of_week: 'monday', retail: false, opt: false }, 'Киров', 0, 0);
+        const result = validateFields(5000, 500, { day_of_week: 'weekdays', retail: false, opt: false }, 'Киров', 0, 0);
         
         expect(result.isValid).toBe(true);
         expect(result.errors.orderTotal).toBeUndefined();

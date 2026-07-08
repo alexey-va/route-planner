@@ -15,7 +15,7 @@ describe('calculate function', () => {
       today: false,
       retail: false,
       opt: false,
-      day_of_week: 'monday'
+      day_of_week: 'weekdays'
     },
     regions: [],
     orderTotal: 0,
@@ -284,14 +284,14 @@ describe('calculate function', () => {
   });
 
   describe('Weekend Adjustments', () => {
-    it('should apply weekend multiplier for heavy items (>800kg) on Saturday', () => {
+    it('should apply weekend multiplier for heavy items (>800kg) on weekend', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 900, // > 800
         region: 'Другой город', // Not Киров to avoid free delivery
         options: {
           ...createDefaultParams().options,
-          day_of_week: 'saturday'
+          day_of_week: 'weekend'
         }
       });
       const result = calculate(params);
@@ -309,31 +309,6 @@ describe('calculate function', () => {
       )).toBe(true);
     });
 
-    it('should apply weekend multiplier for heavy items (>800kg) on Sunday', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        weight: 900,
-        region: 'Другой город', // Not Киров to avoid free delivery
-        options: {
-          ...createDefaultParams().options,
-          day_of_week: 'sunday'
-        }
-      });
-      const result = calculate(params);
-      
-      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
-      // Apply minimal price if needed
-      if (basePrice < vehiclesConfig[0].minimal_city_price) {
-        basePrice = vehiclesConfig[0].minimal_city_price;
-      }
-      const expectedPrice = basePrice * config.weekend_multiplier;
-      
-      expect(result.price).toBe(expectedPrice);
-      expect(result.description.some(desc => 
-        desc.includes('Доставка в выходные дни с весом более 800 кг')
-      )).toBe(true);
-    });
-
     it('should not apply weekend multiplier for items <= 800kg on weekend', () => {
       const params = createDefaultParams({
         distance: 10000,
@@ -341,7 +316,7 @@ describe('calculate function', () => {
         region: 'Другой город', // Not Киров to avoid free delivery
         options: {
           ...createDefaultParams().options,
-          day_of_week: 'saturday'
+          day_of_week: 'weekend'
         }
       });
       const result = calculate(params);
@@ -363,7 +338,7 @@ describe('calculate function', () => {
         region: 'Другой город', // Not Киров to avoid free delivery
         options: {
           ...createDefaultParams().options,
-          day_of_week: 'monday'
+          day_of_week: 'weekdays'
         }
       });
       const result = calculate(params);
@@ -388,7 +363,7 @@ describe('calculate function', () => {
         options: {
           ...createDefaultParams().options,
           by_time: true,
-          day_of_week: 'saturday'
+          day_of_week: 'weekend'
         }
       });
       const result = calculate(params);
@@ -508,7 +483,7 @@ describe('calculate function', () => {
         region: 'Другой город',
         options: {
           ...createDefaultParams().options,
-          day_of_week: 'saturday'
+          day_of_week: 'weekend'
         }
       });
       const result = calculate(params);
@@ -529,7 +504,7 @@ describe('calculate function', () => {
         region: 'Другой город',
         options: {
           ...createDefaultParams().options,
-          day_of_week: 'saturday'
+          day_of_week: 'weekend'
         }
       });
       const result = calculate(params);
@@ -731,7 +706,7 @@ describe('calculate function', () => {
         options: {
           ...createDefaultParams().options,
           by_time: true,
-          day_of_week: 'saturday'
+          day_of_week: 'weekend'
         }
       });
       const result = calculate(params);
@@ -999,7 +974,7 @@ describe('calculate function', () => {
         vehicle: 0,
         region: 'Киров',
         orderTotal: 30000,
-        options: { ...createDefaultParams().options, retail: true, day_of_week: 'saturday' }
+        options: { ...createDefaultParams().options, retail: true, day_of_week: 'weekend' }
       });
       const result = calculate(params);
       expect(result.price).toBeGreaterThan(0);
@@ -1013,7 +988,7 @@ describe('calculate function', () => {
         vehicle: 0,
         region: 'Киров',
         orderTotal: 30000,
-        options: { ...createDefaultParams().options, retail: true, day_of_week: 'saturday' }
+        options: { ...createDefaultParams().options, retail: true, day_of_week: 'weekend' }
       });
       const result = calculate(params);
 

@@ -137,7 +137,7 @@ describe('useCalculationHistory', () => {
             address: 'Тестовый адрес',
             duration: 30,
             weight: 500,
-            options: { by_time: true, day_of_week: 'monday' },
+            options: { by_time: true, day_of_week: 'weekdays' },
             vehicle: 0,
             mapDistance: 10000,
             time: 'day'
@@ -152,7 +152,7 @@ describe('useCalculationHistory', () => {
             address: 'Тестовый адрес',
             duration: 30,
             weight: 500,
-            options: { by_time: true, day_of_week: 'monday' },
+            options: { by_time: true, day_of_week: 'weekdays' },
             vehicle: 0,
             mapDistance: 10000,
             time: 'day'

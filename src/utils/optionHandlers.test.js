@@ -59,14 +59,14 @@ describe('optionHandlers', () => {
 
     it('should set day_of_week for day options', () => {
       const setOptions = vi.fn();
-      const currentOptions = { day_of_week: 'monday' };
+      const currentOptions = { day_of_week: 'weekdays' };
 
-      handleOptionChange('friday', currentOptions, setOptions);
+      handleOptionChange('weekend', currentOptions, setOptions);
 
       expect(setOptions).toHaveBeenCalled();
       const updateFn = setOptions.mock.calls[0][0];
       const result = updateFn(currentOptions);
-      expect(result.day_of_week).toBe('friday');
+      expect(result.day_of_week).toBe('weekend');
     });
 
     it('should toggle other options', () => {

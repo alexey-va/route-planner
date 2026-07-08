@@ -67,7 +67,7 @@ export function getPricingRules() {
         {
             title: 'Выходные дни',
             items: [
-                `Суббота и воскресенье: при весе более 800 кг цена × ${config.weekend_multiplier}`,
+                `Суббота–воскресенье: при весе более 800 кг цена × ${config.weekend_multiplier}`,
                 'Бесплатная доставка в выходные не действует'
             ]
         },

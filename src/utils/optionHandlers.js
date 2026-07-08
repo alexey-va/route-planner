@@ -1,5 +1,5 @@
 const TIME_OPTIONS = ['by_time', 'morning', 'evening', 'today'];
-const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+const DAY_PERIODS = ['weekdays', 'weekend'];
 const RETAIL_OPT_OPTIONS = ['retail', 'opt'];
 
 export function handleOptionChange(option, currentOptions, setOptions) {
@@ -30,7 +30,7 @@ export function handleOptionChange(option, currentOptions, setOptions) {
     }
 
     // Handle day of week - radio button behavior
-    if (DAYS_OF_WEEK.includes(option)) {
+    if (DAY_PERIODS.includes(option)) {
         setOptions(prevOptions => ({
             ...prevOptions,
             day_of_week: option

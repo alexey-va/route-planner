@@ -1,3 +1,5 @@
+import { isWeekend } from './utils/dayOfWeek';
+
 export function calculate(params) {
     const comments = [];
 
@@ -70,7 +72,7 @@ function extractConditions(params) {
     return {
         onGazel: params.vehicle >= 0 && params.vehicle <= 1, // Газель 1.5т, 2т
         onKamaz: params.vehicle === 3,
-        isHeavyOnWeekend: params.weight > 800 && ['sunday', 'saturday'].includes(params.options.day_of_week)
+        isHeavyOnWeekend: params.weight > 800 && isWeekend(params.options.day_of_week)
     };
 }
 
@@ -157,8 +159,8 @@ function applyFreeDeliveryForRetailOpt(params, price, comments) {
     }
 
     // Бесплатная доставка не применяется для "ко времени", "сегодня" и в выходные
-    const isWeekend = ['saturday', 'sunday'].includes(params.options.day_of_week);
-    if (params.options.by_time || params.options.today || isWeekend) {
+    const isWeekendDay = isWeekend(params.options.day_of_week);
+    if (params.options.by_time || params.options.today || isWeekendDay) {
         return null;
     }
 
