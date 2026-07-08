@@ -1,8 +1,8 @@
 import React from 'react';
 import { getFieldValidationClass } from './utils/validation';
-import Tooltip from './components/Tooltip';
+import FieldHint from './components/FieldHint';
 
-function DeliveryOptions({options, handleOptionChange, validationErrors = {}, validationWarnings = {}, orderTotal = 0, setOrderTotal}) {
+function DeliveryOptions({options, handleOptionChange, validationErrors = {}, validationWarnings = {}, orderTotal = 0, setOrderTotal, showHints = false}) {
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}
@@ -18,12 +18,9 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
                         />
                         <label htmlFor="by_time" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
                          max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                            <Tooltip text="Доставка к конкретному времени в указанном диапазоне. Увеличивает стоимость на 70%">
-                                <span className="flex items-center gap-1">
-                                    Ко времени (9:00-16:00)
-                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
-                                </span>
-                            </Tooltip>
+                            <FieldHint showHint={showHints} text="Доставка к конкретному времени в указанном диапазоне. Увеличивает стоимость на 70%">
+                                Ко времени (9:00-16:00)
+                            </FieldHint>
                         </label>
                     </div>
 
@@ -52,12 +49,9 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
                         />
                         <label htmlFor="morning"
                                className="whitespace-nowrap max-sm:ml-1 ml-2 max-xs:text-xs flex flex-wrap items-center self-center">
-                            <Tooltip text="Доставка в утреннее время. Надбавка +500 руб">
-                                <span className="flex items-center gap-1">
-                                    9:00-12:00
-                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
-                                </span>
-                            </Tooltip>
+                            <FieldHint showHint={showHints} text="Доставка в утреннее время. Надбавка +500 руб">
+                                9:00-12:00
+                            </FieldHint>
                         </label>
                     </div>
                     <div className="flex flex-row items-start">
@@ -70,12 +64,9 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
                         />
                         <label htmlFor="evening"
                                className="whitespace-nowrap ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
-                            <Tooltip text="Доставка в вечернее время. Надбавка +300 руб">
-                                <span className="flex items-center gap-1">
-                                    12:00-16:00
-                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
-                                </span>
-                            </Tooltip>
+                            <FieldHint showHint={showHints} text="Доставка в вечернее время. Надбавка +300 руб">
+                                12:00-16:00
+                            </FieldHint>
                         </label>
                     </div>
                 </div>
@@ -136,12 +127,9 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
                         />
                         <label htmlFor="retail"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
-                            <Tooltip text="Розница. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
-                                <span className="flex items-center gap-1">
-                                    Розница
-                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
-                                </span>
-                            </Tooltip>
+                            <FieldHint showHint={showHints} text="Розница. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
+                                Розница
+                            </FieldHint>
                         </label>
                     </div>
                     <div className="flex flex-row items-start">
@@ -155,12 +143,9 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
                         />
                         <label htmlFor="opt"
                                className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
-                            <Tooltip text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
-                                <span className="flex items-center gap-1">
-                                    Опт
-                                    <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
-                                </span>
-                            </Tooltip>
+                            <FieldHint showHint={showHints} text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
+                                Опт
+                            </FieldHint>
                         </label>
                     </div>
                 </div>

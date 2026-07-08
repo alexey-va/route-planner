@@ -3,7 +3,7 @@ import { formatPrice } from './utils/formatters';
 const MANUAL_DISTANCE_THRESHOLD = 99.9; // meters
 const MIN_COMMENTS_DISPLAY = 3;
 
-function ResultDisplay({ distance, duration, region, address, price, weight, mapDistance, regions, reset, validationErrors = {}, validationWarnings = {} }) {
+function ResultDisplay({ distance, duration, region, address, price, weight, mapDistance, regions, reset, validationErrors = {}, validationWarnings = {}, showComments = false }) {
     const isManualDistance = Boolean(
         distance != null && 
         mapDistance != null && 
@@ -39,6 +39,7 @@ function ResultDisplay({ distance, duration, region, address, price, weight, map
             </div>
 
             {/* Comments Section */}
+            {showComments && (
             <div className="mt-2 pt-2 px-2 border-t border-gray-200 max-sm:text-sm text-md">
                 <span className="font-semibold text-lg">Комментарии:</span>
                 {/* Create a new array with at least three elements */}
@@ -58,6 +59,7 @@ function ResultDisplay({ distance, duration, region, address, price, weight, map
                         комментариев.</div>
                 )}
             </div>
+            )}
 
             {/* Price Details */}
             <div

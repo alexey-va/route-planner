@@ -1,6 +1,6 @@
 import { config, vehiclesConfig } from '../script.jsx';
 
-const VEHICLE_LABELS = {
+export const VEHICLE_LABELS = {
     0: '1.5т',
     1: '2т',
     2: '4.3т',

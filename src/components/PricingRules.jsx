@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { getPricingRules } from '../utils/pricingRules';
 
-function PricingRules() {
+function PricingRules({ enabled = false }) {
     const [isOpen, setIsOpen] = useState(false);
     const rules = getPricingRules();
+
+    if (!enabled) {
+        return null;
+    }
 
     return (
         <div className="relative">

@@ -61,14 +61,20 @@ describe('ResultDisplay', () => {
     expect(screen.getByText('Нет')).toBeInTheDocument();
   });
 
-  it('should render comments', () => {
-    render(<ResultDisplay {...defaultProps} />);
+  it('should render comments when showComments is enabled', () => {
+    render(<ResultDisplay {...defaultProps} showComments />);
     expect(screen.getByText('Комментарий 1')).toBeInTheDocument();
     expect(screen.getByText('Комментарий 2')).toBeInTheDocument();
   });
 
-  it('should show "Нет комментариев" when description is empty', () => {
-    render(<ResultDisplay {...defaultProps} price={{ price: 1000, description: [] }} />);
+  it('should hide comments by default', () => {
+    render(<ResultDisplay {...defaultProps} />);
+    expect(screen.queryByText('Комментарий 1')).not.toBeInTheDocument();
+    expect(screen.queryByText('Комментарии:')).not.toBeInTheDocument();
+  });
+
+  it('should show "Нет комментариев" when description is empty and showComments is enabled', () => {
+    render(<ResultDisplay {...defaultProps} price={{ price: 1000, description: [] }} showComments />);
     expect(screen.getByText('Нет комментариев.')).toBeInTheDocument();
   });
 

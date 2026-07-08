@@ -7,7 +7,9 @@ import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
 import CalculationHistory from "./components/CalculationHistory";
 import PricingRules from "./components/PricingRules";
+import TariffReference from "./components/TariffReference";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useAdminAccess } from "./hooks/useAdminAccess";
 import { useCalculationHistory } from "./hooks/useCalculationHistory";
 import { handleOptionChange, findNextAvailableVehicle } from "./utils/optionHandlers";
 import { validateFields } from "./utils/validation";
@@ -43,6 +45,7 @@ function App() {
 
     // History management
     const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
+    const { isUnlocked, unlock, lock } = useAdminAccess();
 
     // Validation
     const validation = validateFields(distance, weight, options, region, mapDistance, orderTotal);
@@ -135,8 +138,9 @@ function App() {
     };
 
     return (
-        <div className="w-full h-full flex justify-center items-center max-md:p-0 md:mt-4 no-scrollbar">
-            <div className="max-md:p-0 max-md:w-full max-md:h-full min-w-[50rem] max-sm:min-w-[20rem] bg-white
+        <div className="w-full h-full flex justify-center items-start max-md:p-0 md:mt-4 md:px-4 no-scrollbar">
+            <div className="flex flex-col lg:flex-row gap-4 items-start justify-center w-full max-w-[78rem]">
+            <div className="max-md:p-0 max-md:w-full max-md:h-full min-w-[50rem] max-sm:min-w-[20rem] lg:flex-1 bg-white
              max-md:drop-shadow-none max-md:rounded-none drop-shadow-xl rounded-md max-md:my-0 ">
                 <div className="w-full flex flex-col self-start h-full ">
                     {/* Map container */}
@@ -162,7 +166,7 @@ function App() {
                                 onRemove={removeFromHistory}
                                 onClear={clearHistory}
                             />
-                            <PricingRules />
+                            <PricingRules enabled={isUnlocked} />
                         </div>
                         
                         <WeightDistanceInput
@@ -187,9 +191,10 @@ function App() {
                                     validationWarnings={validation.warnings}
                                     orderTotal={orderTotal}
                                     setOrderTotal={setOrderTotal}
+                                    showHints={isUnlocked}
                                 />
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
-                                                  setVehicle={setVehicle}/>
+                                                  setVehicle={setVehicle} showHints={isUnlocked}/>
                             </div>
                         </div>
                         <ResultDisplay distance={distance}
@@ -203,11 +208,19 @@ function App() {
                                        reset={reset}
                                        validationErrors={validation.errors}
                                        validationWarnings={validation.warnings}
+                                       showComments={isUnlocked}
                         />
 
 
                     </div>
                 </div>
+            </div>
+            <TariffReference
+                vehiclesConfig={vehiclesConfig}
+                isUnlocked={isUnlocked}
+                onUnlock={unlock}
+                onLock={lock}
+            />
             </div>
         </div>
     )
