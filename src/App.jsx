@@ -5,7 +5,6 @@ import { calculate, vehiclesConfig } from "./script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
 import ResultDisplay from "./ResultDisplay.jsx";
-import Advanced from "./Advanced.jsx";
 import CalculationHistory from "./components/CalculationHistory";
 import PricingRules from "./components/PricingRules";
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -40,7 +39,6 @@ function App() {
     const [vehicle, setVehicle] = useLocalStorage('vehicle', 0);
     const [mapDistance, setMapDistance] = useLocalStorage('mapDistance', 0);
     const [price, setPrice] = useLocalStorage('price', DEFAULT_PRICE);
-    const [advanced, setAdvanced] = useLocalStorage('advanced', {});
     const [orderTotal, setOrderTotal] = useLocalStorage('orderTotal', 0);
 
     // History management
@@ -60,12 +58,11 @@ function App() {
             region,
             regions,
             time,
-            advanced,
             orderTotal
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [distance, duration, weight, options, vehicle, region, regions, time, advanced, orderTotal, setPrice]);
+    }, [distance, duration, weight, options, vehicle, region, regions, time, orderTotal, setPrice]);
 
 
     const onOptionChange = (option) => {
@@ -108,7 +105,6 @@ function App() {
                 options,
                 vehicle,
                 mapDistance,
-                advanced,
                 time,
                 price
             });
@@ -123,8 +119,7 @@ function App() {
         setPrice(DEFAULT_PRICE);
         setAddress('');
         setMapDistance(0);
-        setRegions([]); // Fixed: was setRegions(false), should be empty array
-        setAdvanced({});
+        setRegions([]);
         setTime('day');
         setOrderTotal(0);
         
@@ -188,9 +183,6 @@ function App() {
                                     options={options}
                                     handleOptionChange={onOptionChange}
                                     handleTimeChange={setTime}
-                                    advanced={advanced}
-                                    regions={regions}
-                                    vehicle={vehicle}
                                     validationErrors={validation.errors}
                                     validationWarnings={validation.warnings}
                                     orderTotal={orderTotal}
@@ -199,8 +191,6 @@ function App() {
                                 <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
                                                   setVehicle={setVehicle}/>
                             </div>
-                            <Advanced regions={regions} vehicle={vehicle} advanced={advanced}
-                                      setAdvanced={setAdvanced}/>
                         </div>
                         <ResultDisplay distance={distance}
                                        mapDistance={mapDistance}

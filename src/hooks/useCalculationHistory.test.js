@@ -140,7 +140,6 @@ describe('useCalculationHistory', () => {
             options: { by_time: true, day_of_week: 'monday' },
             vehicle: 0,
             mapDistance: 10000,
-            advanced: { right_time_kom: true },
             time: 'day'
         };
         
@@ -156,7 +155,6 @@ describe('useCalculationHistory', () => {
             options: { by_time: true, day_of_week: 'monday' },
             vehicle: 0,
             mapDistance: 10000,
-            advanced: { right_time_kom: true },
             time: 'day'
         });
     });
@@ -188,7 +186,6 @@ describe('useCalculationHistory', () => {
             },
             vehicle: 0,
             mapDistance: 0,
-            advanced: {},
             time: 'day'
         });
     });

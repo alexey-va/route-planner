@@ -2,11 +2,7 @@ import React from 'react';
 import { getFieldValidationClass } from './utils/validation';
 import Tooltip from './components/Tooltip';
 
-function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicle, validationErrors = {}, validationWarnings = {}, orderTotal = 0, setOrderTotal}) {
-    // Газели (1.5т, 2т) - индексы 0-1
-    let hideTime = advanced && advanced.right_time_kom
-        && regions && regions.includes("Коминтерн")
-        && (vehicle >= 0 && vehicle <= 1);
+function DeliveryOptions({options, handleOptionChange, validationErrors = {}, validationWarnings = {}, orderTotal = 0, setOrderTotal}) {
     return (
         <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
             {/* Time options */}
@@ -16,7 +12,6 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         <input
                             type="checkbox"
                             id="by_time"
-                            disabled={hideTime}
                             checked={options.by_time || false}
                             onChange={() => handleOptionChange('by_time')}
                             className="self-center"
@@ -51,7 +46,6 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         <input
                             type="checkbox"
                             id="morning"
-                            disabled={hideTime}
                             checked={options.morning || false}
                             onChange={() => handleOptionChange('morning')}
                             className="self-center"
@@ -70,7 +64,6 @@ function DeliveryOptions({options, handleOptionChange, advanced, regions, vehicl
                         <input
                             type="checkbox"
                             id="evening"
-                            disabled={hideTime}
                             checked={options.evening || false}
                             onChange={() => handleOptionChange('evening')}
                             className="self-center"

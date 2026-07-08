@@ -18,7 +18,6 @@ describe('calculate function', () => {
       day_of_week: 'monday'
     },
     regions: [],
-    advanced: {},
     orderTotal: 0,
     ...overrides
   });
@@ -98,7 +97,7 @@ describe('calculate function', () => {
       }
       expect(result.price).toBe(expectedPrice);
       expect(result.description.some(desc => 
-        desc.includes('Базовая цена') && desc.includes('50 руб/км')
+        desc.includes('Базовая цена') && desc.includes(`${vehiclesConfig[0].price} руб/км`)
       )).toBe(true);
     });
 
@@ -114,7 +113,7 @@ describe('calculate function', () => {
       // May be adjusted to minimal price
       expect(result.price).toBeGreaterThanOrEqual(Math.min(expectedPrice, vehiclesConfig[1].minimal_city_price));
       expect(result.description.some(desc => 
-        desc.includes('Базовая цена') && desc.includes('60 руб/км')
+        desc.includes('Базовая цена') && desc.includes(`${vehiclesConfig[1].price} руб/км`)
       )).toBe(true);
     });
 
@@ -142,7 +141,7 @@ describe('calculate function', () => {
       
       expect(result.price).toBe(vehiclesConfig[0].minimal_city_price);
       expect(result.description.some(desc => 
-        desc.includes('Минимальная стоимость доставки') && desc.includes('1000 руб')
+        desc.includes('Минимальная стоимость доставки') && desc.includes(`${vehiclesConfig[0].minimal_city_price} руб`)
       )).toBe(true);
     });
 
@@ -157,146 +156,6 @@ describe('calculate function', () => {
       const expectedPrice = (50000 / 1000) * vehiclesConfig[0].price * 2;
       expect(result.price).toBe(expectedPrice);
       expect(result.price).toBeGreaterThan(vehiclesConfig[0].minimal_city_price);
-    });
-  });
-
-  describe('Komintern Discount', () => {
-    it('should apply 50% discount for Gazel (vehicle 2 - 1.5т) in Komintern with right_time_kom', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        vehicle: 0, // Газель 1.5т
-        region: 'Другой город', // Not Киров to avoid free delivery
-        regions: ['Коминтерн'],
-        advanced: {
-          right_time_kom: true
-        }
-      });
-      const result = calculate(params);
-      
-      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
-      // Apply minimal price if needed (before discount)
-      if (basePrice < vehiclesConfig[0].minimal_city_price) {
-        basePrice = vehiclesConfig[0].minimal_city_price;
-      }
-      let expectedPrice = basePrice * 0.5;
-      // Apply Komintern minimal price if needed
-      if (expectedPrice < config.kominter_min_price) {
-        expectedPrice = config.kominter_min_price;
-      }
-      
-      expect(result.price).toBe(expectedPrice);
-      expect(result.description).toContain('Скидка 50% на доставку в Коминтерн в среду или пятницу');
-    });
-
-    it('should apply 50% discount for vehicle 3 (Газель 2т) in Komintern with right_time_kom', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        vehicle: 1, // Газель 2т
-        region: 'Другой город', // Not Киров to avoid free delivery
-        regions: ['Коминтерн'],
-        advanced: {
-          right_time_kom: true
-        }
-      });
-      const result = calculate(params);
-      
-      let basePrice = (10000 / 1000) * vehiclesConfig[1].price * 2;
-      // Apply minimal price if needed (before discount)
-      if (basePrice < vehiclesConfig[1].minimal_city_price) {
-        basePrice = vehiclesConfig[1].minimal_city_price;
-      }
-      let expectedPrice = basePrice * 0.5;
-      // Apply Komintern minimal price if needed
-      if (expectedPrice < config.kominter_min_price) {
-        expectedPrice = config.kominter_min_price;
-      }
-      
-      expect(result.price).toBe(expectedPrice);
-      expect(result.description).toContain('Скидка 50% на доставку в Коминтерн в среду или пятницу');
-    });
-
-    it('should apply minimal price for Komintern discount if discounted price is too low', () => {
-      const params = createDefaultParams({
-        distance: 1000, // Very short distance
-        vehicle: 0, // Газель 1.5т
-        region: 'Другой город', // Not Киров to avoid free delivery
-        regions: ['Коминтерн'],
-        advanced: {
-          right_time_kom: true
-        }
-      });
-      const result = calculate(params);
-      
-      // Calculate: base price = 1000/1000 * 50 * 2 = 100, but minimal is 1000
-      // So base = 1000, then 50% = 500, but Komintern minimal is 1000
-      expect(result.price).toBe(config.kominter_min_price);
-      // The description might not always include the minimal price message if it's already at minimum
-      expect(result.description.some(desc => 
-        desc.includes('Скидка 50%') || desc.includes('Минимальная стоимость доставки в Коминтерн')
-      )).toBe(true);
-    });
-
-    it('should not apply discount for Газон (vehicle 4)', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        vehicle: 2, // Газон
-        region: 'Другой город', // Not Киров to avoid free delivery
-        regions: ['Коминтерн'],
-        advanced: {
-          right_time_kom: true
-        }
-      });
-      const result = calculate(params);
-      
-      let expectedPrice = (10000 / 1000) * vehiclesConfig[2].price * 2;
-      // Apply minimal price if needed
-      if (expectedPrice < vehiclesConfig[2].minimal_city_price) {
-        expectedPrice = vehiclesConfig[2].minimal_city_price;
-      }
-      expect(result.price).toBe(expectedPrice);
-      expect(result.description).toContain('Скидка в Коминтерн не применяется к данному транспорту');
-    });
-
-    it('should not apply discount without right_time_kom', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        vehicle: 0, // Газель 1.5т
-        region: 'Другой город', // Not Киров to avoid free delivery
-        regions: ['Коминтерн'],
-        advanced: {
-          right_time_kom: false
-        }
-      });
-      const result = calculate(params);
-      
-      let expectedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
-      // Apply minimal price if needed
-      if (expectedPrice < vehiclesConfig[0].minimal_city_price) {
-        expectedPrice = vehiclesConfig[0].minimal_city_price;
-      }
-      expect(result.price).toBe(expectedPrice);
-      expect(result.description).not.toContain('Скидка 50% на доставку в Коминтерн');
-    });
-
-    it('should not apply discount when Komintern is not in regions', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        vehicle: 0, // Газель 1.5т
-        region: 'Другой город', // Not Киров to avoid free delivery
-        regions: ['Другой район'],
-        advanced: {
-          right_time_kom: true
-        }
-      });
-      const result = calculate(params);
-      
-      let expectedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
-      // Apply minimal price if needed
-      if (expectedPrice < vehiclesConfig[0].minimal_city_price) {
-        expectedPrice = vehiclesConfig[0].minimal_city_price;
-      }
-      expect(result.price).toBe(expectedPrice);
-      expect(result.description).not.toContain('Скидка 50% на доставку в Коминтерн');
     });
   });
 
@@ -534,8 +393,8 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      // Kamaz: 2000 + (20 * 55 * 2) = 4200
-      // by_time: 4200 * 1.7 = 7140
+      // Kamaz: 2000 + (20 * 72 * 2) = 4880
+      // by_time: 4880 * 1.7 = 8296
       // weekend: 7140 * 1.5 = 10710
       let expectedPrice = 2000 + (20000 / 1000) * vehiclesConfig[3].price * 2;
       expectedPrice *= config.by_time;
@@ -709,16 +568,16 @@ describe('calculate function', () => {
     });
 
     it('should handle distance exactly at minimal price threshold', () => {
-      // For vehicle 0 (1.5т): minimal is 1000, so need distance where price = 1000
-      // 1000 = (distance/1000) * 50 * 2 => distance = 10000
+      // For vehicle 0 (1.5т): minimal is 1300, so need distance where price = 1300
+      // 1300 = (distance/1000) * 55 * 2 => distance ≈ 11818
       const params = createDefaultParams({
-        distance: 10000, // Exactly at minimal threshold
+        distance: 11818,
         vehicle: 0, // Газель 1.5т
         region: 'Другой город'
       });
       const result = calculate(params);
       
-      const calculatedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
+      const calculatedPrice = (11818 / 1000) * vehiclesConfig[0].price * 2;
       // Should be close to minimal (might be slightly off due to rounding)
       expect(result.price).toBeGreaterThanOrEqual(vehiclesConfig[0].minimal_city_price - 1);
       expect(result.price).toBeLessThanOrEqual(vehiclesConfig[0].minimal_city_price + 1);
@@ -726,13 +585,13 @@ describe('calculate function', () => {
 
     it('should handle distance just below minimal price threshold', () => {
       const params = createDefaultParams({
-        distance: 9999, // Just below minimal threshold
+        distance: 11000, // Just below minimal threshold
         vehicle: 0, // Газель 1.5т
         region: 'Другой город'
       });
       const result = calculate(params);
       
-      // Calculated: 9999/1000 * 50 * 2 = 999.9, which is < 1000, so minimal applies
+      // Calculated: 11000/1000 * 55 * 2 = 1210, which is < 1300, so minimal applies
       expect(result.price).toBe(vehiclesConfig[0].minimal_city_price);
       // Check if any description contains minimal price info
       const hasMinimalComment = result.description.some(desc => 
@@ -763,17 +622,6 @@ describe('calculate function', () => {
       expect(() => calculate(params)).not.toThrow();
     });
 
-    it('should handle undefined advanced object', () => {
-      const params = createDefaultParams({
-        advanced: undefined,
-        region: 'Другой город'
-      });
-      
-      expect(() => calculate(params)).not.toThrow();
-      const result = calculate(params);
-      expect(result.price).toBeGreaterThanOrEqual(0);
-    });
-
     it('should handle empty regions array', () => {
       const params = createDefaultParams({
         regions: [],
@@ -782,26 +630,6 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       expect(result.price).toBeGreaterThanOrEqual(0);
-      // Should not apply Komintern discount
-      expect(result.description).not.toContain('Скидка 50% на доставку в Коминтерн');
-    });
-
-    it('should handle advanced.right_time_kom as undefined', () => {
-      const params = createDefaultParams({
-        regions: ['Коминтерн'],
-        advanced: {},
-        region: 'Другой город'
-      });
-      const result = calculate(params);
-      
-      // Should not apply discount
-      const expectedPrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
-      let basePrice = expectedPrice;
-      if (basePrice < vehiclesConfig[0].minimal_city_price) {
-        basePrice = vehiclesConfig[0].minimal_city_price;
-      }
-      expect(result.price).toBe(basePrice);
-      expect(result.description).not.toContain('Скидка 50% на доставку в Коминтерн');
     });
   });
 
@@ -860,72 +688,6 @@ describe('calculate function', () => {
       const result = calculate(params);
       
       expect(result.price).toBeGreaterThanOrEqual(0);
-    });
-  });
-
-  describe('Komintern Discount Edge Cases', () => {
-    it('should return early from Komintern discount (no time adjustments applied)', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        vehicle: 0, // Газель 1.5т
-        region: 'Другой город',
-        regions: ['Коминтерн'],
-        advanced: {
-          right_time_kom: true
-        },
-        options: {
-          ...createDefaultParams().options,
-          by_time: true, // Should not apply because Komintern returns early
-          morning: true
-        }
-      });
-      const result = calculate(params);
-      
-      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
-      if (basePrice < vehiclesConfig[0].minimal_city_price) {
-        basePrice = vehiclesConfig[0].minimal_city_price;
-      }
-      const expectedPrice = basePrice * 0.5;
-      let finalPrice = expectedPrice;
-      if (finalPrice < config.kominter_min_price) {
-        finalPrice = config.kominter_min_price;
-      }
-      
-      expect(result.price).toBe(finalPrice);
-      // Should not have by_time or morning comments
-      expect(result.description).not.toContain('Доставка к конкретному времени');
-      expect(result.description).not.toContain('Доставка утром');
-    });
-
-    it('should handle Komintern with multiple regions in array', () => {
-      const params = createDefaultParams({
-        distance: 10000,
-        vehicle: 0, // Газель 1.5т
-        region: 'Другой город',
-        regions: ['Другой район', 'Коминтерн', 'Еще район'],
-        advanced: {
-          right_time_kom: true
-        }
-      });
-      const result = calculate(params);
-      
-      // Should still apply discount if Коминтерн is in array
-      // Check if any description contains the discount message
-      const hasDiscountComment = result.description.some(desc => 
-        typeof desc === 'string' && desc.includes('Скидка 50% на доставку в Коминтерн')
-      );
-      expect(hasDiscountComment).toBe(true);
-      
-      // Verify price is discounted
-      let basePrice = (10000 / 1000) * vehiclesConfig[0].price * 2;
-      if (basePrice < vehiclesConfig[0].minimal_city_price) {
-        basePrice = vehiclesConfig[0].minimal_city_price;
-      }
-      let expectedPrice = basePrice * 0.5;
-      if (expectedPrice < config.kominter_min_price) {
-        expectedPrice = config.kominter_min_price;
-      }
-      expect(result.price).toBe(expectedPrice);
     });
   });
 

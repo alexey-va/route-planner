@@ -12,8 +12,7 @@ describe('getPricingRules', () => {
             'Тарифы по транспорту',
             'Доплаты за время доставки',
             'Выходные дни',
-            'Бесплатная доставка (розница / опт)',
-            'Коминтерн'
+            'Бесплатная доставка (розница / опт)'
         ]);
     });
 
@@ -23,7 +22,7 @@ describe('getPricingRules', () => {
 
         expect(allItems).toContain(`${config.global_min_price} руб`);
         expect(allItems).toContain(`${config.free_delivery_retail_min} руб`);
-        expect(allItems).toContain(`${config.kominter_min_price} руб`);
+        expect(allItems).toContain('Тариф за км повышен на 10%');
         expect(allItems).toContain(`${vehiclesConfig[0].price} руб/км`);
         expect(allItems).toContain(`${vehiclesConfig[0].minimal_city_price} руб`);
         expect(allItems).toContain('не в зоне Коминтерн');

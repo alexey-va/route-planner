@@ -37,12 +37,6 @@ export function calculate(params) {
     // Calculate base price
     let price = calculateBasePrice(params, vehicleConfig, comments);
 
-    // Apply Komintern discount (returns early if applied)
-    const kominternResult = applyKominternDiscount(params, price, comments);
-    if (kominternResult !== null) {
-        return kominternResult;
-    }
-
     // Apply time-based adjustments
     price = applyTimeAdjustments(params, price, comments);
 
@@ -105,32 +99,6 @@ function calculateBasePrice(params, vehicleConfig, comments) {
     }
 
     return price;
-}
-
-function applyKominternDiscount(params, price, comments) {
-    const hasKominternDiscount = params.regions?.includes("Коминтерн") && params.advanced?.right_time_kom;
-
-    if (!hasKominternDiscount) {
-        return null;
-    }
-
-    // Скидка применяется к Газелям (1.5т, 2т)
-    if (params.vehicle >= 0 && params.vehicle <= 1) {
-        price *= 0.5;
-        comments.push("Скидка 50% на доставку в Коминтерн в среду или пятницу");
-        
-        // Применяем максимум из минимума Коминтерн и глобального минимума
-        const minPrice = Math.max(config.kominter_min_price, config.global_min_price);
-        if (price < minPrice) {
-            price = minPrice;
-            comments.push(`Минимальная стоимость доставки ${minPrice} руб`);
-        }
-
-        return { price, description: comments };
-    } else {
-        comments.push("Скидка в Коминтерн не применяется к данному транспорту");
-        return null;
-    }
 }
 
 function applyTimeAdjustments(params, price, comments) {
@@ -243,7 +211,6 @@ export const config = {
     today: 2.0,
     morning_add: 500,
     evening_add: 300,
-    kominter_min_price: 1000,
     right_now: 2,
     weekend_multiplier: 1.5,
     global_min_price: 500,  // Глобальный минимум для всех доставок
@@ -255,15 +222,15 @@ export const config = {
 export const vehiclesConfig = {
     0: {
         name: "Газель",
-        price: 50,
+        price: 55,
         price_hour: 1200,
         max_weight: 1500,
-        minimal_city_price: 1000,  // 1.5т
+        minimal_city_price: 1300,  // 1.5т
         heavy: false
     },
     1: {
         name: "Газель",
-        price: 60,
+        price: 66,
         price_hour: 1200,
         max_weight: 2000,
         minimal_city_price: 1500,  // 2т
@@ -271,7 +238,7 @@ export const vehiclesConfig = {
     },
     2: {
         name: "Газон",
-        price: 65,
+        price: 72,
         price_hour: 1200,
         max_weight: 4300,
         minimal_city_price: 2000,
@@ -279,7 +246,7 @@ export const vehiclesConfig = {
     },
     3: {
         name: "Камаз",
-        price: 65,
+        price: 72,
         price_hour: 1200,
         max_weight: 10000,
         minimal_city_price: 2000,
