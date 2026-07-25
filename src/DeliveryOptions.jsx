@@ -62,7 +62,7 @@ function DeliveryOptions({
 
             <fieldset className="route-option-group">
                 <legend>День доставки</legend>
-                <div className="route-option-grid">
+                <div className={`route-option-grid route-day-options ${validationErrors.day_of_week ? 'has-error' : ''}`}>
                     <label className={`route-option-card route-option-card--compact ${options.day_of_week === 'weekdays' ? 'is-selected' : ''}`}>
                         <input
                             type="radio"
@@ -142,9 +142,12 @@ function DeliveryOptions({
                         </div>
                     </div>
                 </div>
-                {validationErrors.orderTotal && (
-                    <p className="route-field-message is-error">{validationErrors.orderTotal}</p>
-                )}
+                <p
+                    className={`route-field-message ${validationErrors.orderTotal ? 'is-error' : 'is-placeholder'}`}
+                    aria-live="polite"
+                >
+                    {validationErrors.orderTotal || '\u00A0'}
+                </p>
             </fieldset>
         </div>
     );

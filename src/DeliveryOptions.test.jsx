@@ -26,6 +26,7 @@ describe('DeliveryOptions', () => {
             'route-day-message',
             'is-error'
         );
+        expect(container.querySelector('.route-day-options')).toHaveClass('has-error');
 
         rerender(
             <DeliveryOptions
@@ -40,5 +41,9 @@ describe('DeliveryOptions', () => {
         expect(messageSlot).toBeInTheDocument();
         expect(messageSlot).toHaveClass('is-placeholder');
         expect(messageSlot).toHaveTextContent('');
+        expect(container.querySelector('.route-day-options')).not.toHaveClass('has-error');
+        expect(
+            container.querySelector('.route-option-group:last-child > .route-field-message')
+        ).toHaveClass('is-placeholder');
     });
 });

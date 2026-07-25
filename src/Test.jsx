@@ -680,9 +680,8 @@ function Test({
                     </div>
                 </form>
 
-                <div className="route-map-search-meta">
-                    <span>Подсказки по Кировской области · можно кликнуть по карте или перетащить метку</span>
-                    {recentAddresses.length > 0 && (
+                {recentAddresses.length > 0 && (
+                    <div className="route-map-search-meta">
                         <div className="route-map-recents" aria-label="Недавние адреса">
                             <strong>Недавние:</strong>
                             {recentAddresses.map((item) => (
@@ -696,8 +695,8 @@ function Test({
                                 </button>
                             ))}
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
             <div className="route-map-viewport">
