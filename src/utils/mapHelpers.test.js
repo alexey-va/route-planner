@@ -70,11 +70,10 @@ describe('mapHelpers', () => {
         });
     });
 
-    it('prefers the traffic-aware duration for ETA', () => {
+    it('uses the regular route duration for ETA', () => {
         const values = {
             distance: { text: '12 км', value: 12000 },
-            duration: { text: '20 мин', value: 1200 },
-            durationInTraffic: { text: '31 мин', value: 1860 }
+            duration: { text: '20 мин', value: 1200 }
         };
         const route = {
             properties: {
@@ -83,8 +82,8 @@ describe('mapHelpers', () => {
         };
 
         expect(makeRouteAlternative(0, route, route)).toMatchObject({
-            durationText: '31 мин',
-            durationValue: 1860
+            durationText: '20 мин',
+            durationValue: 1200
         });
     });
 });

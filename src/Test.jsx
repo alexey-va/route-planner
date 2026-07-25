@@ -88,7 +88,6 @@ function Test({
     const [zonesVisible, setZonesVisible] = useState(true);
     const [routeAlternatives, setRouteAlternatives] = useState([]);
     const [recentAddresses, setRecentAddresses] = useState(loadRecentAddresses);
-    const [trafficEnabled, setTrafficEnabled] = useState(true);
 
     callbacksRef.current = {
         setDistance,
@@ -123,7 +122,6 @@ function Test({
         let originMarker = null;
         let deliveryZones = null;
         let suggestView = null;
-        let trafficControl = null;
         let zonesVisibleValue = true;
         let lastDestination = null;
         let zonesPromise = Promise.resolve(null);
@@ -318,10 +316,7 @@ function Test({
             }
 
             const distance = activeRoute.properties.get('distance');
-            const duration = (
-                activeRoute.properties.get('durationInTraffic') ||
-                activeRoute.properties.get('duration')
-            );
+            const duration = activeRoute.properties.get('duration');
             const callbacks = callbacksRef.current;
             callbacks.setDistance(distance?.value || 0);
             callbacks.setMapDistance(distance?.value || 0);
@@ -349,7 +344,6 @@ function Test({
                     params: {
                         routingMode: 'auto',
                         results: 3,
-                        avoidTrafficJams: true,
                         reverseGeocoding: true
                     }
                 }, {
@@ -459,33 +453,6 @@ function Test({
             }
         };
 
-        const useCurrentLocation = async () => {
-            const requestId = ++locationRequestId;
-            setRouteStatus('geocoding');
-            setErrorMessage('');
-
-            try {
-                const result = await ymapsApi.geolocation.get({
-                    provider: 'auto',
-                    autoReverseGeocode: true,
-                    mapStateAutoApply: false,
-                    timeout: 10000
-                });
-                if (disposed || requestId !== locationRequestId) return;
-
-                const geoObject = result.geoObjects.get(0);
-                const coords = geoObject.geometry.getCoordinates();
-                const address = getGeocodeAddress(geoObject, 'Моё местоположение');
-                setQuery(address);
-                createRoute({ address, coords });
-            } catch (error) {
-                if (disposed) return;
-                console.error('Geolocation failed:', error);
-                setRouteStatus('error');
-                setErrorMessage('Не удалось определить местоположение. Разрешите доступ или выберите точку вручную.');
-            }
-        };
-
         const resetMap = () => {
             locationRequestId += 1;
             if (multiRoute && map) {
@@ -540,18 +507,7 @@ function Test({
                         position: { bottom: 18, right: 12 }
                     }
                 });
-                trafficControl = new ymapsApi.control.TrafficControl({
-                    state: {
-                        providerKey: 'traffic#actual',
-                        trafficShown: true
-                    },
-                    options: {
-                        size: 'small',
-                        float: 'none',
-                        position: { top: 12, right: 12 }
-                    }
-                });
-                map.controls.add(zoomControl).add(trafficControl);
+                map.controls.add(zoomControl);
 
                 destinationMarker = new ymapsApi.Placemark(
                     KIROV_CENTER,
@@ -582,7 +538,7 @@ function Test({
                             originMarker = new ymapsApi.Placemark(
                                 originGeoObject.geometry.getCoordinates(),
                                 {
-                                    iconCaption: 'Склад',
+                                    iconCaption: 'Химторг',
                                     balloonContent: ORIGIN_ADDRESS
                                 },
                                 {
@@ -598,18 +554,10 @@ function Test({
                 }
 
                 if (searchInputRef.current) {
-                    const regionalSuggestProvider = {
-                        suggest: (request, options = {}) => ymapsApi.suggest(request, {
-                            ...options,
-                            results: 5,
-                            boundedBy: KIROV_REGION_BOUNDS,
-                            strictBounds: true
-                        })
-                    };
                     suggestView = new ymapsApi.SuggestView(searchInputRef.current, {
                         results: 5,
                         boundedBy: KIROV_REGION_BOUNDS,
-                        provider: regionalSuggestProvider
+                        zIndex: 100000
                     });
                     suggestView.events.add('select', (event) => {
                         const item = event.get('item');
@@ -623,7 +571,6 @@ function Test({
                 zonesPromise = loadZones();
                 controllerRef.current = {
                     search: searchAndRoute,
-                    useCurrentLocation,
                     reset: resetMap,
                     retry: retryRoute,
                     retryZones: async () => {
@@ -639,7 +586,6 @@ function Test({
                 };
                 routeMapController = controllerRef.current;
                 setMapStatus('ready');
-                setTrafficEnabled(true);
             } catch (error) {
                 if (disposed) return;
                 console.error('Map initialization failed:', error);
@@ -704,20 +650,6 @@ function Test({
                         >
                             Построить
                         </button>
-                        <button
-                            type="button"
-                            className="route-map-icon-action"
-                            onClick={() => controllerRef.current?.useCurrentLocation()}
-                            disabled={mapStatus !== 'ready'}
-                            title="Использовать моё местоположение"
-                            aria-label="Использовать моё местоположение"
-                        >
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.7"/>
-                                <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7"/>
-                                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-                            </svg>
-                        </button>
                     </div>
                 </form>
 
@@ -751,7 +683,7 @@ function Test({
                     <div className="route-map-state-overlay" role="status">
                         <span className="route-map-spinner" />
                         <strong>Загружаем карту</strong>
-                        <span>Подключаем геокодер, пробки и тарифные зоны.</span>
+                        <span>Подключаем геокодер и тарифные зоны.</span>
                     </div>
                 )}
 
@@ -828,10 +760,6 @@ function Test({
                             <strong>Варианты маршрута</strong>
                             <span>Нажмите на линию маршрута на карте, чтобы сменить вариант.</span>
                         </div>
-                        <span className="route-traffic-badge">
-                            <i />
-                            {trafficEnabled ? 'С учётом пробок' : 'Без пробок'}
-                        </span>
                     </div>
                     <div className="route-map-alternatives-list">
                         {routeAlternatives.map((alternative) => (

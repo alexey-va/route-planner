@@ -81,10 +81,7 @@ export function formatArrivalTime(durationSeconds, now = new Date()) {
 
 export function makeRouteAlternative(index, route, activeRoute) {
     const distance = route?.properties?.get('distance');
-    const duration = (
-        route?.properties?.get('durationInTraffic') ||
-        route?.properties?.get('duration')
-    );
+    const duration = route?.properties?.get('duration');
 
     return {
         id: index,

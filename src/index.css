@@ -360,7 +360,7 @@ input:focus-visible {
 
 .route-map-search-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 7px;
 }
 
@@ -405,7 +405,6 @@ input:focus-visible {
 }
 
 .route-map-primary-action,
-.route-map-icon-action,
 .route-map-notice button,
 .route-map-state-overlay button {
     min-height: 42px;
@@ -428,35 +427,17 @@ input:focus-visible {
     transform: translateY(-1px);
 }
 
-.route-map-primary-action:disabled,
-.route-map-icon-action:disabled {
+.route-map-primary-action:disabled {
     cursor: not-allowed;
     opacity: 0.48;
-}
-
-.route-map-icon-action {
-    width: 44px;
-    display: grid;
-    place-items: center;
-    color: var(--route-accent);
-    border: 1px solid #cfd9d4;
-    background: white;
-}
-
-.route-map-icon-action:hover:not(:disabled) {
-    background: var(--route-accent-soft);
-}
-
-.route-map-icon-action svg {
-    width: 20px;
-    height: 20px;
 }
 
 .route-map-search-meta {
     min-height: 21px;
     margin-top: 7px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: 12px;
     color: #77847e;
     font-size: 9px;
@@ -468,35 +449,36 @@ input:focus-visible {
 
 .route-map-recents {
     min-width: 0;
+    flex: 1 1 480px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: 5px;
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-
-.route-map-recents::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
 }
 
 .route-map-recents strong {
     flex-shrink: 0;
+    padding-top: 5px;
     color: #66736d;
 }
 
 .route-map-recents button {
-    max-width: 190px;
-    flex-shrink: 0;
+    max-width: min(280px, 100%);
+    flex: 0 1 auto;
     padding: 4px 7px;
-    overflow: hidden;
+    overflow: visible;
+    overflow-wrap: anywhere;
     color: #53625b;
     border: 1px solid #d9e1dd;
     border-radius: 7px;
     background: #f5f8f6;
     cursor: pointer;
     font-size: 9px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.35;
+    text-align: left;
+    text-overflow: clip;
+    white-space: normal;
 }
 
 .route-map-recents button:hover {
@@ -726,23 +708,6 @@ input:focus-visible {
     margin-top: 2px;
     color: var(--route-muted);
     font-size: 8px;
-}
-
-.route-traffic-badge {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: #53625b;
-    font-size: 9px;
-    font-weight: 720;
-}
-
-.route-traffic-badge i {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #2ea477;
 }
 
 .route-map-alternatives-list {
@@ -1276,8 +1241,8 @@ input:focus-visible {
 }
 
 .route-vehicle-icon svg {
-    width: 30px;
-    height: 22px;
+    width: 38px;
+    height: 24px;
 }
 
 .route-vehicle-copy {
@@ -1970,7 +1935,7 @@ input:focus-visible {
     }
 
     .route-map-search-row {
-        grid-template-columns: minmax(0, 1fr) 44px;
+        grid-template-columns: 1fr;
     }
 
     .route-map-search-input {
@@ -1991,6 +1956,11 @@ input:focus-visible {
 
     .route-map-recents {
         width: 100%;
+        flex-basis: 100%;
+    }
+
+    .route-map-recents button {
+        max-width: 100%;
     }
 
     .route-map-viewport {

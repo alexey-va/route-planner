@@ -1,5 +1,51 @@
 import FieldHint from './components/FieldHint';
 
+function VehicleIcon({ vehicleKey }) {
+    if (vehicleKey === 0) {
+        return (
+            <svg viewBox="0 0 38 24" fill="none">
+                <path d="M3 7h19v11H3zM22 10h6.5l5.5 5v3H22z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+                <path d="M25 11.5h3l3.2 3H25z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+                <circle cx="9" cy="19" r="2.4" fill="white" stroke="currentColor" strokeWidth="1.7"/>
+                <circle cx="29" cy="19" r="2.4" fill="white" stroke="currentColor" strokeWidth="1.7"/>
+            </svg>
+        );
+    }
+
+    if (vehicleKey === 1) {
+        return (
+            <svg viewBox="0 0 38 24" fill="none">
+                <path d="M2.5 3.5h21V18h-21zM23.5 8h6l5 5.5V18h-11z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+                <path d="M26 9.5h3l3 3.5h-6zM7 7h12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="9" cy="19" r="2.4" fill="white" stroke="currentColor" strokeWidth="1.7"/>
+                <circle cx="29.5" cy="19" r="2.4" fill="white" stroke="currentColor" strokeWidth="1.7"/>
+            </svg>
+        );
+    }
+
+    if (vehicleKey === 2) {
+        return (
+            <svg viewBox="0 0 38 24" fill="none">
+                <path d="M2 4h21v14H2zM25 7h6l4.5 5.5V18H25zM23 17h2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+                <path d="M28 9h2.5l2.8 3.5H28zM6 8h13M6 11h13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="8" cy="19" r="2.5" fill="white" stroke="currentColor" strokeWidth="1.8"/>
+                <circle cx="28.5" cy="19" r="2.5" fill="white" stroke="currentColor" strokeWidth="1.8"/>
+                <circle cx="34" cy="19" r="2.5" fill="white" stroke="currentColor" strokeWidth="1.8"/>
+            </svg>
+        );
+    }
+
+    return (
+        <svg viewBox="0 0 38 24" fill="none">
+            <path d="M2 6h20l-2 10H5zM24 4h8l4 6v7H24z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+            <path d="M4 8h16M27 7h4l2.4 3.5H27zM20 16h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="8" cy="19" r="2.5" fill="white" stroke="currentColor" strokeWidth="1.8"/>
+            <circle cx="25.5" cy="19" r="2.5" fill="white" stroke="currentColor" strokeWidth="1.8"/>
+            <circle cx="32.5" cy="19" r="2.5" fill="white" stroke="currentColor" strokeWidth="1.8"/>
+        </svg>
+    );
+}
+
 function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHints = false}) {
     return (
         <div className="route-vehicle-grid">
@@ -23,11 +69,7 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
                             onChange={() => setVehicle(vehicleKey)}
                         />
                         <span className="route-vehicle-icon" aria-hidden="true">
-                            <svg viewBox="0 0 28 20" fill="none">
-                                <path d="M2 3h15v11H2zM17 7h4.4l4.1 4.2V14H17z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-                                <circle cx="6.2" cy="16" r="2" stroke="currentColor" strokeWidth="1.7"/>
-                                <circle cx="21.8" cy="16" r="2" stroke="currentColor" strokeWidth="1.7"/>
-                            </svg>
+                            <VehicleIcon vehicleKey={vehicleKey} />
                         </span>
                         <span className="route-vehicle-copy">
                             <FieldHint
