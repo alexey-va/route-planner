@@ -369,6 +369,11 @@ input:focus-visible {
     min-width: 0;
 }
 
+.route-map-search-input.is-suppressed > ymaps,
+.route-map-search-input.is-suppressed [class*="suggest"] {
+    display: none !important;
+}
+
 .route-map-search-input svg {
     position: absolute;
     top: 50%;
@@ -1016,6 +1021,10 @@ input:focus-visible {
     color: var(--route-warning) !important;
 }
 
+.route-field-message.is-placeholder {
+    visibility: hidden;
+}
+
 .route-options {
     display: grid;
     gap: 16px;
@@ -1036,13 +1045,6 @@ input:focus-visible {
     font-weight: 780;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-}
-
-.route-option-group.has-error {
-    padding: 9px;
-    border: 1px solid #e2a8a3;
-    border-radius: 13px;
-    background: var(--route-danger-soft);
 }
 
 .route-option-grid {

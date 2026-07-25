@@ -88,6 +88,7 @@ function Test({
     const [zonesVisible, setZonesVisible] = useState(true);
     const [routeAlternatives, setRouteAlternatives] = useState([]);
     const [recentAddresses, setRecentAddresses] = useState(loadRecentAddresses);
+    const [suggestionsSuppressed, setSuggestionsSuppressed] = useState(false);
 
     callbacksRef.current = {
         setDistance,
@@ -129,6 +130,25 @@ function Test({
         let routeRequestTimer = null;
         let locationRequestId = 0;
         const routesWithClickHandler = new WeakSet();
+
+        const closeSuggestions = () => {
+            setSuggestionsSuppressed(true);
+            searchInputRef.current?.blur();
+
+            const closePanel = () => {
+                if (!disposed) {
+                    suggestView?.state.set('panelClosed', true);
+                }
+            };
+
+            closePanel();
+            window.setTimeout(closePanel, 0);
+        };
+
+        const setQuerySilently = (address) => {
+            setQuery(address);
+            closeSuggestions();
+        };
 
         const clearRouteValues = () => {
             const callbacks = callbacksRef.current;
@@ -393,6 +413,7 @@ function Test({
 
         const reverseGeocodeAndRoute = async (coords) => {
             const requestId = ++locationRequestId;
+            closeSuggestions();
             setRouteStatus('geocoding');
             setErrorMessage('');
 
@@ -405,7 +426,7 @@ function Test({
 
                 const geoObject = result.geoObjects.get(0);
                 const address = getGeocodeAddress(geoObject, 'Выбранная точка на карте');
-                setQuery(address);
+                setQuerySilently(address);
                 createRoute({ address, coords });
             } catch (error) {
                 if (disposed) return;
@@ -419,9 +440,10 @@ function Test({
             const normalizedRequest = request?.trim();
             if (!normalizedRequest && !knownCoords) return;
             const requestId = ++locationRequestId;
+            closeSuggestions();
 
             if (knownCoords) {
-                setQuery(normalizedRequest);
+                setQuerySilently(normalizedRequest);
                 createRoute({ address: normalizedRequest, coords: knownCoords });
                 return;
             }
@@ -443,7 +465,7 @@ function Test({
 
                 const coords = geoObject.geometry.getCoordinates();
                 const address = getGeocodeAddress(geoObject, normalizedRequest);
-                setQuery(address);
+                setQuerySilently(address);
                 createRoute({ address, coords });
             } catch (error) {
                 if (disposed) return;
@@ -462,6 +484,7 @@ function Test({
             lastDestination = null;
             destinationMarker?.options.set('visible', false);
             setQuery('');
+            closeSuggestions();
             setRouteStatus('idle');
             setRouteAlternatives([]);
             setActiveZones([]);
@@ -618,7 +641,7 @@ function Test({
     const routeStatusLabel = {
         idle: 'Выберите адрес',
         geocoding: 'Определяем адрес…',
-        routing: 'Строим маршрут с учётом пробок…',
+        routing: 'Строим маршрут…',
         ready: 'Маршрут готов',
         error: 'Нужна ваша помощь'
     }[routeStatus];
@@ -629,7 +652,7 @@ function Test({
                 <form className="route-map-search" onSubmit={submitSearch}>
                     <label htmlFor="route-address-search">Адрес доставки</label>
                     <div className="route-map-search-row">
-                        <div className="route-map-search-input">
+                        <div className={`route-map-search-input ${suggestionsSuppressed ? 'is-suppressed' : ''}`}>
                             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.8"/>
                                 <path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
@@ -638,7 +661,11 @@ function Test({
                                 ref={searchInputRef}
                                 id="route-address-search"
                                 value={query}
-                                onChange={(event) => setQuery(event.target.value)}
+                                onFocus={() => setSuggestionsSuppressed(false)}
+                                onChange={(event) => {
+                                    setSuggestionsSuppressed(false);
+                                    setQuery(event.target.value);
+                                }}
                                 placeholder="Кировская область: город, улица, дом"
                                 autoComplete="off"
                             />
@@ -663,10 +690,7 @@ function Test({
                                     key={`${item.address}-${item.coords.join('-')}`}
                                     type="button"
                                     title={item.address}
-                                    onClick={() => {
-                                        setQuery(item.address);
-                                        controllerRef.current?.search(item.address, item.coords);
-                                    }}
+                                    onClick={() => controllerRef.current?.search(item.address, item.coords)}
                                 >
                                     {item.address}
                                 </button>

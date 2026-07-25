@@ -60,7 +60,7 @@ function DeliveryOptions({
                 </div>
             </fieldset>
 
-            <fieldset className={`route-option-group ${validationErrors.day_of_week ? 'has-error' : ''}`}>
+            <fieldset className="route-option-group">
                 <legend>День доставки</legend>
                 <div className="route-option-grid">
                     <label className={`route-option-card route-option-card--compact ${options.day_of_week === 'weekdays' ? 'is-selected' : ''}`}>
@@ -90,9 +90,12 @@ function DeliveryOptions({
                         </span>
                     </label>
                 </div>
-                {validationErrors.day_of_week && (
-                    <p className="route-field-message is-error">{validationErrors.day_of_week}</p>
-                )}
+                <p
+                    className={`route-field-message route-day-message ${validationErrors.day_of_week ? 'is-error' : 'is-placeholder'}`}
+                    aria-live="polite"
+                >
+                    {validationErrors.day_of_week || '\u00A0'}
+                </p>
             </fieldset>
 
             <fieldset className="route-option-group">
