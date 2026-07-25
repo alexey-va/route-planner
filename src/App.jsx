@@ -39,11 +39,64 @@ const LEGACY_APP_DOCUMENT = `<!doctype html>
     <script type="module" crossorigin src="/legacy/assets/index-Dt9U6nZw.js"></script>
     <link rel="stylesheet" crossorigin href="/legacy/assets/index-DXN-bJtr.css" />
     <style>
+      body {
+        font-size: 17px;
+      }
+      .text-xs {
+        font-size: 13px;
+        line-height: 17px;
+      }
+      .text-sm {
+        font-size: 15px;
+        line-height: 21px;
+      }
+      .text-lg {
+        font-size: 19px;
+        line-height: 29px;
+      }
+      .text-xl {
+        font-size: 21px;
+        line-height: 29px;
+      }
+      .text-2xl {
+        font-size: 25px;
+        line-height: 33px;
+      }
+      .text-3xl {
+        font-size: 31px;
+        line-height: 37px;
+      }
       .truncate {
         overflow: visible !important;
         text-overflow: clip !important;
         white-space: normal !important;
         overflow-wrap: anywhere;
+      }
+      @media (max-width: 639px) {
+        .max-sm\\:text-sm {
+          font-size: 15px;
+          line-height: 21px;
+        }
+        .max-sm\\:text-lg {
+          font-size: 19px;
+          line-height: 29px;
+        }
+        .max-sm\\:text-xl {
+          font-size: 21px;
+          line-height: 29px;
+        }
+      }
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .min-w-\\[50rem\\] {
+          width: 100%;
+          min-width: 0;
+        }
+      }
+      @media (max-width: 379px) {
+        .max-xs\\:text-xs {
+          font-size: 13px;
+          line-height: 17px;
+        }
       }
     </style>
   </head>
