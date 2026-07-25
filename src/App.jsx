@@ -86,6 +86,13 @@ const LEGACY_APP_DOCUMENT = `<!doctype html>
           line-height: 29px;
         }
       }
+      @media (max-width: 480px) {
+        #map [class*="control-popup"]:has([class*="route-panel"]) {
+          box-sizing: border-box;
+          width: calc(100vw - 10px) !important;
+          max-width: calc(100vw - 10px) !important;
+        }
+      }
       @media (min-width: 768px) and (max-width: 1023px) {
         .min-w-\\[50rem\\] {
           width: 100%;
