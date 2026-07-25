@@ -9,7 +9,7 @@ function FieldHint({ text, showHint, children }) {
         <Tooltip text={text}>
             <span className="flex items-center gap-1">
                 {children}
-                <span className="text-gray-400 hover:text-gray-600 cursor-help text-xs">?</span>
+                <span className="route-hint-icon">?</span>
             </span>
         </Tooltip>
     );

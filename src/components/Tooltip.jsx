@@ -28,7 +28,7 @@ function Tooltip({ text, children, position = 'top' }) {
             {children}
             {isVisible && text && (
                 <div className={`absolute z-50 ${positionClasses[position]}`}>
-                    <div className="bg-gray-800 text-white text-sm rounded-lg px-4 py-3 shadow-lg w-96 whitespace-normal">
+                    <div className="route-tooltip">
                         {text}
                         <div className={`absolute w-0 h-0 border-4 ${arrowClasses[position]}`}></div>
                     </div>
@@ -39,4 +39,3 @@ function Tooltip({ text, children, position = 'top' }) {
 }
 
 export default Tooltip;
-

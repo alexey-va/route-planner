@@ -1,6 +1,6 @@
 import Test, { routePanelControl } from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { calculate, vehiclesConfig } from "./script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
@@ -28,7 +28,30 @@ const DEFAULT_PRICE = {
     description: [""]
 };
 
-function App() {
+function InterfaceModeToggle({ mode, onChange }) {
+    return (
+        <div className="route-interface-toggle" role="group" aria-label="Версия интерфейса">
+            <button
+                type="button"
+                className={mode === 'modern' ? 'is-active' : ''}
+                aria-pressed={mode === 'modern'}
+                onClick={() => onChange('modern')}
+            >
+                Новый
+            </button>
+            <button
+                type="button"
+                className={mode === 'legacy' ? 'is-active' : ''}
+                aria-pressed={mode === 'legacy'}
+                onClick={() => onChange('legacy')}
+            >
+                Классический
+            </button>
+        </div>
+    );
+}
+
+function ModernApp({ onSelectLegacy }) {
     // State with localStorage persistence
     const [time, setTime] = useLocalStorage('time', 'day');
     const [distance, setDistance] = useLocalStorage('distance', 0);
@@ -137,30 +160,87 @@ function App() {
         }
     };
 
+    const distanceKm = ((distance || 0) / 1000).toFixed(1);
+    const hasRoute = distance > 0 && region;
+
     return (
-        <div className="w-full h-full flex justify-center items-start max-md:p-0 md:mt-4 md:px-4 no-scrollbar">
-            <div className="flex flex-col lg:flex-row gap-4 items-start justify-center w-full max-w-[78rem]">
-            <div className="max-md:p-0 max-md:w-full max-md:h-full min-w-[50rem] max-sm:min-w-[20rem] lg:flex-1 bg-white
-             max-md:drop-shadow-none max-md:rounded-none drop-shadow-xl rounded-md max-md:my-0 ">
-                <div className="w-full flex flex-col self-start h-full ">
-                    {/* Map container */}
-                    <div className="relative w-full h-[500px] min-h-[500px] min-w-[400px]
-                     md:min-h-[500px] md:min-w-[350px] max-sm:min-w-[20rem] grow md:px-1 md:pt-1 ">
-                        <Test setDistance={setDistance}
-                              setDuration={setDuration}
-                              setRegion={setRegion}
-                              vehicle={vehicle}
-                              setAddress={setAddress}
-                              setMapDistance={setMapDistance}
-                              setRegions={setRegions}
-                        />
-
-
+        <div className="route-app-shell">
+            <header className="route-topbar">
+                <div className="route-brand">
+                    <div className="route-brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 7.5h10.5v9H4zM14.5 11h3.1l2.4 2.7v2.8h-5.5z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+                            <circle cx="7.2" cy="18" r="1.7" stroke="currentColor" strokeWidth="1.7"/>
+                            <circle cx="17.4" cy="18" r="1.7" stroke="currentColor" strokeWidth="1.7"/>
+                            <path d="M6.5 4.5h7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+                        </svg>
                     </div>
-                    {/* Content container */}
-                    <div className="px-4 py-2 text-lg font-sans flex flex-col border-t-2 grow">
-                        {/* History button */}
-                        <div className="flex justify-end gap-2 mb-2">
+                    <div>
+                        <p className="route-brand-title">Маршрут</p>
+                        <p className="route-brand-subtitle">Калькулятор доставки</p>
+                    </div>
+                </div>
+                <div className="route-topbar-meta" aria-label="Статус сервиса">
+                    <InterfaceModeToggle mode="modern" onChange={onSelectLegacy} />
+                    <span className="route-status-pill">
+                        <span className="route-status-dot" />
+                        Расчёт онлайн
+                    </span>
+                    <span className="route-location-pill">Киров и область</span>
+                </div>
+            </header>
+
+            <main className="route-workspace">
+                <section className="route-map-column" aria-label="Маршрут доставки">
+                    <article className="route-card route-map-card">
+                        <div className="route-card-header route-map-header">
+                            <div>
+                                <span className="route-eyebrow">Шаг 1 · маршрут</span>
+                                <h1>Куда доставить?</h1>
+                                <p>Укажите адрес на карте — расстояние и район определятся автоматически.</p>
+                            </div>
+                            <div className="route-map-metrics" aria-live="polite">
+                                <div>
+                                    <span>Расстояние</span>
+                                    <strong>{distanceKm} км</strong>
+                                </div>
+                                <div>
+                                    <span>Зона</span>
+                                    <strong>{region || 'Не выбрана'}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="route-map-canvas">
+                            <Test setDistance={setDistance}
+                                  setDuration={setDuration}
+                                  setRegion={setRegion}
+                                  vehicle={vehicle}
+                                  setAddress={setAddress}
+                                  setMapDistance={setMapDistance}
+                                  setRegions={setRegions}
+                            />
+                        </div>
+                        <div className={`route-map-footer ${hasRoute ? 'is-ready' : ''}`}>
+                            <span className="route-map-footer-icon" aria-hidden="true">
+                                {hasRoute ? '✓' : '⌖'}
+                            </span>
+                            <div>
+                                <strong>{hasRoute ? 'Маршрут построен' : 'Выберите адрес назначения'}</strong>
+                                <span>{address || 'Начните вводить адрес в панели карты'}</span>
+                            </div>
+                        </div>
+                    </article>
+
+                </section>
+
+                <aside className="route-card route-calculator-card" aria-label="Параметры и стоимость доставки">
+                    <div className="route-calculator-header">
+                        <div>
+                            <span className="route-eyebrow">Калькулятор</span>
+                            <h2>Параметры доставки</h2>
+                            <p>Заполните поля — стоимость обновится сразу.</p>
+                        </div>
+                        <div className="route-toolbar">
                             <CalculationHistory
                                 history={history}
                                 onRemove={removeFromHistory}
@@ -168,35 +248,61 @@ function App() {
                             />
                             <PricingRules enabled={isUnlocked} />
                         </div>
-                        
-                        <WeightDistanceInput
-                            weight={weight}
-                            handleWeightChange={handleWeightChange}
-                            distance={distance}
-                            setDistance={setDistance}
-                            vehicle={vehicle}
-                            options={options}
-                            validationErrors={validation.errors}
-                            validationWarnings={validation.warnings}
-                        />
+                    </div>
 
-                        <div className="mt-1">
-                            <label className="font-semibold max-sm:text-lg text-xl">Настройки</label>
-                            <div className="mt-0 flex flex-col">
-                                <DeliveryOptions 
-                                    options={options}
-                                    handleOptionChange={onOptionChange}
-                                    handleTimeChange={setTime}
-                                    validationErrors={validation.errors}
-                                    validationWarnings={validation.warnings}
-                                    orderTotal={orderTotal}
-                                    setOrderTotal={setOrderTotal}
-                                    showHints={isUnlocked}
-                                />
-                                <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
-                                                  setVehicle={setVehicle} showHints={isUnlocked}/>
+                    <div className="route-calculator-body">
+                        <section className="route-form-section">
+                            <div className="route-section-title">
+                                <span>1</span>
+                                <div>
+                                    <h3>Груз и расстояние</h3>
+                                    <p>Можно скорректировать расстояние вручную.</p>
+                                </div>
                             </div>
-                        </div>
+                            <WeightDistanceInput
+                                weight={weight}
+                                handleWeightChange={handleWeightChange}
+                                distance={distance}
+                                setDistance={setDistance}
+                                vehicle={vehicle}
+                                options={options}
+                                validationErrors={validation.errors}
+                                validationWarnings={validation.warnings}
+                            />
+                        </section>
+
+                        <section className="route-form-section">
+                            <div className="route-section-title">
+                                <span>2</span>
+                                <div>
+                                    <h3>Условия доставки</h3>
+                                    <p>Время, день и тип заказа влияют на тариф.</p>
+                                </div>
+                            </div>
+                            <DeliveryOptions
+                                options={options}
+                                handleOptionChange={onOptionChange}
+                                handleTimeChange={setTime}
+                                validationErrors={validation.errors}
+                                validationWarnings={validation.warnings}
+                                orderTotal={orderTotal}
+                                setOrderTotal={setOrderTotal}
+                                showHints={isUnlocked}
+                            />
+                        </section>
+
+                        <section className="route-form-section">
+                            <div className="route-section-title">
+                                <span>3</span>
+                                <div>
+                                    <h3>Автомобиль</h3>
+                                    <p>Недоступные по весу машины отключены.</p>
+                                </div>
+                            </div>
+                            <VehicleSelection vehiclesConfig={vehiclesConfig} weight={weight} vehicle={vehicle}
+                                              setVehicle={setVehicle} showHints={isUnlocked}/>
+                        </section>
+
                         <ResultDisplay distance={distance}
                                        mapDistance={mapDistance}
                                        duration={duration}
@@ -210,22 +316,72 @@ function App() {
                                        validationWarnings={validation.warnings}
                                        showComments={isUnlocked}
                         />
-
-
                     </div>
-                </div>
-            </div>
-            <TariffReference
-                vehiclesConfig={vehiclesConfig}
-                isUnlocked={isUnlocked}
-                onUnlock={unlock}
-                onLock={lock}
-            />
-            </div>
+                </aside>
+
+                <TariffReference
+                    vehiclesConfig={vehiclesConfig}
+                    isUnlocked={isUnlocked}
+                    onUnlock={unlock}
+                    onLock={lock}
+                />
+            </main>
+
+            <footer className="route-footer">
+                Расчёт ориентировочный · итоговая стоимость подтверждается менеджером
+            </footer>
         </div>
     )
 
 
+}
+
+function LegacyApp({ onSelectModern }) {
+    return (
+        <div className="route-legacy-shell">
+            <header className="route-legacy-switchbar">
+                <div>
+                    <strong>Классический интерфейс</strong>
+                    <span>Версия до редизайна</span>
+                </div>
+                <InterfaceModeToggle mode="legacy" onChange={onSelectModern} />
+            </header>
+            <iframe
+                className="route-legacy-frame"
+                src="./legacy/index.html"
+                title="Классический интерфейс калькулятора доставки"
+            />
+        </div>
+    );
+}
+
+function getInitialInterfaceMode() {
+    const mode = new URLSearchParams(window.location.search).get('ui');
+    return mode === 'legacy' ? 'legacy' : 'modern';
+}
+
+function App() {
+    const [interfaceMode, setInterfaceMode] = useState(getInitialInterfaceMode);
+
+    const changeInterfaceMode = (mode) => {
+        const nextMode = mode === 'legacy' ? 'legacy' : 'modern';
+        const url = new URL(window.location.href);
+
+        if (nextMode === 'legacy') {
+            url.searchParams.set('ui', 'legacy');
+        } else {
+            url.searchParams.delete('ui');
+        }
+
+        window.history.replaceState({}, '', url);
+        setInterfaceMode(nextMode);
+    };
+
+    if (interfaceMode === 'legacy') {
+        return <LegacyApp onSelectModern={changeInterfaceMode} />;
+    }
+
+    return <ModernApp onSelectLegacy={changeInterfaceMode} />;
 }
 
 export default App;

@@ -33,10 +33,10 @@ function CalculationHistory({ history, onRemove, onClear }) {
     };
 
     return (
-        <div className="relative">
+        <div className="route-popover">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                className="route-toolbar-button"
                 aria-expanded={isOpen}
                 aria-label="История расчетов"
             >
@@ -55,7 +55,7 @@ function CalculationHistory({ history, onRemove, onClear }) {
                 </svg>
                 История
                 {history.length > 0 && (
-                    <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-0.5">
+                    <span className="route-toolbar-count">
                         {history.length}
                     </span>
                 )}
@@ -70,17 +70,17 @@ function CalculationHistory({ history, onRemove, onClear }) {
                     />
                     
                     {/* Панель истории */}
-                    <div className="absolute right-0 top-full mt-2 w-80 max-h-96 bg-white border border-gray-200 rounded-lg shadow-xl z-20 overflow-hidden flex flex-col">
+                    <div className="route-popover-panel route-history-panel">
                         {/* Заголовок */}
-                        <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gray-50">
-                            <h3 className="font-semibold text-lg">История расчетов</h3>
+                        <div className="route-popover-header">
+                            <h3>История расчётов</h3>
                             {history.length > 0 && (
                                 <button
                                     onClick={() => {
                                         onClear();
                                         setIsOpen(false);
                                     }}
-                                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                                    className="route-danger-link"
                                     title="Очистить историю"
                                 >
                                     Очистить
@@ -89,23 +89,23 @@ function CalculationHistory({ history, onRemove, onClear }) {
                         </div>
 
                         {/* Список истории */}
-                        <div className="overflow-y-auto flex-1">
+                        <div className="route-popover-content">
                             {history.length === 0 ? (
-                                <div className="p-4 text-center text-gray-500 text-sm">
+                                <div className="route-empty-state">
                                     История пуста
                                 </div>
                             ) : (
-                                <ul className="divide-y divide-gray-100">
+                                <ul className="route-history-list">
                                     {history.map((item) => (
                                         <li 
                                             key={item.id}
-                                            className="hover:bg-gray-50 transition-colors"
+                                            className="route-history-item"
                                         >
                                             <div className="p-3">
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="flex-1 min-w-0">
                                                         {/* Итоговая цена - крупно и выделено */}
-                                                        <div className="text-lg font-bold text-blue-600 mb-1">
+                                                        <div className="route-history-price">
                                                             {formatPrice(item.price?.price)}
                                                         </div>
                                                         
@@ -167,4 +167,3 @@ function CalculationHistory({ history, onRemove, onClear }) {
 }
 
 export default CalculationHistory;
-

@@ -140,7 +140,7 @@ function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, 
 
     return (
         <>
-            <div className="w-full h-full bg-gray-100" id="map"></div>
+            <div className="route-map-surface" id="map"></div>
         </>
     );
 }

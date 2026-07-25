@@ -1,185 +1,148 @@
-import React from 'react';
-import { getFieldValidationClass } from './utils/validation';
 import FieldHint from './components/FieldHint';
 
-function DeliveryOptions({options, handleOptionChange, validationErrors = {}, validationWarnings = {}, orderTotal = 0, setOrderTotal, showHints = false}) {
+function DeliveryOptions({
+    options,
+    handleOptionChange,
+    validationErrors = {},
+    orderTotal = 0,
+    setOrderTotal,
+    showHints = false
+}) {
     return (
-        <div className="max-sm:px-0 pl-2 pt-2 max-sm:text-sm text-md">
-            {/* Time options */}
-            <div className="max-sm:px-2 max-sm:py-2  px-4 py-2  rounded-lg relative">
-                <div className="grid grid-rows-2 grid-cols-2 gap-x-2 gap-y-2 max-sm:gap-x-16">
-                    <div className="flex flex-row items-start">
+        <div className="route-options">
+            <fieldset className="route-option-group">
+                <legend>Время доставки</legend>
+                <div className="route-option-grid route-option-grid--three">
+                    <label className={`route-option-card ${options.by_time ? 'is-selected' : ''}`}>
                         <input
                             type="checkbox"
                             id="by_time"
                             checked={options.by_time || false}
                             onChange={() => handleOptionChange('by_time')}
-                            className="self-center"
                         />
-                        <label htmlFor="by_time" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
+                        <span className="route-option-copy">
                             <FieldHint showHint={showHints} text="Доставка к конкретному времени в указанном диапазоне. Увеличивает стоимость на 70%">
-                                Ко времени (9:00-16:00)
+                                <strong>Ко времени</strong>
                             </FieldHint>
-                        </label>
-                    </div>
+                            <small>9:00–16:00 · +70%</small>
+                        </span>
+                    </label>
 
-                    {/*<div className="flex flex-row items-start">*/}
-                    {/*    <input*/}
-                    {/*        type="checkbox"*/}
-                    {/*        id="today"*/}
-                    {/*        disabled={hideTime}*/}
-                    {/*        checked={options.today || false}*/}
-                    {/*        onChange={() => handleOptionChange('today')}*/}
-                    {/*        className="self-center"*/}
-                    {/*    />*/}
-                    {/*    <label htmlFor="today" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1*/}
-                    {/*     max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">*/}
-                    {/*        Сегодня*/}
-                    {/*    </label>*/}
-                    {/*</div>*/}
-
-                    <div className="flex flex-row items-start">
+                    <label className={`route-option-card ${options.morning ? 'is-selected' : ''}`}>
                         <input
                             type="checkbox"
                             id="morning"
                             checked={options.morning || false}
                             onChange={() => handleOptionChange('morning')}
-                            className="self-center"
                         />
-                        <label htmlFor="morning"
-                               className="whitespace-nowrap max-sm:ml-1 ml-2 max-xs:text-xs flex flex-wrap items-center self-center">
+                        <span className="route-option-copy">
                             <FieldHint showHint={showHints} text="Доставка в утреннее время. Надбавка +500 руб">
-                                9:00-12:00
+                                <strong>Утром</strong>
                             </FieldHint>
-                        </label>
-                    </div>
-                    <div className="flex flex-row items-start">
+                            <small>9:00–12:00 · +500 ₽</small>
+                        </span>
+                    </label>
+
+                    <label className={`route-option-card ${options.evening ? 'is-selected' : ''}`}>
                         <input
                             type="checkbox"
                             id="evening"
                             checked={options.evening || false}
                             onChange={() => handleOptionChange('evening')}
-                            className="self-center"
                         />
-                        <label htmlFor="evening"
-                               className="whitespace-nowrap ml-2 max-xs:ml-1 max-xs:text-xs flex flex-wrap items-center self-center">
-                            <FieldHint showHint={showHints} text="Доставка в вечернее время. Надбавка +300 руб">
-                                12:00-16:00
+                        <span className="route-option-copy">
+                            <FieldHint showHint={showHints} text="Доставка в дневное время. Надбавка +300 руб">
+                                <strong>Днём</strong>
                             </FieldHint>
-                        </label>
-                    </div>
-                </div>
-            </div>
-            {/* Time options */}
-            <hr/>
-            {/* Day options */}
-            <div className={`max-sm:px-2 max-sm:py-2 px-4 py-2 grid grid-cols-2 gap-x-4 rounded-lg relative ${
-                validationErrors.day_of_week ? 'border-2 border-red-500 bg-red-50' : ''
-            }`}>
-                <div className="flex flex-row items-start">
-                    <input
-                        type="radio"
-                        id="weekdays"
-                        checked={options.day_of_week === "weekdays" || false}
-                        onChange={() => handleOptionChange('weekdays')}
-                        className="self-center"
-                    />
-                    <label htmlFor="weekdays" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Понедельник–пятница
+                            <small>12:00–16:00 · +300 ₽</small>
+                        </span>
                     </label>
                 </div>
-                <div className="flex flex-row items-start">
-                    <input
-                        type="radio"
-                        id="weekend"
-                        checked={options.day_of_week === "weekend" || false}
-                        onChange={() => handleOptionChange('weekend')}
-                        className="self-center"
-                    />
-                    <label htmlFor="weekend" className="relative max-sm:ml-1 max-sm:gap-x-1 ml-2 gap-x-1.5 max-xs:ml-1
-                         max-xs:text-xs flex flex-wrap items-center self-center whitespace-nowrap">
-                        Суббота–воскресенье
+            </fieldset>
+
+            <fieldset className={`route-option-group ${validationErrors.day_of_week ? 'has-error' : ''}`}>
+                <legend>День доставки</legend>
+                <div className="route-option-grid">
+                    <label className={`route-option-card route-option-card--compact ${options.day_of_week === 'weekdays' ? 'is-selected' : ''}`}>
+                        <input
+                            type="radio"
+                            id="weekdays"
+                            name="delivery-day"
+                            checked={options.day_of_week === 'weekdays'}
+                            onChange={() => handleOptionChange('weekdays')}
+                        />
+                        <span className="route-option-copy">
+                            <strong>Будни</strong>
+                            <small>Пн–пт</small>
+                        </span>
+                    </label>
+                    <label className={`route-option-card route-option-card--compact ${options.day_of_week === 'weekend' ? 'is-selected' : ''}`}>
+                        <input
+                            type="radio"
+                            id="weekend"
+                            name="delivery-day"
+                            checked={options.day_of_week === 'weekend'}
+                            onChange={() => handleOptionChange('weekend')}
+                        />
+                        <span className="route-option-copy">
+                            <strong>Выходные</strong>
+                            <small>Сб–вс</small>
+                        </span>
                     </label>
                 </div>
                 {validationErrors.day_of_week && (
-                    <div className="col-span-2 mt-2">
-                        <p className="text-red-500 text-sm font-semibold">
-                            ⚠️ {validationErrors.day_of_week}
-                        </p>
-                    </div>
+                    <p className="route-field-message is-error">{validationErrors.day_of_week}</p>
                 )}
-            </div>
-            {/* Day options */}
-            <hr/>
-            {/* Retail / Wholesale options (radio: одна всегда выбрана, по умолчанию розница) */}
-            <div className="max-sm:px-2 max-sm:py-2 px-4 py-2 rounded-lg">
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <div className="flex flex-row items-start">
-                        <input
-                            type="radio"
-                            id="retail"
-                            name="retail_opt"
-                            checked={options.retail !== false}
-                            onChange={() => handleOptionChange('retail')}
-                            className="self-center"
-                        />
-                        <label htmlFor="retail"
-                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
-                            <FieldHint showHint={showHints} text="Розница. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
+            </fieldset>
+
+            <fieldset className="route-option-group">
+                <legend>Тип заказа</legend>
+                <div className="route-order-row">
+                    <div className="route-segmented">
+                        <label className={options.retail !== false ? 'is-selected' : ''}>
+                            <input
+                                type="radio"
+                                id="retail"
+                                name="retail_opt"
+                                checked={options.retail !== false}
+                                onChange={() => handleOptionChange('retail')}
+                            />
+                            <FieldHint showHint={showHints} text="Розница. При заказе от 25 000 руб — бесплатная доставка в пределах города при соблюдении условий">
                                 Розница
                             </FieldHint>
                         </label>
-                    </div>
-                    <div className="flex flex-row items-start">
-                        <input
-                            type="radio"
-                            id="opt"
-                            name="retail_opt"
-                            checked={options.opt === true}
-                            onChange={() => handleOptionChange('opt')}
-                            className="self-center"
-                        />
-                        <label htmlFor="opt"
-                               className="flex ml-2 max-sm:ml-1 flex-wrap gap-x-2 items-center self-center cursor-pointer">
-                            <FieldHint showHint={showHints} text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
+                        <label className={options.opt === true ? 'is-selected' : ''}>
+                            <input
+                                type="radio"
+                                id="opt"
+                                name="retail_opt"
+                                checked={options.opt === true}
+                                onChange={() => handleOptionChange('opt')}
+                            />
+                            <FieldHint showHint={showHints} text="Опт. При заказе от 25 000 руб — бесплатная доставка в пределах города при соблюдении условий">
                                 Опт
                             </FieldHint>
                         </label>
                     </div>
-                </div>
-                {/* Сумма заказа — всегда показываем (одна из retail/opt всегда выбрана) */}
-                {(
-                    <div className="mt-3">
-                        <div className="flex items-center gap-2">
-                            <label htmlFor="orderTotal" className="text-sm text-gray-600">
-                                Сумма заказа:
-                            </label>
+
+                    <div className={`route-order-total ${validationErrors.orderTotal ? 'has-error' : ''}`}>
+                        <label htmlFor="orderTotal">Сумма заказа</label>
+                        <div>
                             <input
                                 type="number"
                                 id="orderTotal"
                                 value={orderTotal || ''}
-                                onChange={(e) => setOrderTotal(parseFloat(e.target.value) || 0)}
+                                onChange={(event) => setOrderTotal(parseFloat(event.target.value) || 0)}
                                 placeholder="0"
-                                className={`w-32 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 ${
-                                    validationErrors.orderTotal 
-                                        ? 'border-red-500 border-2 focus:ring-red-500' 
-                                        : 'border-gray-300 focus:ring-blue-500'
-                                }`}
                             />
-                            <span className="text-sm text-gray-500">руб</span>
+                            <span>₽</span>
                         </div>
-                        {validationErrors.orderTotal && (
-                            <p className="text-red-500 text-xs mt-1 ml-0">
-                                ⚠️ {validationErrors.orderTotal}
-                            </p>
-                        )}
                     </div>
+                </div>
+                {validationErrors.orderTotal && (
+                    <p className="route-field-message is-error">{validationErrors.orderTotal}</p>
                 )}
-            </div>
-            {/* Retail / Wholesale options */}
-            <hr/>
+            </fieldset>
         </div>
     );
 }

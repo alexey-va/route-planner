@@ -10,10 +10,10 @@ function PricingRules({ enabled = false }) {
     }
 
     return (
-        <div className="relative">
+        <div className="route-popover">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                className="route-toolbar-button"
                 aria-expanded={isOpen}
                 aria-label="Правила расчёта цены"
             >
@@ -40,9 +40,9 @@ function PricingRules({ enabled = false }) {
                         onClick={() => setIsOpen(false)}
                     />
 
-                    <div className="absolute right-0 top-full mt-2 w-[28rem] max-w-[calc(100vw-2rem)] max-h-[32rem] bg-white border border-gray-200 rounded-lg shadow-xl z-20 overflow-hidden flex flex-col">
-                        <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gray-50">
-                            <h3 className="font-semibold text-lg">Правила расчёта цены</h3>
+                    <div className="route-popover-panel route-rules-panel">
+                        <div className="route-popover-header">
+                            <h3>Правила расчёта цены</h3>
                             <button
                                 onClick={() => setIsOpen(false)}
                                 className="p-1 text-gray-500 hover:text-gray-700 rounded"
@@ -54,20 +54,20 @@ function PricingRules({ enabled = false }) {
                             </button>
                         </div>
 
-                        <div className="overflow-y-auto flex-1 p-3 space-y-4">
+                        <div className="route-popover-content route-rules-content">
                             {rules.map((section) => (
                                 <section key={section.title}>
-                                    <h4 className="font-semibold text-gray-900 mb-1.5">
+                                    <h4>
                                         {section.title}
                                     </h4>
-                                    <ul className="space-y-1 text-sm text-gray-700">
+                                    <ul>
                                         {section.items.map((item, index) => (
                                             <li
                                                 key={`${section.title}-${index}`}
                                                 className={item.startsWith('  •') ? 'pl-2' : 'flex gap-2'}
                                             >
                                                 {!item.startsWith('  •') && (
-                                                    <span className="text-blue-500 mt-0.5 shrink-0">•</span>
+                                                    <span className="route-rule-bullet">•</span>
                                                 )}
                                                 <span className={item.startsWith('  •') ? 'text-gray-600' : ''}>
                                                     {item.startsWith('  •') ? item.slice(3) : item}

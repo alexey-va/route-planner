@@ -1,6 +1,4 @@
-import React from 'react';
 import { formatDistance, formatWeight } from './utils/formatters';
-import { getFieldValidationClass } from './utils/validation';
 import { isWeekend } from './utils/dayOfWeek';
 
 const MAX_DISTANCE_KM = 10000;
@@ -12,47 +10,36 @@ function WeightDistanceInput({
     distance,
     setDistance,
     options,
-    vehicle,
     validationErrors = {},
     validationWarnings = {}
 }) {
     const displayDistance = formatDistance(distance);
     const displayWeight = formatWeight(weight);
-
-    // Calculate label positions based on content length
-    const kgLabelStyle = {
-        left: `${Math.max(1, displayWeight.length) / 1.6 + 1.0}rem`,
-    };
-
-    const kmLabelStyle = {
-        left: `${Math.max(1, displayDistance.length - (displayDistance.includes('.') ? 0.4 : 0)) / 1.6 + 1.0}rem`,
-    };
-
     const isWeekendDay = isWeekend(options.day_of_week);
-    const showWeekendWarning = isWeekendDay && parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD;
+    const showWeekendWarning =
+        isWeekendDay && parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD;
 
-    const handleDistanceChange = (e) => {
-        let km = parseFloat(e.target.value);
-        
-        // Clamp to valid range
+    const handleDistanceChange = (event) => {
+        let km = parseFloat(event.target.value);
         if (km >= MAX_DISTANCE_KM) km = MAX_DISTANCE_KM;
         if (km < 0 || isNaN(km)) km = 0;
-        
-        // Convert kilometers to meters for internal state
         setDistance(km * 1000);
     };
 
+    const fieldState = (error, warning) => {
+        if (error) return 'has-error';
+        if (warning) return 'has-warning';
+        return '';
+    };
+
     return (
-        <div className={`max-sm:text-lg text-xl grid grid-cols-[2fr_2.2fr] gap-12`}>
-            {/* DISTANCE */}
-            <div className="relative mt-1">
-                <div className={`relative`}>
-                    {/*<div className={`absolute inset-0 w-[9.5rem] -left-0.5 rounded-sm ${vehiclesConfig[vehicle].heavy ? "animate-pulseOutline ring-2 ring-red-500 ring-opacity-100" : ""}`}></div>*/}
-                    <label htmlFor="distance" className="font-semibold overflow-hidden whitespace-nowrap">
-                        Расстояние (км):
-                    </label>
-                </div>
-                <div className={`flex items-center rounded-md mt-1 ${getFieldValidationClass(
+        <div className="route-field-grid">
+            <div className="route-field">
+                <label htmlFor="distance">
+                    Расстояние
+                    <span>км</span>
+                </label>
+                <div className={`route-input-shell ${fieldState(
                     validationErrors.distance,
                     validationWarnings.distance
                 )}`}>
@@ -65,44 +52,28 @@ function WeightDistanceInput({
                         step="any"
                         value={displayDistance}
                         onChange={handleDistanceChange}
-                        className={`min-sm:text-lg w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 ${
-                            validationErrors.distance 
-                                ? 'focus:ring-red-500' 
-                                : validationWarnings.distance 
-                                    ? 'focus:ring-yellow-400' 
-                                    : 'focus:ring-gray-500'
-                        }`}
+                        className="route-input"
                     />
-                    <span className="pointer-events-none absolute text-gray-400" style={kmLabelStyle}>км</span>
+                    <span className="route-input-unit">км</span>
                 </div>
-                {validationErrors.distance && (
-                    <p className="text-red-500 text-sm font-semibold mt-1">
-                        {validationErrors.distance}
-                    </p>
-                )}
-                {validationWarnings.distance && !validationErrors.distance && (
-                    <p className="text-yellow-600 text-sm mt-1">
-                        ⚠️ {validationWarnings.distance}
-                    </p>
-                )}
-                {!validationErrors.distance && (
-                    <p className="text-gray-500 text-xs mt-1">
-                        💡 Можно ввести вручную или выбрать точку на карте
-                    </p>
+                {validationErrors.distance ? (
+                    <p className="route-field-message is-error">{validationErrors.distance}</p>
+                ) : validationWarnings.distance ? (
+                    <p className="route-field-message is-warning">{validationWarnings.distance}</p>
+                ) : (
+                    <p className="route-field-message">С карты или вручную</p>
                 )}
             </div>
-            {/* WEIGHT */}
-            <div className="relative mt-1">
-                <label htmlFor="weight" className="font-semibold overflow-clip">
-                    Вес (кг):
+
+            <div className="route-field">
+                <label htmlFor="weight">
+                    Вес груза
+                    <span>кг</span>
                 </label>
-                <div className={`flex items-center rounded-md mt-1 transition-all duration-300 ${
-                    validationErrors.weight 
-                        ? getFieldValidationClass(true, false)
-                        : showWeekendWarning 
-                            ? "border-4 border-red-500 animate-pulse" 
-                            : getFieldValidationClass(false, validationWarnings.weight)
-                }`}>
+                <div className={`route-input-shell ${fieldState(
+                    validationErrors.weight,
+                    validationWarnings.weight || showWeekendWarning
+                )}`}>
                     <input
                         type="number"
                         id="weight"
@@ -112,36 +83,20 @@ function WeightDistanceInput({
                         placeholder="Введите вес"
                         value={displayWeight}
                         onChange={handleWeightChange}
-                        className={`min-sm:text-lg w-full p-1 rounded-md pl-2 pr-2 focus:outline-none focus:ring-2 ${
-                            validationErrors.weight 
-                                ? 'focus:ring-red-500' 
-                                : validationWarnings.weight 
-                                    ? 'focus:ring-yellow-400' 
-                                    : 'focus:ring-gray-500'
-                        }`}
+                        className="route-input"
                     />
-                    <span className="pointer-events-none absolute text-gray-400" style={kgLabelStyle}>кг</span>
+                    <span className="route-input-unit">кг</span>
                 </div>
-
-                {validationErrors.weight && (
-                    <p className="text-red-500 text-sm font-semibold mt-1">
-                        {validationErrors.weight}
-                    </p>
-                )}
-                {validationWarnings.weight && !validationErrors.weight && (
-                    <p className="text-yellow-600 text-sm mt-1">
-                        ⚠️ {validationWarnings.weight}
-                    </p>
-                )}
-                {showWeekendWarning && !validationErrors.weight && (
-                    <p className="text-red-500 text-sm font-semibold mt-1 animate-pulse">
-                        Более 800кг в выходные дни +50%
-                    </p>
+                {validationErrors.weight ? (
+                    <p className="route-field-message is-error">{validationErrors.weight}</p>
+                ) : showWeekendWarning ? (
+                    <p className="route-field-message is-warning">Свыше 800 кг в выходные: +50%</p>
+                ) : validationWarnings.weight ? (
+                    <p className="route-field-message is-warning">{validationWarnings.weight}</p>
+                ) : (
+                    <p className="route-field-message">До 10 000 кг</p>
                 )}
             </div>
-
-
-
         </div>
     );
 }

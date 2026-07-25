@@ -1,51 +1,48 @@
-import React from 'react';
 import FieldHint from './components/FieldHint';
 
 function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHints = false}) {
-
     return (
-        <div className="max-sm:px-0 max-sm:ml-0 ml-2 ">
-            {/* VEHICLE SELECTION */}
-            <div className={`max-sm:px-2 max-sm:py-2 px-4 py-2 gap-12 max-sm:gap-4 rounded-lg flex flex-row flex-wrap w-full`}>
-                {Object.entries(vehiclesConfig).map(([key, value]) => {
-                    const isDisabled = weight > value.max_weight;
-                    const vehicleKey = parseInt(key, 10);
-                    
-                    return (
-                        <div key={key} className="flex flex-col space-y-2 max-sm:text-sm text-md">
-                            <div className="flex items-center space-x-[0.4rem]">
-                                <input
-                                    type="radio"
-                                    id={`vehicle-${key}`}
-                                    name="vehicleSelection"
-                                    disabled={isDisabled}
-                                    checked={vehicle === vehicleKey}
-                                    onChange={() => setVehicle(vehicleKey)}
-                                />
-                                <label
-                                    className={`flex flex-row items-center gap-1`}
-                                    htmlFor={`vehicle-${key}`}>
-                                    <FieldHint
-                                        showHint={showHints}
-                                        text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${value.price} руб/км. Минимальная стоимость: ${value.minimal_city_price} руб`}
-                                    >
-                                        <span className="flex flex-row items-center gap-1">
-                                            {value.name}
-                                            <span className="md:translate-y-0.5 ml-1 text-gray-500 text-sm self-center">
-                                                {value.max_weight / 1000}т
-                                            </span>
-                                        </span>
-                                    </FieldHint>
-                                </label>
+        <div className="route-vehicle-grid">
+            {Object.entries(vehiclesConfig).map(([key, value]) => {
+                const isDisabled = weight > value.max_weight;
+                const vehicleKey = parseInt(key, 10);
+                const isSelected = vehicle === vehicleKey;
 
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-            {/* VEHICLE SELECTION */}
+                return (
+                    <label
+                        key={key}
+                        className={`route-vehicle-card ${isSelected ? 'is-selected' : ''} ${isDisabled ? 'is-disabled' : ''}`}
+                        htmlFor={`vehicle-${key}`}
+                    >
+                        <input
+                            type="radio"
+                            id={`vehicle-${key}`}
+                            name="vehicleSelection"
+                            disabled={isDisabled}
+                            checked={isSelected}
+                            onChange={() => setVehicle(vehicleKey)}
+                        />
+                        <span className="route-vehicle-icon" aria-hidden="true">
+                            <svg viewBox="0 0 28 20" fill="none">
+                                <path d="M2 3h15v11H2zM17 7h4.4l4.1 4.2V14H17z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+                                <circle cx="6.2" cy="16" r="2" stroke="currentColor" strokeWidth="1.7"/>
+                                <circle cx="21.8" cy="16" r="2" stroke="currentColor" strokeWidth="1.7"/>
+                            </svg>
+                        </span>
+                        <span className="route-vehicle-copy">
+                            <FieldHint
+                                showHint={showHints}
+                                text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${value.price} руб/км. Минимальная стоимость: ${value.minimal_city_price} руб`}
+                            >
+                                <strong>{value.name}</strong>
+                            </FieldHint>
+                            <small>{value.max_weight / 1000}т</small>
+                        </span>
+                        <span className="route-vehicle-check" aria-hidden="true">✓</span>
+                    </label>
+                );
+            })}
         </div>
-
     );
 }
 
