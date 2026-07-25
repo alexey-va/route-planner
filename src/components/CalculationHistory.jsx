@@ -121,7 +121,7 @@ function CalculationHistory({ history, onRemove, onClear }) {
                                                                 <div>⚖️ {item.weight} кг</div>
                                                             )}
                                                             {item.address && (
-                                                                <div className="text-gray-400 truncate">🏠 {item.address}</div>
+                                                                <div className="route-history-address">🏠 {item.address}</div>
                                                             )}
                                                         </div>
                                                         

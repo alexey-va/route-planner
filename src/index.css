@@ -889,6 +889,25 @@ input:focus-visible {
     white-space: nowrap;
 }
 
+.route-result-address {
+    grid-column: 1 / -1;
+}
+
+.route-result-address dd,
+.route-history-address {
+    overflow: visible;
+    overflow-wrap: anywhere;
+    color: #33413b;
+    line-height: 1.4;
+    text-overflow: clip;
+    white-space: normal;
+}
+
+.route-history-address {
+    margin-top: 2px;
+    color: #7b8781;
+}
+
 .route-result-comments {
     margin-bottom: 14px;
     padding: 12px;

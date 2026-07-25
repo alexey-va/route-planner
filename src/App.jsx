@@ -38,6 +38,14 @@ const LEGACY_APP_DOCUMENT = `<!doctype html>
     <script src="https://yandex.st/jquery/2.2.3/jquery.js"></script>
     <script type="module" crossorigin src="/legacy/assets/index-Dt9U6nZw.js"></script>
     <link rel="stylesheet" crossorigin href="/legacy/assets/index-DXN-bJtr.css" />
+    <style>
+      .truncate {
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -373,7 +381,7 @@ function LegacyApp({ onSelectModern }) {
 
 function getInitialInterfaceMode() {
     const mode = new URLSearchParams(window.location.search).get('ui');
-    return mode === 'legacy' ? 'legacy' : 'modern';
+    return mode === 'modern' ? 'modern' : 'legacy';
 }
 
 function App() {
@@ -383,8 +391,8 @@ function App() {
         const nextMode = mode === 'legacy' ? 'legacy' : 'modern';
         const url = new URL(window.location.href);
 
-        if (nextMode === 'legacy') {
-            url.searchParams.set('ui', 'legacy');
+        if (nextMode === 'modern') {
+            url.searchParams.set('ui', 'modern');
         } else {
             url.searchParams.delete('ui');
         }
