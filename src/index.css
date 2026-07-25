@@ -111,7 +111,7 @@ input:focus-visible {
 
 .route-brand-title {
     margin: 0;
-    font-size: 18px;
+    font-size: 19px;
     line-height: 1.1;
     font-weight: 760;
     letter-spacing: -0.02em;
@@ -120,7 +120,7 @@ input:focus-visible {
 .route-brand-subtitle {
     margin: 4px 0 0;
     color: var(--route-muted);
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1;
 }
 
@@ -129,7 +129,7 @@ input:focus-visible {
     align-items: center;
     gap: 8px;
     color: #53615b;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 650;
 }
 
@@ -153,7 +153,7 @@ input:focus-visible {
     border-radius: 999px;
     background: transparent;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 720;
     transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
@@ -217,7 +217,7 @@ input:focus-visible {
     display: block;
     margin-bottom: 6px;
     color: var(--route-accent);
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.2;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -234,17 +234,17 @@ input:focus-visible {
 }
 
 .route-card h1 {
-    font-size: clamp(24px, 3vw, 34px);
+    font-size: clamp(25px, 3vw, 35px);
     line-height: 1.05;
 }
 
 .route-card h2 {
-    font-size: 22px;
+    font-size: 23px;
     line-height: 1.15;
 }
 
 .route-card h3 {
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.2;
 }
 
@@ -270,7 +270,7 @@ input:focus-visible {
 .route-map-header p {
     max-width: 580px;
     margin: 8px 0 0;
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
 }
 
@@ -296,7 +296,7 @@ input:focus-visible {
 .route-map-metrics span {
     margin-bottom: 3px;
     color: var(--route-muted);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 650;
     text-transform: uppercase;
     letter-spacing: 0.07em;
@@ -306,7 +306,7 @@ input:focus-visible {
     max-width: 160px;
     overflow: hidden;
     color: var(--route-ink);
-    font-size: 14px;
+    font-size: 15px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -352,7 +352,7 @@ input:focus-visible {
     display: block;
     margin-bottom: 6px;
     color: #65736d;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 780;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -393,7 +393,7 @@ input:focus-visible {
     border: 1px solid #cfd9d4;
     border-radius: 12px;
     background: #fbfcfb;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 620;
     transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
@@ -416,7 +416,7 @@ input:focus-visible {
     border: 0;
     border-radius: 11px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 760;
     transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
@@ -444,7 +444,7 @@ input:focus-visible {
     flex-wrap: wrap;
     gap: 12px;
     color: #77847e;
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .route-map-recents {
@@ -474,7 +474,7 @@ input:focus-visible {
     border-radius: 7px;
     background: #f5f8f6;
     cursor: pointer;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 1.35;
     text-align: left;
     text-overflow: clip;
@@ -513,13 +513,13 @@ input:focus-visible {
 
 .route-map-state-overlay strong {
     color: var(--route-ink);
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .route-map-state-overlay span:not(.route-map-spinner) {
     max-width: 300px;
     color: var(--route-muted);
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-map-state-overlay.is-error {
@@ -565,7 +565,7 @@ input:focus-visible {
     background: rgba(255, 255, 255, 0.92);
     box-shadow: 0 6px 16px rgba(26, 47, 39, 0.08);
     backdrop-filter: blur(10px);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 730;
 }
 
@@ -611,7 +611,7 @@ input:focus-visible {
     background: rgba(255, 255, 255, 0.91);
     box-shadow: 0 7px 20px rgba(26, 47, 39, 0.08);
     backdrop-filter: blur(10px);
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .route-map-legend-header {
@@ -623,7 +623,7 @@ input:focus-visible {
 
 .route-map-legend-header strong {
     color: #3c4a44;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-map-legend button {
@@ -632,7 +632,7 @@ input:focus-visible {
     border: 0;
     background: transparent;
     cursor: pointer;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 730;
 }
 
@@ -678,7 +678,7 @@ input:focus-visible {
     color: #765422;
     border-top: 1px solid #efd6a9;
     background: var(--route-warning-soft);
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-map-alternatives {
@@ -702,13 +702,13 @@ input:focus-visible {
 
 .route-map-alternatives-heading > div strong {
     color: var(--route-ink);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .route-map-alternatives-heading > div span {
     margin-top: 2px;
     color: var(--route-muted);
-    font-size: 8px;
+    font-size: 9px;
 }
 
 .route-map-alternatives-list {
@@ -728,7 +728,7 @@ input:focus-visible {
     border-radius: 10px;
     background: #f7f9f8;
     cursor: pointer;
-    font-size: 9px;
+    font-size: 10px;
     text-align: left;
     transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
@@ -766,14 +766,14 @@ input:focus-visible {
 .route-map-alternatives-list > button em {
     margin-top: 3px;
     color: var(--route-danger);
-    font-size: 7px;
+    font-size: 8px;
     font-style: normal;
 }
 
 .route-map-alternatives-list > button small {
     grid-column: 2;
     color: #77847e;
-    font-size: 8px;
+    font-size: 9px;
 }
 
 .route-map-footer {
@@ -793,7 +793,7 @@ input:focus-visible {
     color: #66746e;
     border-radius: 11px;
     background: #edf1ef;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 800;
 }
 
@@ -809,7 +809,7 @@ input:focus-visible {
 
 .route-map-footer strong {
     margin-bottom: 3px;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .route-map-footer span:not(.route-map-footer-icon) {
@@ -817,7 +817,7 @@ input:focus-visible {
     overflow: visible;
     overflow-wrap: anywhere;
     color: var(--route-muted);
-    font-size: 12px;
+    font-size: 13px;
     text-overflow: clip;
     white-space: normal;
 }
@@ -841,7 +841,7 @@ input:focus-visible {
 
 .route-calculator-header p {
     margin: 7px 0 0;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .route-toolbar {
@@ -861,7 +861,7 @@ input:focus-visible {
     border-radius: 10px;
     background: white;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     transition: color 160ms ease, border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
@@ -887,7 +887,7 @@ input:focus-visible {
     color: white;
     border-radius: 999px;
     background: var(--route-accent);
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-calculator-body {
@@ -915,13 +915,13 @@ input:focus-visible {
     color: var(--route-accent);
     border-radius: 9px;
     background: var(--route-accent-soft);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 800;
 }
 
 .route-section-title p {
     margin: 4px 0 0;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .route-field-grid {
@@ -942,13 +942,13 @@ input:focus-visible {
     align-items: center;
     justify-content: space-between;
     color: #34423c;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 720;
 }
 
 .route-field label > span {
     color: #8a9690;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 650;
     text-transform: uppercase;
 }
@@ -990,7 +990,7 @@ input:focus-visible {
     border: 0;
     outline: 0;
     background: transparent;
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 760;
 }
 
@@ -1002,7 +1002,7 @@ input:focus-visible {
 .route-input-unit {
     padding-right: 13px;
     color: #8a9690;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
 }
 
@@ -1010,7 +1010,7 @@ input:focus-visible {
     min-height: 16px;
     margin: 5px 0 0 !important;
     color: #8a9690 !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
     line-height: 1.35;
 }
 
@@ -1042,7 +1042,7 @@ input:focus-visible {
     width: 100%;
     margin-bottom: 8px;
     color: #6f7c76;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 780;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1109,14 +1109,14 @@ input:focus-visible {
 }
 
 .route-option-copy strong {
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.2;
 }
 
 .route-option-copy small {
     margin-top: 4px;
     color: #7d8984;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 1.3;
 }
 
@@ -1147,7 +1147,7 @@ input:focus-visible {
     color: #68756f;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 720;
 }
 
@@ -1165,7 +1165,7 @@ input:focus-visible {
 
 .route-order-total > label {
     margin-bottom: 5px;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-order-total > div {
@@ -1186,14 +1186,14 @@ input:focus-visible {
     border: 0;
     outline: 0;
     background: transparent;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
 }
 
 .route-order-total span {
     padding-right: 11px;
     color: #8a9690;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
 }
 
@@ -1265,13 +1265,13 @@ input:focus-visible {
 }
 
 .route-vehicle-copy strong {
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-vehicle-copy small {
     margin-top: 2px;
     color: #7f8b85;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
 }
 
@@ -1286,7 +1286,7 @@ input:focus-visible {
     color: white;
     border-radius: 50%;
     background: var(--route-accent);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 900;
 }
 
@@ -1311,7 +1311,7 @@ input:focus-visible {
     color: var(--route-warning);
     border-radius: 7px;
     background: var(--route-warning-soft);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 750;
 }
 
@@ -1332,7 +1332,7 @@ input:focus-visible {
 .route-result-details dt {
     margin-bottom: 3px;
     color: #7b8781;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -1342,7 +1342,7 @@ input:focus-visible {
     margin: 0;
     overflow: hidden;
     color: #33413b;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1373,7 +1373,7 @@ input:focus-visible {
     border: 1px solid var(--route-line);
     border-radius: 12px;
     background: #fbfcfb;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .route-result-comments strong {
@@ -1389,7 +1389,7 @@ input:focus-visible {
 
 .route-result-comments p {
     margin: 0;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .route-price-card {
@@ -1413,19 +1413,19 @@ input:focus-visible {
 }
 
 .route-price-card span {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 750;
 }
 
 .route-price-card small {
     margin-top: 4px;
     color: rgba(255, 255, 255, 0.68);
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .route-price-card strong {
     flex-shrink: 0;
-    font-size: clamp(22px, 3vw, 30px);
+    font-size: clamp(23px, 3vw, 31px);
     line-height: 1;
     font-weight: 800;
     letter-spacing: -0.04em;
@@ -1444,7 +1444,7 @@ input:focus-visible {
     border-radius: 12px;
     background: white;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 740;
     transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
 }
@@ -1475,7 +1475,7 @@ input:focus-visible {
 
 .route-tariff-note {
     color: #8a9690;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-tariff-grid {
@@ -1501,7 +1501,7 @@ input:focus-visible {
 
 .route-tariff-item-title span {
     overflow: hidden;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 760;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1510,12 +1510,12 @@ input:focus-visible {
 .route-tariff-item-title strong {
     flex-shrink: 0;
     color: var(--route-accent);
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-tariff-item p {
     margin: 5px 0 0;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 1.35;
 }
 
@@ -1542,7 +1542,7 @@ input:focus-visible {
 .route-access-panel label,
 .route-access-status {
     color: #44514c;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 760;
 }
 
@@ -1553,7 +1553,7 @@ input:focus-visible {
 .route-access-panel small {
     margin-top: 3px;
     color: #8a9690;
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .route-access-panel button {
@@ -1564,7 +1564,7 @@ input:focus-visible {
     border-radius: 9px;
     background: white;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 720;
 }
 
@@ -1581,7 +1581,7 @@ input:focus-visible {
     border: 1px solid #ccd7d1;
     border-radius: 9px;
     outline: 0;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .route-access-input button {
@@ -1629,7 +1629,7 @@ input:focus-visible {
 }
 
 .route-popover-header h3 {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .route-popover-header button {
@@ -1640,7 +1640,7 @@ input:focus-visible {
 
 .route-danger-link {
     color: var(--route-danger);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 720;
 }
 
@@ -1653,7 +1653,7 @@ input:focus-visible {
     padding: 26px 16px;
     color: var(--route-muted);
     text-align: center;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .route-history-list {
@@ -1674,7 +1674,7 @@ input:focus-visible {
 .route-history-price {
     margin-bottom: 4px;
     color: var(--route-accent);
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 800;
 }
 
@@ -1688,7 +1688,7 @@ input:focus-visible {
 
 .route-rules-content h4 {
     margin: 0 0 7px;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .route-rules-content ul {
@@ -1697,7 +1697,7 @@ input:focus-visible {
     display: grid;
     gap: 5px;
     color: #58655f;
-    font-size: 11px;
+    font-size: 12px;
     list-style: none;
 }
 
@@ -1713,7 +1713,7 @@ input:focus-visible {
     border-radius: 10px;
     background: #24332d;
     box-shadow: 0 12px 30px rgba(17, 34, 27, 0.22);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.45;
     white-space: normal;
 }
@@ -1727,7 +1727,7 @@ input:focus-visible {
     border-radius: 50%;
     background: rgba(23, 108, 84, 0.11);
     cursor: help;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 800;
 }
 
@@ -1736,7 +1736,7 @@ input:focus-visible {
     margin: 18px auto 0;
     color: #87928d;
     text-align: center;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .route-legacy-shell {
@@ -1769,12 +1769,12 @@ input:focus-visible {
 }
 
 .route-legacy-switchbar strong {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .route-legacy-switchbar span {
     color: var(--route-muted);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .route-legacy-frame {
@@ -1886,7 +1886,7 @@ input:focus-visible {
     }
 
     .route-brand-title {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .route-brand-subtitle,
@@ -1905,7 +1905,7 @@ input:focus-visible {
     .route-interface-toggle button {
         min-height: 25px;
         padding: 0 8px;
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .route-status-pill {
@@ -1930,7 +1930,7 @@ input:focus-visible {
     }
 
     .route-map-header p {
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .route-map-metrics > div {
@@ -1939,7 +1939,7 @@ input:focus-visible {
     }
 
     .route-map-metrics strong {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .route-map-canvas {
@@ -2095,7 +2095,7 @@ input:focus-visible {
     }
 
     .route-price-card strong {
-        font-size: 22px;
+        font-size: 23px;
     }
 
     .route-tariff-card {
