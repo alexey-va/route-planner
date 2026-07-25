@@ -99,12 +99,14 @@ Dockerfile собирает статический Vite bundle и раздаёт
 ```bash
 git switch master
 git pull --ff-only
-git revert <commit-с-редизайном>
+git revert --no-commit route-before-modern-ui-2026-07-25..HEAD
+git commit -m "revert: restore classic route planner"
 git push origin master
 ```
 
-Тег нужен как точная контрольная точка для просмотра старой версии:
+Команда откатывает все изменения после контрольной точки, включая последующие
+исправления редизайна. Перед push результат можно сверить с тегом:
 
 ```bash
-git show route-before-modern-ui-2026-07-25
+git diff --exit-code route-before-modern-ui-2026-07-25
 ```
