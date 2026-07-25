@@ -1,4 +1,4 @@
-import Test, { routePanelControl } from "./Test.jsx";
+import Test, { routeMapController } from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput";
 import { useEffect, useState } from "react";
 import { calculate, vehiclesConfig } from "./script.jsx";
@@ -173,15 +173,7 @@ function ModernApp({ onSelectLegacy }) {
         setTime('day');
         setOrderTotal(0);
         
-        // Reset map if available
-        if (routePanelControl) {
-            routePanelControl.routePanel.state.set({
-                fromEnabled: false,
-                from: routePanelControl.routePanel.state.get("from"),
-                to: "",
-                type: "auto"
-            });
-        }
+        routeMapController?.reset();
     };
 
     const distanceKm = ((distance || 0) / 1000).toFixed(1);
