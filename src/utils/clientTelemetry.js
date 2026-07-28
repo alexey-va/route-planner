@@ -3,6 +3,7 @@ const FLUSH_DELAY_MS = 1500;
 const MAX_QUEUE_SIZE = 50;
 const MAX_BATCH_SIZE = 20;
 const MAX_FIELD_LENGTH = 160;
+const INPUT_DEBOUNCE_MS = 500;
 
 function telemetryEndpoint() {
     return import.meta.env.VITE_CLIENT_EVENTS_ENDPOINT
@@ -49,6 +50,21 @@ function sessionId(windowRef) {
     }
 }
 
+function clientId(windowRef) {
+    const storageKey = 'route-planner-telemetry-client';
+
+    try {
+        const existing = windowRef.localStorage.getItem(storageKey);
+        if (existing) return existing;
+
+        const created = randomId(windowRef);
+        windowRef.localStorage.setItem(storageKey, created);
+        return created;
+    } catch {
+        return randomId(windowRef);
+    }
+}
+
 function currentUiMode(windowRef) {
     try {
         return new URLSearchParams(windowRef.location.search).get('ui') === 'modern'
@@ -65,8 +81,8 @@ function targetMetadata(target) {
         return {};
     }
 
-    const actionable = target.closest('button, a, input, select, textarea, form, [role="button"]');
-    if (!actionable) return {};
+    const actionable = target.closest('button, a, input, select, textarea, form, [role="button"]')
+        || target;
 
     const classKey = Array.from(actionable.classList || [])
         .filter((token) => /^[a-zA-Z][a-zA-Z0-9_-]{1,63}$/.test(token))
@@ -89,6 +105,22 @@ function targetMetadata(target) {
     };
 }
 
+function fieldState(target) {
+    const tagName = target?.tagName?.toLowerCase();
+    if (!['input', 'select', 'textarea'].includes(tagName)) return undefined;
+
+    const type = target.getAttribute('type')?.toLowerCase();
+    if (type === 'password') return 'redacted';
+    if (type === 'checkbox' || type === 'radio') {
+        return target.checked ? 'checked' : 'unchecked';
+    }
+    return target.value ? 'nonempty' : 'empty';
+}
+
+function safeNumber(value, min = 0) {
+    return Number.isFinite(value) ? Math.max(min, Math.round(value)) : undefined;
+}
+
 export function createClientTelemetry({
     windowRef = window,
     endpoint = telemetryEndpoint(),
@@ -97,7 +129,12 @@ export function createClientTelemetry({
 } = {}) {
     const queue = [];
     const attachedDocuments = new WeakMap();
+    const telemetryClientId = clientId(windowRef);
     const telemetrySessionId = sessionId(windowRef);
+    const telemetryPageViewId = randomId(windowRef);
+    const pageStartedAt = Date.now();
+    let lastEventAt = pageStartedAt;
+    let sequence = 0;
     let flushTimer = null;
     let started = false;
     let detachMainDocument = () => {};
@@ -154,10 +191,17 @@ export function createClientTelemetry({
 
     const track = (type, details = {}) => {
         try {
+            const now = Date.now();
+            sequence += 1;
             const event = {
                 eventId: randomId(windowRef),
+                clientId: telemetryClientId,
                 sessionId: telemetrySessionId,
+                pageViewId: telemetryPageViewId,
                 occurredAt: new Date().toISOString(),
+                sequence,
+                elapsedMs: safeNumber(now - pageStartedAt),
+                sincePreviousMs: safeNumber(now - lastEventAt),
                 type: safeText(type, 64) || 'unknown',
                 page: safeText(windowRef.location.pathname, 120) || '/',
                 uiMode: safeText(details.uiMode, 24) || currentUiMode(windowRef),
@@ -167,7 +211,22 @@ export function createClientTelemetry({
                 detail: safeText(details.detail),
                 viewportWidth: Number.isFinite(windowRef.innerWidth) ? windowRef.innerWidth : undefined,
                 viewportHeight: Number.isFinite(windowRef.innerHeight) ? windowRef.innerHeight : undefined,
+                screenWidth: safeNumber(windowRef.screen?.width),
+                screenHeight: safeNumber(windowRef.screen?.height),
+                durationMs: safeNumber(details.durationMs),
+                changed: typeof details.changed === 'boolean' ? details.changed : undefined,
+                fieldState: safeText(details.fieldState, 40),
+                webdriver: windowRef.navigator?.webdriver === true,
+                language: safeText(windowRef.navigator?.language, 40),
+                platform: safeText(
+                    windowRef.navigator?.userAgentData?.platform
+                    || windowRef.navigator?.platform,
+                    40,
+                ),
+                hardwareConcurrency: safeNumber(windowRef.navigator?.hardwareConcurrency),
+                maxTouchPoints: safeNumber(windowRef.navigator?.maxTouchPoints),
             };
+            lastEventAt = now;
 
             if (queue.length >= MAX_QUEUE_SIZE) queue.shift();
             queue.push(event);
@@ -182,27 +241,74 @@ export function createClientTelemetry({
             return attachedDocuments.get(documentRef) || (() => {});
         }
 
-        const handleClick = (event) => track('click', {
+        const focusStates = new WeakMap();
+        const inputTimers = new Map();
+        const eventDetails = (target, details = {}) => ({
             ...context,
-            ...targetMetadata(event.target),
+            ...targetMetadata(target),
+            fieldState: fieldState(target),
+            ...details,
+        });
+        const handleClick = (event) => track('click', {
+            ...eventDetails(event.target),
         });
         const handleChange = (event) => track('change', {
-            ...context,
-            ...targetMetadata(event.target),
+            ...eventDetails(event.target, { changed: true }),
         });
         const handleSubmit = (event) => track('submit', {
-            ...context,
-            ...targetMetadata(event.target),
+            ...eventDetails(event.target),
         });
+        const handleFocus = (event) => {
+            focusStates.set(event.target, {
+                focusedAt: Date.now(),
+                initialState: fieldState(event.target),
+                changed: false,
+            });
+            track('focus', eventDetails(event.target));
+        };
+        const handleInput = (event) => {
+            const state = focusStates.get(event.target);
+            if (state) state.changed = true;
+
+            const existingTimer = inputTimers.get(event.target);
+            if (existingTimer !== undefined) windowRef.clearTimeout(existingTimer);
+            inputTimers.set(event.target, windowRef.setTimeout(() => {
+                inputTimers.delete(event.target);
+                track('input', eventDetails(event.target, { changed: true }));
+            }, INPUT_DEBOUNCE_MS));
+        };
+        const handleBlur = (event) => {
+            const timer = inputTimers.get(event.target);
+            if (timer !== undefined) {
+                windowRef.clearTimeout(timer);
+                inputTimers.delete(event.target);
+            }
+            const state = focusStates.get(event.target);
+            track('blur', eventDetails(event.target, {
+                durationMs: state ? Date.now() - state.focusedAt : undefined,
+                changed: state
+                    ? state.changed || state.initialState !== fieldState(event.target)
+                    : undefined,
+            }));
+            focusStates.delete(event.target);
+        };
 
         documentRef.addEventListener('click', handleClick, true);
         documentRef.addEventListener('change', handleChange, true);
         documentRef.addEventListener('submit', handleSubmit, true);
+        documentRef.addEventListener('focusin', handleFocus, true);
+        documentRef.addEventListener('input', handleInput, true);
+        documentRef.addEventListener('focusout', handleBlur, true);
 
         const detach = () => {
             documentRef.removeEventListener('click', handleClick, true);
             documentRef.removeEventListener('change', handleChange, true);
             documentRef.removeEventListener('submit', handleSubmit, true);
+            documentRef.removeEventListener('focusin', handleFocus, true);
+            documentRef.removeEventListener('input', handleInput, true);
+            documentRef.removeEventListener('focusout', handleBlur, true);
+            inputTimers.forEach((timer) => windowRef.clearTimeout(timer));
+            inputTimers.clear();
             attachedDocuments.delete(documentRef);
         };
         attachedDocuments.set(documentRef, detach);

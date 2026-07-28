@@ -672,6 +672,7 @@ function Test({
                         </div>
                         <button
                             type="submit"
+                            data-telemetry-action="build-route"
                             className="route-map-primary-action"
                             disabled={mapStatus !== 'ready' || !query.trim()}
                         >
@@ -688,6 +689,7 @@ function Test({
                                 <button
                                     key={`${item.address}-${item.coords.join('-')}`}
                                     type="button"
+                                    data-telemetry-action="recent-address"
                                     title={item.address}
                                     onClick={() => controllerRef.current?.search(item.address, item.coords)}
                                 >
@@ -732,6 +734,7 @@ function Test({
                                 <strong>Тарифные зоны</strong>
                                 <button
                                     type="button"
+                                    data-telemetry-action="toggle-tariff-zones"
                                     onClick={() => controllerRef.current?.setZonesVisible(!zonesVisible)}
                                 >
                                     {zonesVisible ? 'Скрыть' : 'Показать'}
@@ -741,6 +744,7 @@ function Test({
                             {zonesStatus === 'error' && (
                                 <button
                                     type="button"
+                                    data-telemetry-action="retry-tariff-zones"
                                     className="route-map-zone-retry"
                                     onClick={() => controllerRef.current?.retryZones()}
                                 >
@@ -769,7 +773,11 @@ function Test({
                 <div className="route-map-notice" role="alert">
                     <span>{errorMessage || zoneWarning}</span>
                     {routeStatus === 'error' && (
-                        <button type="button" onClick={() => controllerRef.current?.retry()}>
+                        <button
+                            type="button"
+                            data-telemetry-action="retry-route"
+                            onClick={() => controllerRef.current?.retry()}
+                        >
                             Повторить маршрут
                         </button>
                     )}

@@ -6,6 +6,7 @@ describe('client telemetry', () => {
 
     beforeEach(() => {
         vi.useFakeTimers();
+        localStorage.clear();
         sessionStorage.clear();
         document.body.innerHTML = '';
     });
@@ -46,8 +47,87 @@ describe('client telemetry', () => {
         expect(payload.events[1]).toMatchObject({
             targetTag: 'input',
             targetKey: 'delivery-address',
+            fieldState: 'nonempty',
+            changed: true,
         });
+        expect(payload.events[0].pageViewId).toBeTruthy();
+        expect(payload.events[0].clientId).toBeTruthy();
+        expect(payload.events[0].sessionId).toBeTruthy();
+        expect(payload.events[0].sequence).toBe(1);
+        expect(payload.events[1].sequence).toBe(2);
+        expect(payload.events[1].elapsedMs).toBeGreaterThanOrEqual(0);
+        expect(payload.events[1].webdriver).toBe(false);
         expect(request.body).not.toContain('Секретный адрес');
+    });
+
+    it('records input timing and state without the entered value', async () => {
+        const fetchMock = vi.fn().mockResolvedValue(undefined);
+        document.body.innerHTML = '<input id="delivery-address" value="" />';
+        const input = document.getElementById('delivery-address');
+        telemetry = createClientTelemetry({
+            windowRef: window,
+            fetchImpl: fetchMock,
+            beaconImpl: undefined,
+        });
+
+        telemetry.start();
+        input.focus();
+        await vi.advanceTimersByTimeAsync(700);
+        input.value = 'Киров, секретная улица, 42';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        await vi.advanceTimersByTimeAsync(500);
+        input.blur();
+        telemetry.flush();
+
+        const body = fetchMock.mock.calls[0][1].body;
+        const events = JSON.parse(body).events;
+        expect(events.map((event) => event.type)).toEqual([
+            'page_view',
+            'focus',
+            'input',
+            'blur',
+        ]);
+        expect(events[2]).toMatchObject({
+            targetKey: 'delivery-address',
+            fieldState: 'nonempty',
+            changed: true,
+        });
+        expect(events[3]).toMatchObject({
+            targetKey: 'delivery-address',
+            fieldState: 'nonempty',
+            changed: true,
+            durationMs: 1200,
+        });
+        expect(body).not.toContain('Киров');
+        expect(body).not.toContain('секретная');
+    });
+
+    it('always marks password fields as redacted', () => {
+        const fetchMock = vi.fn().mockResolvedValue(undefined);
+        document.body.innerHTML = '<input id="admin-password" type="password" />';
+        const input = document.getElementById('admin-password');
+        telemetry = createClientTelemetry({
+            windowRef: window,
+            fetchImpl: fetchMock,
+            beaconImpl: undefined,
+        });
+
+        telemetry.start();
+        input.focus();
+        input.value = 'top-secret-password';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.blur();
+        telemetry.flush();
+
+        const body = fetchMock.mock.calls[0][1].body;
+        const events = JSON.parse(body).events;
+        expect(events.at(-1)).toMatchObject({
+            type: 'blur',
+            targetKey: 'admin-password',
+            fieldState: 'redacted',
+            changed: true,
+        });
+        expect(body).not.toContain('top-secret-password');
     });
 
     it('silently drops a batch when the backend is unavailable', () => {

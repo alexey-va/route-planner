@@ -73,7 +73,12 @@ function ResultDisplay({
                 <strong>{formatPrice(price.price)}</strong>
             </div>
 
-            <button type="button" className="route-reset-button" onClick={reset}>
+            <button
+                type="button"
+                data-telemetry-action="reset-calculation"
+                className="route-reset-button"
+                onClick={reset}
+            >
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M4 7v5h5M20 17v-5h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M6.1 16.5A7 7 0 0018.8 14M17.9 7.5A7 7 0 005.2 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>

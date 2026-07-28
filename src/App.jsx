@@ -121,6 +121,7 @@ function InterfaceModeToggle({ mode, onChange }) {
         <div className="route-interface-toggle" role="group" aria-label="Версия интерфейса">
             <button
                 type="button"
+                data-telemetry-action="interface-modern"
                 className={mode === 'modern' ? 'is-active' : ''}
                 aria-pressed={mode === 'modern'}
                 onClick={() => onChange('modern')}
@@ -129,6 +130,7 @@ function InterfaceModeToggle({ mode, onChange }) {
             </button>
             <button
                 type="button"
+                data-telemetry-action="interface-legacy"
                 className={mode === 'legacy' ? 'is-active' : ''}
                 aria-pressed={mode === 'legacy'}
                 onClick={() => onChange('legacy')}

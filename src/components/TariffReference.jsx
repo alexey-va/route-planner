@@ -55,7 +55,13 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
                             <span className="route-access-status">Расширенные подсказки включены</span>
                             <small>Доступны комментарии и правила расчёта</small>
                         </div>
-                        <button type="button" onClick={onLock}>Закрыть доступ</button>
+                        <button
+                            type="button"
+                            data-telemetry-action="lock-tariff-hints"
+                            onClick={onLock}
+                        >
+                            Закрыть доступ
+                        </button>
                     </>
                 ) : (
                     <form onSubmit={handleSubmit}>
@@ -76,7 +82,9 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
                                 autoComplete="off"
                                 aria-invalid={Boolean(error)}
                             />
-                            <button type="submit">Открыть</button>
+                            <button type="submit" data-telemetry-action="unlock-tariff-hints">
+                                Открыть
+                            </button>
                         </div>
                         {error && <p className="route-field-message is-error">{error}</p>}
                     </form>

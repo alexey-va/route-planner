@@ -36,6 +36,7 @@ function CalculationHistory({ history, onRemove, onClear }) {
         <div className="route-popover">
             <button
                 onClick={() => setIsOpen(!isOpen)}
+                data-telemetry-action="toggle-calculation-history"
                 className="route-toolbar-button"
                 aria-expanded={isOpen}
                 aria-label="История расчетов"
@@ -76,6 +77,7 @@ function CalculationHistory({ history, onRemove, onClear }) {
                             <h3>История расчётов</h3>
                             {history.length > 0 && (
                                 <button
+                                    data-telemetry-action="clear-calculation-history"
                                     onClick={() => {
                                         onClear();
                                         setIsOpen(false);
@@ -132,6 +134,7 @@ function CalculationHistory({ history, onRemove, onClear }) {
                                                     </div>
                                                     <div className="flex items-center gap-1 flex-shrink-0">
                                                         <button
+                                                            data-telemetry-action="delete-calculation-history-item"
                                                             onClick={() => onRemove(item.id)}
                                                             className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
                                                             title="Удалить из истории"
