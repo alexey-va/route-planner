@@ -1,6 +1,6 @@
 import Test, { routeMapController } from "./Test.jsx";
 import WeightDistanceInput from "./WeightDistanceInput";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { calculate, vehiclesConfig } from "./script.jsx";
 import DeliveryOptions from "./DeliveryOptions.jsx";
 import VehicleSelection from "./VehicleSelection.jsx";
@@ -13,6 +13,10 @@ import { useAdminAccess } from "./hooks/useAdminAccess";
 import { useCalculationHistory } from "./hooks/useCalculationHistory";
 import { handleOptionChange, findNextAvailableVehicle } from "./utils/optionHandlers";
 import { validateFields } from "./utils/validation";
+import {
+    attachClientTelemetryDocument,
+    trackClientEvent,
+} from "./utils/clientTelemetry";
 
 const DEFAULT_OPTIONS = {
     by_time: false,
@@ -413,6 +417,20 @@ function ModernApp({ onSelectLegacy }) {
 }
 
 function LegacyApp({ onSelectModern }) {
+    const frameRef = useRef(null);
+    const detachTelemetryRef = useRef(() => {});
+
+    useEffect(() => () => detachTelemetryRef.current(), []);
+
+    const handleFrameLoad = () => {
+        detachTelemetryRef.current();
+        detachTelemetryRef.current = attachClientTelemetryDocument(
+            frameRef.current?.contentDocument,
+            { uiMode: 'legacy' },
+        );
+        trackClientEvent('legacy_frame_loaded', { uiMode: 'legacy' });
+    };
+
     return (
         <div className="route-legacy-shell">
             <header className="route-legacy-switchbar">
@@ -423,9 +441,11 @@ function LegacyApp({ onSelectModern }) {
                 <InterfaceModeToggle mode="legacy" onChange={onSelectModern} />
             </header>
             <iframe
+                ref={frameRef}
                 className="route-legacy-frame"
                 srcDoc={LEGACY_APP_DOCUMENT}
                 title="Классический интерфейс калькулятора доставки"
+                onLoad={handleFrameLoad}
             />
         </div>
     );
@@ -441,6 +461,10 @@ function App() {
 
     const changeInterfaceMode = (mode) => {
         const nextMode = mode === 'legacy' ? 'legacy' : 'modern';
+        trackClientEvent('interface_changed', {
+            uiMode: interfaceMode,
+            detail: `${interfaceMode}->${nextMode}`,
+        });
         const url = new URL(window.location.href);
 
         if (nextMode === 'modern') {
