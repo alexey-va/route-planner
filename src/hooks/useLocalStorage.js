@@ -1,18 +1,13 @@
 import { useState, useEffect } from 'react';
-
-const STORAGE_EXPIRY_MS = 1000 * 60 * 30; // 30 minutes
+import {
+    expireCalculatorStorageIfNeeded,
+    STORAGE_LAST_UPDATED_KEY,
+} from '../utils/storageExpiry';
 
 export function useLocalStorage(key, defaultValue) {
     const [value, setValue] = useState(() => {
-        // Check if storage has expired
-        const lastUpdateDate = localStorage.getItem('last_updated');
-        if (lastUpdateDate) {
-            const currentDate = Date.now();
-            const diff = currentDate - parseInt(lastUpdateDate, 10);
-            if (diff > STORAGE_EXPIRY_MS) {
-                localStorage.clear();
-                return defaultValue;
-            }
+        if (expireCalculatorStorageIfNeeded(localStorage)) {
+            return defaultValue;
         }
 
         // Get stored value
@@ -21,10 +16,9 @@ export function useLocalStorage(key, defaultValue) {
     });
 
     useEffect(() => {
-        localStorage.setItem('last_updated', Date.now().toString());
+        localStorage.setItem(STORAGE_LAST_UPDATED_KEY, Date.now().toString());
         localStorage.setItem(key, JSON.stringify(value));
     }, [key, value]);
 
     return [value, setValue];
 }
-
