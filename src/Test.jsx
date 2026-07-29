@@ -702,7 +702,11 @@ function Test({
             </div>
 
             <div className="route-map-viewport">
-                <div className="route-map-surface" id="map" />
+                <div
+                    className="route-map-surface"
+                    id="map"
+                    data-telemetry-action="map"
+                />
 
                 {mapStatus === 'loading' && (
                     <div className="route-map-state-overlay" role="status">

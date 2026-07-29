@@ -75,14 +75,27 @@ function currentUiMode(windowRef) {
     }
 }
 
-function targetMetadata(target) {
+function telemetryTarget(target) {
     const ElementConstructor = target?.ownerDocument?.defaultView?.Element;
     if (!ElementConstructor || !(target instanceof ElementConstructor)) {
-        return {};
+        return undefined;
     }
 
-    const actionable = target.closest('button, a, input, select, textarea, form, [role="button"]')
-        || target;
+    const label = target.closest('label');
+    const labelControl = label?.control
+        || (label?.htmlFor ? label.ownerDocument.getElementById(label.htmlFor) : undefined)
+        || label?.querySelector('input, select, textarea');
+
+    return labelControl
+        || target.closest(
+            '[data-telemetry-action], button, a, input, select, textarea, form, [role="button"]',
+        )
+        || undefined;
+}
+
+function targetMetadata(target) {
+    const actionable = telemetryTarget(target);
+    if (!actionable) return {};
 
     const classKey = Array.from(actionable.classList || [])
         .filter((token) => /^[a-zA-Z][a-zA-Z0-9_-]{1,63}$/.test(token))
@@ -103,6 +116,28 @@ function targetMetadata(target) {
             40,
         ),
     };
+}
+
+function isValueControl(target) {
+    const actionable = telemetryTarget(target);
+    const tagName = actionable?.tagName?.toLowerCase();
+    if (tagName === 'select' || tagName === 'textarea') return true;
+    if (tagName !== 'input') return false;
+
+    return !['button', 'submit', 'reset', 'image'].includes(
+        actionable.getAttribute('type')?.toLowerCase() || 'text',
+    );
+}
+
+function isContinuousField(target) {
+    const actionable = telemetryTarget(target);
+    const tagName = actionable?.tagName?.toLowerCase();
+    if (tagName === 'textarea') return true;
+    if (tagName !== 'input') return false;
+
+    return !['button', 'submit', 'reset', 'image', 'checkbox', 'radio', 'file'].includes(
+        actionable.getAttribute('type')?.toLowerCase() || 'text',
+    );
 }
 
 function fieldState(target) {
@@ -249,16 +284,20 @@ export function createClientTelemetry({
             fieldState: fieldState(target),
             ...details,
         });
-        const handleClick = (event) => track('click', {
-            ...eventDetails(event.target),
-        });
-        const handleChange = (event) => track('change', {
-            ...eventDetails(event.target, { changed: true }),
-        });
+        const handleClick = (event) => {
+            const details = eventDetails(event.target);
+            if (!details.targetKey || isValueControl(event.target)) return;
+            track('click', details);
+        };
+        const handleChange = (event) => {
+            if (isContinuousField(event.target)) return;
+            track('change', eventDetails(event.target, { changed: true }));
+        };
         const handleSubmit = (event) => track('submit', {
             ...eventDetails(event.target),
         });
         const handleFocus = (event) => {
+            if (!isContinuousField(event.target)) return;
             focusStates.set(event.target, {
                 focusedAt: Date.now(),
                 initialState: fieldState(event.target),
@@ -267,6 +306,7 @@ export function createClientTelemetry({
             track('focus', eventDetails(event.target));
         };
         const handleInput = (event) => {
+            if (!isContinuousField(event.target)) return;
             const state = focusStates.get(event.target);
             if (state) state.changed = true;
 
@@ -278,17 +318,16 @@ export function createClientTelemetry({
             }, INPUT_DEBOUNCE_MS));
         };
         const handleBlur = (event) => {
+            const state = focusStates.get(event.target);
+            if (!state) return;
             const timer = inputTimers.get(event.target);
             if (timer !== undefined) {
                 windowRef.clearTimeout(timer);
                 inputTimers.delete(event.target);
             }
-            const state = focusStates.get(event.target);
             track('blur', eventDetails(event.target, {
-                durationMs: state ? Date.now() - state.focusedAt : undefined,
-                changed: state
-                    ? state.changed || state.initialState !== fieldState(event.target)
-                    : undefined,
+                durationMs: Date.now() - state.focusedAt,
+                changed: state.changed || state.initialState !== fieldState(event.target),
             }));
             focusStates.delete(event.target);
         };

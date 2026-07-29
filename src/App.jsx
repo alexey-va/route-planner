@@ -251,7 +251,7 @@ function ModernApp({ onSelectLegacy }) {
 
     return (
         <div className="route-app-shell">
-            <header className="route-topbar">
+            <header className="route-topbar" data-telemetry-action="topbar">
                 <div className="route-brand">
                     <div className="route-brand-mark" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none">

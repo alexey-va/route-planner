@@ -31,7 +31,7 @@ function ResultDisplay({
                 )}
             </div>
 
-            <dl className="route-result-details">
+            <dl className="route-result-details" data-telemetry-action="result-summary">
                 <div>
                     <dt>Расстояние</dt>
                     <dd>{((distance || 0) / 1000).toFixed(1)} км</dd>

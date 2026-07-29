@@ -128,7 +128,10 @@ function DeliveryOptions({
                         </label>
                     </div>
 
-                    <div className={`route-order-total ${validationErrors.orderTotal ? 'has-error' : ''}`}>
+                    <div
+                        className={`route-order-total ${validationErrors.orderTotal ? 'has-error' : ''}`}
+                        data-telemetry-action="order-total-field"
+                    >
                         <label htmlFor="orderTotal">Сумма заказа</label>
                         <div>
                             <input

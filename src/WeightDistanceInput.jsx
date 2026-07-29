@@ -34,7 +34,7 @@ function WeightDistanceInput({
 
     return (
         <div className="route-field-grid">
-            <div className="route-field">
+            <div className="route-field" data-telemetry-action="distance-field">
                 <label htmlFor="distance">
                     Расстояние
                     <span>км</span>
@@ -65,7 +65,7 @@ function WeightDistanceInput({
                 )}
             </div>
 
-            <div className="route-field">
+            <div className="route-field" data-telemetry-action="weight-field">
                 <label htmlFor="weight">
                     Вес груза
                     <span>кг</span>
