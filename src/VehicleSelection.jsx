@@ -12,17 +12,6 @@ function VehicleIcon({ vehicleKey }) {
         );
     }
 
-    if (vehicleKey === 1) {
-        return (
-            <svg viewBox="0 0 38 24" fill="none">
-                <path d="M2.5 3.5h21V18h-21zM23.5 8h6l5 5.5V18h-11z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
-                <path d="M26 9.5h3l3 3.5h-6zM7 7h12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="9" cy="19" r="2.4" fill="white" stroke="currentColor" strokeWidth="1.7"/>
-                <circle cx="29.5" cy="19" r="2.4" fill="white" stroke="currentColor" strokeWidth="1.7"/>
-            </svg>
-        );
-    }
-
     if (vehicleKey === 2) {
         return (
             <svg viewBox="0 0 38 24" fill="none">

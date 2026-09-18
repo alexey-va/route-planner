@@ -33,20 +33,22 @@ export function calculate(params) {
     }
 
     // Extract conditions
-    const conditions = extractConditions(params);
-    const vehicleConfig = vehiclesConfig[params.vehicle];
+    const vehicle = resolveVehicle(params.vehicle, params.weight);
+    const normalizedParams = vehicle === params.vehicle ? params : { ...params, vehicle };
+    const conditions = extractConditions(normalizedParams);
+    const vehicleConfig = vehiclesConfig[vehicle];
 
     // Calculate base price
-    let price = calculateBasePrice(params, vehicleConfig, comments);
+    let price = calculateBasePrice(normalizedParams, vehicleConfig, comments);
 
     // Apply time-based adjustments
-    price = applyTimeAdjustments(params, price, comments);
+    price = applyTimeAdjustments(normalizedParams, price, comments);
 
     // Apply weekend adjustments
     price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
     // Check for free delivery with retail/opt (розница/опт 25к — в пределах города, без доставки к времени, машина до 1.5т, не в выходные)
-    const freeDeliveryResult = applyFreeDeliveryForRetailOpt(params, price, comments);
+    const freeDeliveryResult = applyFreeDeliveryForRetailOpt(normalizedParams, price, comments);
     if (freeDeliveryResult !== null) {
         return freeDeliveryResult;
     }
@@ -68,9 +70,20 @@ function canFitInAnyVehicle(weight) {
     return Object.values(vehiclesConfig).some(vehicle => weight <= vehicle.max_weight);
 }
 
+function resolveVehicle(vehicleKey, weight) {
+    if (vehiclesConfig[vehicleKey]) {
+        return Number(vehicleKey);
+    }
+
+    const fallback = Object.entries(vehiclesConfig)
+        .find(([, vehicle]) => weight <= vehicle.max_weight);
+
+    return Number(fallback?.[0] ?? 0);
+}
+
 function extractConditions(params) {
     return {
-        onGazel: params.vehicle >= 0 && params.vehicle <= 1, // Газель 1.5т, 2т
+        onGazel: params.vehicle === 0,
         onKamaz: params.vehicle === 3,
         isHeavyOnWeekend: params.weight > 800 && isWeekend(params.options.day_of_week)
     };
@@ -230,20 +243,12 @@ export const vehiclesConfig = {
         minimal_city_price: 1300,  // 1.5т
         heavy: false
     },
-    1: {
-        name: "Газель",
-        price: 66,
-        price_hour: 1200,
-        max_weight: 2000,
-        minimal_city_price: 1500,  // 2т
-        heavy: false
-    },
     2: {
         name: "Газон",
-        price: 72,
+        price: 80,
         price_hour: 1200,
         max_weight: 4300,
-        minimal_city_price: 2000,
+        minimal_city_price: 2300,
         heavy: true
     },
     3: {

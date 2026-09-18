@@ -87,7 +87,6 @@ describe('optionHandlers', () => {
   describe('findNextAvailableVehicle', () => {
     const vehiclesConfig = {
       0: { max_weight: 1500 },
-      1: { max_weight: 2000 },
       2: { max_weight: 4300 },
       3: { max_weight: 10000 }
     };
@@ -95,8 +94,8 @@ describe('optionHandlers', () => {
     it('should find correct vehicle for weight', () => {
       expect(findNextAvailableVehicle(500, vehiclesConfig)).toBe(0);
       expect(findNextAvailableVehicle(1500, vehiclesConfig)).toBe(0);
-      expect(findNextAvailableVehicle(1501, vehiclesConfig)).toBe(1);
-      expect(findNextAvailableVehicle(2000, vehiclesConfig)).toBe(1);
+      expect(findNextAvailableVehicle(1501, vehiclesConfig)).toBe(2);
+      expect(findNextAvailableVehicle(2000, vehiclesConfig)).toBe(2);
       expect(findNextAvailableVehicle(4300, vehiclesConfig)).toBe(2);
       expect(findNextAvailableVehicle(10000, vehiclesConfig)).toBe(3);
     });
@@ -106,4 +105,3 @@ describe('optionHandlers', () => {
     });
   });
 });
-

@@ -2,7 +2,6 @@ import { config, vehiclesConfig } from '../script.jsx';
 
 export const VEHICLE_LABELS = {
     0: '1.5т',
-    1: '2т',
     2: '4.3т',
     3: '10т'
 };
@@ -47,7 +46,6 @@ export function getPricingRules() {
         {
             title: 'Тарифы по транспорту',
             items: [
-                'Тариф за км повышен на 10% от прежних ставок (50→55, 60→66, 65→72 руб/км), округление вверх до целых рублей',
                 ...vehicleRules.flatMap((rule) => [
                     rule.title,
                     ...rule.items.map((item) => `  • ${item}`)

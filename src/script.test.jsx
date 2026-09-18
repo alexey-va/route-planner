@@ -101,20 +101,34 @@ describe('calculate function', () => {
       )).toBe(true);
     });
 
-    it('should calculate price based on distance for vehicle 3 (Газель 2т)', () => {
+    it('should calculate the Gazon price with its minimum', () => {
       const params = createDefaultParams({
         distance: 10000, // 10 km
-        vehicle: 1, // Газель 2т
+        vehicle: 2, // Газон
         region: 'Другой город' // Not Киров to avoid free delivery
       });
       const result = calculate(params);
-      
-      const expectedPrice = (10000 / 1000) * vehiclesConfig[1].price * 2;
-      // May be adjusted to minimal price
-      expect(result.price).toBeGreaterThanOrEqual(Math.min(expectedPrice, vehiclesConfig[1].minimal_city_price));
+
+      expect(vehiclesConfig[2].price).toBe(80);
+      expect(vehiclesConfig[2].minimal_city_price).toBe(2300);
+      expect(result.price).toBe(2300);
       expect(result.description.some(desc => 
-        desc.includes('Базовая цена') && desc.includes(`${vehiclesConfig[1].price} руб/км`)
+        desc.includes('Базовая цена') && desc.includes('80 руб/км')
       )).toBe(true);
+    });
+
+    it('should remove the 2t Gazel and recover a persisted selection of it', () => {
+      expect(Object.keys(vehiclesConfig)).toEqual(['0', '2', '3']);
+
+      const result = calculate(createDefaultParams({
+        distance: 10000,
+        weight: 1800,
+        vehicle: 1,
+        region: 'Другой город'
+      }));
+
+      expect(result.price).toBe(2300);
+      expect(result.description.some(desc => desc.includes('80 руб/км'))).toBe(true);
     });
 
     it('should calculate price with base price for Kamaz', () => {
@@ -392,7 +406,7 @@ describe('calculate function', () => {
     });
 
     it('should handle all vehicle types correctly', () => {
-      const vehicles = [0, 1, 2, 3];
+      const vehicles = [0, 2, 3];
       const distance = 10000;
       
       vehicles.forEach(vehicle => {
@@ -524,7 +538,6 @@ describe('calculate function', () => {
     it('should handle each vehicle at its exact max weight', () => {
       const testCases = [
         { vehicle: 0, maxWeight: vehiclesConfig[0].max_weight },
-        { vehicle: 1, maxWeight: vehiclesConfig[1].max_weight },
         { vehicle: 2, maxWeight: vehiclesConfig[2].max_weight },
         { vehicle: 3, maxWeight: vehiclesConfig[3].max_weight }
       ];
@@ -872,7 +885,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1501,
-        vehicle: 1,
+        vehicle: 2,
         region: 'Киров',
         orderTotal: 30000,
         options: { ...createDefaultParams().options, retail: true }
@@ -886,7 +899,7 @@ describe('calculate function', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 1000,
-        vehicle: 1,
+        vehicle: 2,
         region: 'Киров',
         orderTotal: 30000,
         options: { ...createDefaultParams().options, retail: true }
@@ -1062,4 +1075,3 @@ describe('calculate function', () => {
     });
   });
 });
-

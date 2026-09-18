@@ -22,9 +22,12 @@ describe('getPricingRules', () => {
 
         expect(allItems).toContain(`${config.global_min_price} руб`);
         expect(allItems).toContain(`${config.free_delivery_retail_min} руб`);
-        expect(allItems).toContain('Тариф за км повышен на 10%');
         expect(allItems).toContain(`${vehiclesConfig[0].price} руб/км`);
         expect(allItems).toContain(`${vehiclesConfig[0].minimal_city_price} руб`);
+        expect(allItems).toContain('Газон 4.3т');
+        expect(allItems).toContain('80 руб/км');
+        expect(allItems).toContain('2300 руб');
+        expect(allItems).not.toContain('Газель 2т');
         expect(allItems).toContain('не в зоне Коминтерн');
         expect(allItems).toContain('Бесплатная доставка в выходные не действует');
     });

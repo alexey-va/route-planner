@@ -5,8 +5,7 @@ import VehicleSelection from './VehicleSelection';
 
 const mockVehiclesConfig = {
   0: { name: 'Газель', max_weight: 1500, price: 50, minimal_city_price: 1000 },
-  1: { name: 'Газель', max_weight: 2000, price: 55, minimal_city_price: 1500 },
-  2: { name: 'Газон', max_weight: 4300, price: 60, minimal_city_price: 2000 },
+  2: { name: 'Газон', max_weight: 4300, price: 80, minimal_city_price: 2300 },
   3: { name: 'Камаз', max_weight: 10000, price: 60, minimal_city_price: 2000 }
 };
 
@@ -22,7 +21,7 @@ describe('VehicleSelection', () => {
     render(<VehicleSelection {...defaultProps} />);
     
     expect(screen.getByLabelText(/Газель.*1.5т/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Газель.*2т/)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Газель.*2т/)).not.toBeInTheDocument();
     expect(screen.getByLabelText(/Газон.*4.3т/)).toBeInTheDocument();
     expect(screen.getByLabelText(/Камаз.*10т/)).toBeInTheDocument();
   });
@@ -40,8 +39,8 @@ describe('VehicleSelection', () => {
     const gazel15Radio = screen.getByLabelText(/Газель.*1.5т/);
     expect(gazel15Radio).toBeDisabled();
     
-    const gazel2Radio = screen.getByLabelText(/Газель.*2т/);
-    expect(gazel2Radio).not.toBeDisabled();
+    const gazonRadio = screen.getByLabelText(/Газон.*4.3т/);
+    expect(gazonRadio).not.toBeDisabled();
   });
 
   it('should call setVehicle when vehicle is selected', async () => {
@@ -60,9 +59,8 @@ describe('VehicleSelection', () => {
     render(<VehicleSelection {...defaultProps} />);
     
     expect(screen.getByText('1.5т')).toBeInTheDocument();
-    expect(screen.getByText('2т')).toBeInTheDocument();
+    expect(screen.queryByText('2т')).not.toBeInTheDocument();
     expect(screen.getByText('4.3т')).toBeInTheDocument();
     expect(screen.getByText('10т')).toBeInTheDocument();
   });
 });
-
