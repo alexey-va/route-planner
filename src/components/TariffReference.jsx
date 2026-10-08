@@ -50,7 +50,7 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
                                 <p className="route-tariff-outside-rate">
                                     Зелёная зона и Коминтерн · {formatRubles(vehicle.price)} ₽/км
                                     <br />
-                                    За пределами зон · {formatRubles(vehicle.outside_city_price)} ₽/км
+                                    За городом · {formatRubles(vehicle.outside_city_price)} ₽/км
                                     <br />
                                     Участки пути считаются отдельно
                                 </p>

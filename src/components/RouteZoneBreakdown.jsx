@@ -66,7 +66,7 @@ function RouteZoneBreakdown({ pricing }) {
                     </dd>
                 </div>
                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2">
-                    <dt className="min-w-0 text-slate-600">За пределами зон</dt>
+                    <dt className="min-w-0 text-slate-600">За городом</dt>
                     <dd className="flex items-center gap-2 text-right font-medium text-slate-800">
                         <span>{formatKilometers(pricing.outsideMeters)}</span>
                         {hasDistinctRates && (

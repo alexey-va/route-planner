@@ -39,6 +39,6 @@ describe('TariffReference', () => {
         );
 
         expect(screen.getByText(/Зелёная зона и Коминтерн · 80 ₽\/км/)).toBeVisible();
-        expect(screen.getByText(/За пределами зон · 50 ₽\/км/)).toBeVisible();
+        expect(screen.getByText(/За городом · 50 ₽\/км/)).toBeVisible();
     });
 });

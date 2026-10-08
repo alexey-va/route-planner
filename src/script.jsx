@@ -111,7 +111,7 @@ function calculateBasePrice(params, vehicleConfig, comments, routePricing) {
             const outsideKm = routePricing.outsideMeters / 1000;
             price = (insideKm * routePricing.insideRate + outsideKm * routePricing.outsideRate) * 2;
             comments.push(
-                `По участкам маршрута: (${insideKm.toFixed(2)} км × ${routePricing.insideRate} руб/км в Кирове и Коминтерне + ${outsideKm.toFixed(2)} км × ${routePricing.outsideRate} руб/км за пределами зон) × 2 (туда-обратно) = ${price.toFixed(0)} руб`
+                `По участкам маршрута: (${insideKm.toFixed(2)} км × ${routePricing.insideRate} руб/км в Кирове и Коминтерне + ${outsideKm.toFixed(2)} км × ${routePricing.outsideRate} руб/км за городом) × 2 (туда-обратно) = ${price.toFixed(0)} руб`
             );
         } else {
             price = distanceKm * rate * 2;

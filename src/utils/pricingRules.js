@@ -25,7 +25,7 @@ function formatVehicleBaseRule(vehicleKey, vehicle) {
             ...(vehicle.outside_city_price !== undefined
                 ? [
                     `Киров (зелёная зона) и Коминтерн: ${vehicle.price} руб/км`,
-                    `За пределами этих зон: ${vehicle.outside_city_price} руб/км`,
+                    `За городом: ${vehicle.outside_city_price} руб/км`,
                     'Участки маршрута внутри и снаружи зон считаются отдельно; сумма × 2 (туда-обратно)',
                     'Без маршрута на карте весь путь считается по тарифу зоны назначения, без разбивки'
                 ]

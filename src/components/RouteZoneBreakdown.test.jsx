@@ -27,7 +27,7 @@ describe('RouteZoneBreakdown', () => {
         expect(screen.getByText('Киров и Коминтерн')).toBeInTheDocument();
         expect(screen.getByText('1,25 км')).toBeInTheDocument();
         expect(screen.getByText('80 ₽/км')).toBeInTheDocument();
-        expect(screen.getByText('За пределами зон')).toBeInTheDocument();
+        expect(screen.getByText('За городом')).toBeInTheDocument();
         expect(screen.getByText('20,25 км')).toBeInTheDocument();
         expect(screen.getByText('50 ₽/км')).toBeInTheDocument();
         expect(screen.getByText('Для расчёта стоимости пробег считается туда-обратно.')).toBeInTheDocument();
@@ -41,7 +41,7 @@ describe('RouteZoneBreakdown', () => {
         );
 
         expect(screen.getByText('Киров и Коминтерн')).toBeInTheDocument();
-        expect(screen.getByText('За пределами зон')).toBeInTheDocument();
+        expect(screen.getByText('За городом')).toBeInTheDocument();
         expect(screen.queryByText('55 ₽/км')).not.toBeInTheDocument();
     });
 
