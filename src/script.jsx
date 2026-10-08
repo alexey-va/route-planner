@@ -45,7 +45,7 @@ export function calculate(params) {
     price = applyTimeAdjustments(normalizedParams, price, comments);
 
     // Apply weekend adjustments
-    price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
+    price = applyWeekendAdjustments(conditions, price, comments);
 
     const discountedDelivery = applyDiscountedDelivery(normalizedParams);
     if (discountedDelivery !== null) {
@@ -81,10 +81,12 @@ function resolveVehicle(vehicleKey, weight) {
 }
 
 function extractConditions(params) {
+    const onWeekend = isWeekend(params.options.day_of_week);
     return {
         onGazel: params.vehicle === 0,
         onKamaz: params.vehicle === 3,
-        isHeavyOnWeekend: params.weight > 800 && isWeekend(params.options.day_of_week)
+        isHeavyGazelOnWeekend: params.vehicle === 0 && params.weight > 800 && onWeekend,
+        isTruckOnWeekend: (params.vehicle === 2 || params.vehicle === 3) && onWeekend
     };
 }
 
@@ -144,16 +146,25 @@ function applyTimeAdjustments(params, price, comments) {
     return price;
 }
 
-function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
-    if (isHeavyOnWeekend) {
-        const newPrice = price * config.weekend_multiplier;
-        comments.push(
-            `Доставка в выходные дни с весом более 800 кг. Цена: ${price.toFixed(0)} руб × ${config.weekend_multiplier} = ${newPrice.toFixed(0)} руб`
-        );
-        return newPrice;
+function applyWeekendAdjustments(conditions, price, comments) {
+    const multiplier = conditions.isTruckOnWeekend
+        ? config.truck_weekend_multiplier
+        : conditions.isHeavyGazelOnWeekend
+            ? config.weekend_multiplier
+            : null;
+
+    if (multiplier === null) {
+        return price;
     }
 
-    return price;
+    const newPrice = price * multiplier;
+    const weekendRule = conditions.isTruckOnWeekend
+        ? 'для Газона и Камаза при любом весе'
+        : 'для Газели с весом более 800 кг';
+    comments.push(
+        `Доставка в выходные дни ${weekendRule}. Цена: ${price.toFixed(0)} руб × ${multiplier} = ${newPrice.toFixed(0)} руб`
+    );
+    return newPrice;
 }
 
 // Льготная доставка Газелью в Кирове; прежние ограничения и доплаты сохраняются.
@@ -194,6 +205,7 @@ export const config = {
     evening_add: 300,
     right_now: 2,
     weekend_multiplier: 1.5,
+    truck_weekend_multiplier: 2,
     global_min_price: 500,  // Глобальный минимум для всех доставок
     bridge_distance_add: 10,
     delivery_retail_min: 25000,

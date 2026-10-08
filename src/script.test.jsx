@@ -201,7 +201,7 @@ describe('calculate function', () => {
         distance: 40000, weight: 2000, vehicle: 2, region: 'Область',
         options: { ...createDefaultParams().options, by_time: true, day_of_week: 'weekend' }
       }));
-      expect(result.price).toBe(4000 * 1.7 * 1.5);
+      expect(result.price).toBe(4000 * 1.7 * 2);
     });
   });
 
@@ -330,7 +330,73 @@ describe('calculate function', () => {
   });
 
   describe('Weekend Adjustments', () => {
-    it('should apply weekend multiplier for heavy items (>800kg) on weekend', () => {
+    it.each([
+      { vehicleName: 'Газон', vehicle: 2, day: 'weekend', weight: 1, expectedPrice: 8000 },
+      { vehicleName: 'Газон', vehicle: 2, day: 'weekend', weight: 1000, expectedPrice: 8000 },
+      { vehicleName: 'Газон', vehicle: 2, day: 'saturday', weight: 1, expectedPrice: 8000 },
+      { vehicleName: 'Газон', vehicle: 2, day: 'saturday', weight: 1000, expectedPrice: 8000 },
+      { vehicleName: 'Газон', vehicle: 2, day: 'sunday', weight: 1, expectedPrice: 8000 },
+      { vehicleName: 'Газон', vehicle: 2, day: 'sunday', weight: 1000, expectedPrice: 8000 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'weekend', weight: 1, expectedPrice: 15520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'weekend', weight: 1000, expectedPrice: 15520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'saturday', weight: 1, expectedPrice: 15520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'saturday', weight: 1000, expectedPrice: 15520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'sunday', weight: 1, expectedPrice: 15520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'sunday', weight: 1000, expectedPrice: 15520 }
+    ])('$vehicleName gets one ×2 weekend multiplier at $weight kg for $day', ({ vehicle, day, weight, expectedPrice }) => {
+      const result = calculate(createDefaultParams({
+        distance: 40000,
+        weight,
+        vehicle,
+        region: 'Область',
+        options: { ...createDefaultParams().options, day_of_week: day }
+      }));
+
+      expect(result.price).toBe(expectedPrice);
+      expect(result.description[0]).toContain(vehicle === 2 ? '50 руб/км' : '72 руб/км');
+      expect(result.description.some((description) => description.includes('× 2 ='))).toBe(true);
+      expect(result.description.some((description) => description.includes('× 1.5'))).toBe(false);
+    });
+
+    it.each([
+      { vehicleName: 'Газон', vehicle: 2, weight: 1, expectedPrice: 4000 },
+      { vehicleName: 'Газон', vehicle: 2, weight: 1000, expectedPrice: 4000 },
+      { vehicleName: 'Камаз', vehicle: 3, weight: 1, expectedPrice: 7760 },
+      { vehicleName: 'Камаз', vehicle: 3, weight: 1000, expectedPrice: 7760 }
+    ])('$vehicleName keeps its weekday price at $weight kg', ({ vehicle, weight, expectedPrice }) => {
+      const result = calculate(createDefaultParams({
+        distance: 40000,
+        weight,
+        vehicle,
+        region: 'Область',
+        options: { ...createDefaultParams().options, day_of_week: 'weekdays' }
+      }));
+
+      expect(result.price).toBe(expectedPrice);
+      expect(result.description.some((description) => description.includes('Доставка в выходные'))).toBe(false);
+    });
+
+    it.each([
+      { vehicleName: 'Газон', vehicle: 2, basePrice: 4000, expectedPrice: 13600 },
+      { vehicleName: 'Камаз', vehicle: 3, basePrice: 7760, expectedPrice: 26384 }
+    ])('$vehicleName applies the weekend multiplier after the by-time multiplier', ({ vehicle, basePrice, expectedPrice }) => {
+      const result = calculate(createDefaultParams({
+        distance: 40000,
+        weight: 500,
+        vehicle,
+        region: 'Область',
+        options: { ...createDefaultParams().options, by_time: true, day_of_week: 'saturday' }
+      }));
+      const timeIndex = result.description.findIndex((description) => description.includes('Доставка к конкретному времени'));
+      const weekendIndex = result.description.findIndex((description) => description.includes('Доставка в выходные'));
+
+      expect(result.price).toBe(expectedPrice);
+      expect(result.description[timeIndex]).toContain(`Цена: ${basePrice} руб × 1.7 = ${basePrice * 1.7} руб`);
+      expect(result.description[weekendIndex]).toContain(`Цена: ${basePrice * 1.7} руб × 2 = ${expectedPrice} руб`);
+      expect(timeIndex).toBeLessThan(weekendIndex);
+    });
+
+    it('should apply the Gazelle weekend multiplier for weights above 800kg', () => {
       const params = createDefaultParams({
         distance: 10000,
         weight: 900, // > 800
@@ -351,7 +417,7 @@ describe('calculate function', () => {
       
       expect(result.price).toBe(expectedPrice);
       expect(result.description.some(desc => 
-        desc.includes('Доставка в выходные дни с весом более 800 кг') && desc.includes('× 1.5')
+        desc.includes('Доставка в выходные дни для Газели с весом более 800 кг') && desc.includes('× 1.5')
       )).toBe(true);
     });
 
@@ -374,7 +440,7 @@ describe('calculate function', () => {
       }
       
       expect(result.price).toBe(basePrice);
-      expect(result.description).not.toContain('Доставка в выходные дни с весом более 800 кг');
+      expect(result.description).not.toContain('Доставка в выходные дни для Газели с весом более 800 кг');
     });
 
     it('should not apply weekend multiplier on weekdays', () => {
@@ -396,7 +462,7 @@ describe('calculate function', () => {
       }
       
       expect(result.price).toBe(basePrice);
-      expect(result.description).not.toContain('Доставка в выходные дни с весом более 800 кг');
+      expect(result.description).not.toContain('Доставка в выходные дни для Газели с весом более 800 кг');
     });
   });
 
@@ -416,10 +482,10 @@ describe('calculate function', () => {
       
       // Kamaz: 2000 + (20 * 72 * 2) = 4880
       // by_time: 4880 * 1.7 = 8296
-      // weekend: 7140 * 1.5 = 10710
+      // weekend: 8296 * 2 = 16592
       let expectedPrice = 2000 + (20000 / 1000) * vehiclesConfig[3].price * 2;
       expectedPrice *= config.by_time;
-      expectedPrice *= config.weekend_multiplier;
+      expectedPrice *= 2;
       
       expect(result.price).toBe(expectedPrice);
     });
@@ -540,7 +606,7 @@ describe('calculate function', () => {
         basePrice = vehiclesConfig[0].minimal_city_price;
       }
       expect(result.price).toBe(basePrice);
-      expect(result.description).not.toContain('Доставка в выходные дни с весом более 800 кг');
+      expect(result.description).not.toContain('Доставка в выходные дни для Газели с весом более 800 кг');
     });
 
     it('should handle weight just over heavy weekend threshold (801kg)', () => {
@@ -563,7 +629,7 @@ describe('calculate function', () => {
       const expectedPrice = basePrice * config.weekend_multiplier;
       expect(result.price).toBe(expectedPrice);
       expect(result.description.some(desc => 
-        desc.includes('Доставка в выходные дни с весом более 800 кг')
+        desc.includes('Доставка в выходные дни для Газели с весом более 800 кг')
       )).toBe(true);
     });
 
@@ -1059,7 +1125,7 @@ describe('calculate function', () => {
       const expectedPrice = basePrice * config.weekend_multiplier;
 
       expect(result.price).toBe(expectedPrice);
-      expect(result.description.some(d => d && d.includes('Доставка в выходные дни с весом более 800 кг'))).toBe(true);
+      expect(result.description.some(d => d && d.includes('Доставка в выходные дни для Газели с весом более 800 кг'))).toBe(true);
       expect(result.description.some(d => d && d.includes('Льготная доставка'))).toBe(false);
     });
 

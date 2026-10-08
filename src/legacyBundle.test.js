@@ -3,7 +3,13 @@ import { readFileSync } from 'node:fs';
 import { JSDOM, VirtualConsole } from 'jsdom';
 import { expect, it, vi } from 'vitest';
 
-it('renders the shipped classic bundle and calculates discounted delivery', async () => {
+it.each([
+    { vehicle: 0, day: 'weekdays', price: 700 },
+    { vehicle: 2, day: 'weekdays', price: 2300 },
+    { vehicle: 2, day: 'weekend', price: 4600 },
+    { vehicle: 3, day: 'weekdays', price: 3440 },
+    { vehicle: 3, day: 'weekend', price: 6880 },
+])('renders the shipped classic bundle: vehicle $vehicle, $day → $price', async ({ vehicle, day, price }) => {
     const app = readFileSync(new URL('./App.jsx', import.meta.url), 'utf8');
     const asset = app.match(/src="(\/legacy\/assets\/[^\"]+\.js)"/)[1];
     const bundle = readFileSync(new URL(`../public${asset}`, import.meta.url), 'utf8');
@@ -17,9 +23,9 @@ it('renders the shipped classic bundle and calculates discounted delivery', asyn
     try {
         dom.window.ymaps = { ready() {} };
         const fixture = {
-            distance: 10000, weight: 500, vehicle: 0, region: 'Киров', regions: [],
+            distance: 10000, weight: 1, vehicle, region: 'Киров', regions: [],
             orderTotal: 25000,
-            options: { retail: true, opt: false, day_of_week: 'weekdays' },
+            options: { retail: true, opt: false, day_of_week: day },
         };
         for (const [key, value] of Object.entries(fixture)) {
             dom.window.localStorage.setItem(key, JSON.stringify(value));
@@ -27,12 +33,16 @@ it('renders the shipped classic bundle and calculates discounted delivery', asyn
         dom.window.eval(bundle);
         await vi.waitFor(() => {
             expect(errors).toEqual([]);
-            expect(dom.window.document.body.textContent).toContain('700 руб');
+            const priceLabel = [...dom.window.document.querySelectorAll('span')]
+                .find((span) => span.textContent === 'Стоимость:');
+            expect(priceLabel?.nextElementSibling?.textContent).toBe(`${price} руб`);
         });
         const labels = [...dom.window.document.querySelectorAll('label')]
             .map((label) => label.textContent.replace(/\s+/g, ' '));
-        expect(labels).toContain('Розница (от 25 000 ₽)');
-        expect(labels).toContain('Опт (от 20 000 ₽)');
+        expect(labels).toContain('Розница');
+        expect(labels).toContain('Опт');
+        const bodyText = dom.window.document.body.textContent.replace(/\s+/g, ' ');
+        expect(bodyText).toContain('При сумме заказа от 20 000 ₽ для опта или от 25 000 ₽ для розницы.');
     } finally {
         dom.window.close();
     }

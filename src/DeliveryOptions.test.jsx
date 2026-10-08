@@ -25,13 +25,21 @@ describe('DeliveryOptions', () => {
             />
         );
 
-        const thresholds = Array.from(container.querySelectorAll('.route-order-threshold'));
-        const thresholdText = thresholds.map((threshold) => normalizeSpaces(threshold.textContent));
+        const explanation = container.querySelector('#route-order-discount');
+        const explanationText = normalizeSpaces(explanation.textContent);
 
-        expect(thresholds).toHaveLength(2);
-        expect(thresholdText).toContain(normalizeSpaces(`от ${formatRubles(config.delivery_opt_min)} ₽`));
-        expect(thresholdText).toContain(normalizeSpaces(`от ${formatRubles(config.delivery_retail_min)} ₽`));
-        thresholds.forEach((threshold) => expect(threshold).toBeVisible());
+        expect(explanation).toBeVisible();
+        expect(explanationText).toContain(normalizeSpaces(
+            `Льготная доставка Газелью — от ${formatRubles(config.discounted_delivery_price)} ₽`
+        ));
+        expect(explanationText).toContain(normalizeSpaces(
+            `При сумме заказа от ${formatRubles(config.delivery_opt_min)} ₽ для опта или от ${formatRubles(config.delivery_retail_min)} ₽ для розницы.`
+        ));
+        expect(screen.getByRole('radio', { name: 'Розница', exact: true })).toBeChecked();
+        expect(screen.getByRole('radio', { name: 'Опт', exact: true })).not.toBeChecked();
+        expect(screen.getByRole('spinbutton', { name: 'Сумма заказа' })).toHaveAttribute(
+            'aria-describedby', 'route-order-discount'
+        );
     });
 
     it('keeps the day validation message slot mounted after a day is selected', () => {

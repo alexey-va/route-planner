@@ -30,6 +30,8 @@ describe('getPricingRules', () => {
         expect(allItems).toContain('20000 руб');
         expect(allItems).toContain('700 руб');
         expect(allItems).not.toContain('Бесплатная доставка');
+        expect(allItems).toContain('Суббота–воскресенье: Газель при весе более 800 кг — цена × 1.5');
+        expect(allItems).toContain('Суббота–воскресенье: Газон и Камаз при любом весе — цена × 2');
         expect(allItems).toContain('2300 руб');
         expect(allItems).not.toContain('Газель 2т');
         expect(allItems).toContain('не в зоне Коминтерн');

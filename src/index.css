@@ -971,7 +971,8 @@ input:focus-visible {
     transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
-.route-input-shell:focus-within {
+.route-input-shell:focus-within,
+.route-order-total > div:focus-within {
     border-color: var(--route-accent);
     background: white;
     box-shadow: 0 0 0 3px rgba(23, 108, 84, 0.11);
@@ -1001,7 +1002,8 @@ input:focus-visible {
     font-weight: 760;
 }
 
-.route-input:focus-visible {
+.route-input:focus-visible,
+.route-order-total input:focus-visible {
     outline: none;
     outline-offset: 0;
 }
@@ -1139,13 +1141,36 @@ input:focus-visible {
 
 .route-order-row {
     display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
     gap: 10px;
     align-items: end;
 }
 
+.route-order-type {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.route-order-type legend,
+.route-order-total > label {
+    width: 100%;
+    margin: 0 0 7px;
+    color: #34423c;
+    font-size: 13px;
+    font-weight: 720;
+    line-height: 20px;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.route-order-total {
+    min-width: 0;
+}
+
 .route-segmented {
-    height: 58px;
+    height: 46px;
     padding: 3px;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1157,19 +1182,13 @@ input:focus-visible {
     display: grid;
     align-content: center;
     justify-items: center;
-    gap: 3px;
+    padding: 0 8px;
     color: #68756f;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 720;
-}
-
-.route-order-threshold {
-    color: #7d8984;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.15;
+    white-space: nowrap;
 }
 
 .route-segmented label.is-selected {
@@ -1184,13 +1203,8 @@ input:focus-visible {
     pointer-events: none;
 }
 
-.route-order-total > label {
-    margin-bottom: 7px;
-    font-size: 12px;
-}
-
 .route-order-total > div {
-    height: 58px;
+    height: 46px;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -1201,6 +1215,36 @@ input:focus-visible {
 
 .route-order-row + .route-field-message.is-placeholder {
     display: none;
+}
+
+.route-order-discount {
+    margin-top: 12px;
+    color: #68756f;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.route-order-discount p {
+    margin: 0;
+}
+
+.route-order-discount strong {
+    color: #34423c;
+    font-weight: 650;
+}
+
+.route-order-discount details {
+    margin-top: 4px;
+}
+
+.route-order-discount summary {
+    width: fit-content;
+    color: var(--route-accent-strong);
+    cursor: pointer;
+}
+
+.route-order-discount details p {
+    margin-top: 5px;
 }
 
 .route-order-total input {
@@ -1860,10 +1904,6 @@ input:focus-visible {
         min-height: 52px;
     }
 
-    .route-order-row {
-        grid-template-columns: 1fr;
-    }
-
     .route-tariff-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1950,10 +1990,6 @@ input:focus-visible {
 
     .route-field-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .route-order-row {
-        grid-template-columns: 0.9fr 1.1fr;
     }
 }
 
@@ -2167,10 +2203,6 @@ input:focus-visible {
 
     .route-option-grid {
         grid-template-columns: 1fr 1fr;
-    }
-
-    .route-order-row {
-        grid-template-columns: 1fr;
     }
 
     .route-vehicle-grid {

@@ -101,37 +101,33 @@ function DeliveryOptions({
                 </p>
             </fieldset>
 
-            <fieldset className="route-option-group">
-                <legend>Тип заказа</legend>
+            <div className="route-option-group">
                 <div className="route-order-row">
-                    <div className="route-segmented">
-                        <label className={options.retail !== false ? 'is-selected' : ''}>
-                            <input
-                                type="radio"
-                                id="retail"
-                                name="retail_opt"
-                                checked={options.retail !== false}
-                                onChange={() => handleOptionChange('retail')}
-                            />
-                            <FieldHint showHint={showHints} text={`Розница. Льготная доставка Газелью в городе при заказе от ${formatRubles(config.delivery_retail_min)} руб и соблюдении условий`}>
+                    <fieldset className="route-order-type" aria-describedby="route-order-discount">
+                        <legend>Тип заказа</legend>
+                        <div className="route-segmented">
+                            <label className={options.retail !== false ? 'is-selected' : ''}>
+                                <input
+                                    type="radio"
+                                    id="retail"
+                                    name="retail_opt"
+                                    checked={options.retail !== false}
+                                    onChange={() => handleOptionChange('retail')}
+                                />
                                 Розница
-                            </FieldHint>
-                            <small className="route-order-threshold">от {formatRubles(config.delivery_retail_min)} ₽</small>
-                        </label>
-                        <label className={options.opt === true ? 'is-selected' : ''}>
-                            <input
-                                type="radio"
-                                id="opt"
-                                name="retail_opt"
-                                checked={options.opt === true}
-                                onChange={() => handleOptionChange('opt')}
-                            />
-                            <FieldHint showHint={showHints} text={`Опт. Льготная доставка Газелью в городе при заказе от ${formatRubles(config.delivery_opt_min)} руб и соблюдении условий`}>
+                            </label>
+                            <label className={options.opt === true ? 'is-selected' : ''}>
+                                <input
+                                    type="radio"
+                                    id="opt"
+                                    name="retail_opt"
+                                    checked={options.opt === true}
+                                    onChange={() => handleOptionChange('opt')}
+                                />
                                 Опт
-                            </FieldHint>
-                            <small className="route-order-threshold">от {formatRubles(config.delivery_opt_min)} ₽</small>
-                        </label>
-                    </div>
+                            </label>
+                        </div>
+                    </fieldset>
 
                     <div
                         className={`route-order-total ${validationErrors.orderTotal ? 'has-error' : ''}`}
@@ -145,6 +141,7 @@ function DeliveryOptions({
                                 value={orderTotal || ''}
                                 onChange={(event) => setOrderTotal(parseFloat(event.target.value) || 0)}
                                 placeholder="0"
+                                aria-describedby="route-order-discount"
                             />
                             <span>₽</span>
                         </div>
@@ -156,7 +153,22 @@ function DeliveryOptions({
                 >
                     {validationErrors.orderTotal || '\u00A0'}
                 </p>
-            </fieldset>
+                <div className="route-order-discount" id="route-order-discount">
+                    <p><strong>Льготная доставка Газелью — от {formatRubles(config.discounted_delivery_price)} ₽</strong></p>
+                    <p>
+                        При сумме заказа от {formatRubles(config.delivery_opt_min)} ₽ для опта
+                        {' '}или от {formatRubles(config.delivery_retail_min)} ₽ для розницы.
+                    </p>
+                    <details>
+                        <summary>Условия льготной доставки</summary>
+                        <p>
+                            В зоне «Киров», кроме Коминтерна, до 1,5 т, в будни.
+                            Не действует на доставку сегодня и ко времени.
+                            Утром +{formatRubles(config.morning_add)} ₽, днём +{formatRubles(config.evening_add)} ₽.
+                        </p>
+                    </details>
+                </div>
+            </div>
         </div>
     );
 }

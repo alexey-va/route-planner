@@ -1,5 +1,6 @@
 import { formatDistance, formatWeight } from './utils/formatters';
 import { isWeekend } from './utils/dayOfWeek';
+import { config, vehiclesConfig } from './script.jsx';
 
 const MAX_DISTANCE_KM = 10000;
 const WEEKEND_WEIGHT_WARNING_THRESHOLD = 500;
@@ -10,14 +11,19 @@ function WeightDistanceInput({
     distance,
     setDistance,
     options,
+    vehicle = 0,
     validationErrors = {},
     validationWarnings = {}
 }) {
     const displayDistance = formatDistance(distance);
     const displayWeight = formatWeight(weight);
     const isWeekendDay = isWeekend(options.day_of_week);
+    const isTruck = vehiclesConfig[vehicle]?.heavy;
     const showWeekendWarning =
-        isWeekendDay && parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD;
+        isWeekendDay && (isTruck || parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD);
+    const weekendWarning = isTruck
+        ? `В выходные стоимость ×${config.truck_weekend_multiplier} при любом весе`
+        : `Свыше 800 кг в выходные: +${Math.round((config.weekend_multiplier - 1) * 100)}%`;
 
     const handleDistanceChange = (event) => {
         let km = parseFloat(event.target.value);
@@ -90,7 +96,7 @@ function WeightDistanceInput({
                 {validationErrors.weight ? (
                     <p className="route-field-message is-error">{validationErrors.weight}</p>
                 ) : showWeekendWarning ? (
-                    <p className="route-field-message is-warning">Свыше 800 кг в выходные: +50%</p>
+                    <p className="route-field-message is-warning">{weekendWarning}</p>
                 ) : validationWarnings.weight ? (
                     <p className="route-field-message is-warning">{validationWarnings.weight}</p>
                 ) : (
