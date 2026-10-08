@@ -47,10 +47,9 @@ export function calculate(params) {
     // Apply weekend adjustments
     price = applyWeekendAdjustments(conditions.isHeavyOnWeekend, price, comments);
 
-    // Check for free delivery with retail/opt (розница/опт 25к — в пределах города, без доставки к времени, машина до 1.5т, не в выходные)
-    const freeDeliveryResult = applyFreeDeliveryForRetailOpt(normalizedParams, price, comments);
-    if (freeDeliveryResult !== null) {
-        return freeDeliveryResult;
+    const discountedDelivery = applyDiscountedDelivery(normalizedParams);
+    if (discountedDelivery !== null) {
+        return discountedDelivery;
     }
 
     // Apply global minimum price
@@ -91,19 +90,24 @@ function extractConditions(params) {
 
 function calculateBasePrice(params, vehicleConfig, comments) {
     const distanceKm = params.distance / 1000;
+    const inCityZone = params.region === 'Киров' || params.region === 'Коминтерн'
+        || params.regions?.includes('Коминтерн');
+    const rate = !inCityZone && vehicleConfig.outside_city_price !== undefined
+        ? vehicleConfig.outside_city_price
+        : vehicleConfig.price;
     let price;
 
     if (params.vehicle === 3) {
         // Камаз has base price of 2000
         const basePrice = 2000;
-        price = basePrice + distanceKm * vehicleConfig.price * 2;
+        price = basePrice + distanceKm * rate * 2;
         comments.push(
-            `Базовая цена: ${basePrice} руб + ${vehicleConfig.price} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
+            `Базовая цена: ${basePrice} руб + ${rate} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
         );
     } else {
-        price = distanceKm * vehicleConfig.price * 2;
+        price = distanceKm * rate * 2;
         comments.push(
-            `Базовая цена: ${vehicleConfig.price} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
+            `Базовая цена: ${rate} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
         );
 
         // Apply minimal price if needed
@@ -152,73 +156,35 @@ function applyWeekendAdjustments(isHeavyOnWeekend, price, comments) {
     return price;
 }
 
-// Бесплатная доставка при рознице/опте (только газель 1.5т или меньше)
-// Розница и опт: от 25000 руб — в пределах города (Киров), без доставки к конкретному времени
-// В зоне Коминтерн и в выходные бесплатная доставка не применяется
-// При выборе утро/вечер — бесплатно, но надбавка за время сохраняется
-function applyFreeDeliveryForRetailOpt(params, price, comments) {
-    const maxWeightForFreeDelivery = 1500; // 1.5 тонны
-
-    // Только Газель 1.5т (индекс 0)
-    if (params.vehicle !== 0) {
+// Льготная доставка Газелью в Кирове; прежние ограничения и доплаты сохраняются.
+function applyDiscountedDelivery(params) {
+    if (params.vehicle !== 0 || params.weight > vehiclesConfig[0].max_weight) {
         return null;
     }
 
-    const vehicleConfig = vehiclesConfig[params.vehicle];
-
-    // Вес груза до 1.5т
-    if (params.weight > maxWeightForFreeDelivery) {
+    if (params.options.by_time || params.options.today || isWeekend(params.options.day_of_week)) {
         return null;
     }
 
-    // Бесплатная доставка не применяется для "ко времени", "сегодня" и в выходные
-    const isWeekendDay = isWeekend(params.options.day_of_week);
-    if (params.options.by_time || params.options.today || isWeekendDay) {
-        return null;
-    }
-
-    // Только в пределах города (Киров), но не в зоне Коминтерн
-    const inCity = params.region === 'Киров';
     const inKomintern = params.regions?.includes('Коминтерн') || params.region === 'Коминтерн';
-    if (!inCity || inKomintern) {
+    if (params.region !== 'Киров' || inKomintern) {
         return null;
     }
 
     const orderTotal = params.orderTotal || 0;
-    const isRetailFree = params.options.retail && orderTotal >= config.free_delivery_retail_min;
-    const isOptFree = params.options.opt && orderTotal >= config.free_delivery_opt_min;
-
-    if (!isRetailFree && !isOptFree) {
+    const isRetail = params.options.retail && orderTotal >= config.delivery_retail_min;
+    const isOpt = params.options.opt && orderTotal >= config.delivery_opt_min;
+    if (!isRetail && !isOpt) {
         return null;
     }
 
-    const typeLabel = isRetailFree ? 'розница' : 'опт';
-    const minOrderSum = isRetailFree ? config.free_delivery_retail_min : config.free_delivery_opt_min;
-
-    if (params.options.morning) {
-        return {
-            price: config.morning_add,
-            description: [
-                `Бесплатная доставка: ${typeLabel}, заказ от ${minOrderSum} руб`,
-                `Доставка утром (9:00-12:00). Надбавка: ${config.morning_add} руб`
-            ]
-        };
-    }
-
-    if (params.options.evening) {
-        return {
-            price: config.evening_add,
-            description: [
-                `Бесплатная доставка: ${typeLabel}, заказ от ${minOrderSum} руб`,
-                `Доставка днём (12:00-16:00). Надбавка: ${config.evening_add} руб`
-            ]
-        };
-    }
-
-    return {
-        price: 0,
-        description: [`Бесплатная доставка: ${typeLabel}, заказ от ${minOrderSum} руб, вес до 1.5 т, машина до 1.5 т`]
-    };
+    const typeLabel = isRetail ? 'розница' : 'опт';
+    const minOrderSum = isRetail ? config.delivery_retail_min : config.delivery_opt_min;
+    const description = [
+        `Льготная доставка: ${config.discounted_delivery_price} руб, ${typeLabel}, заказ от ${minOrderSum} руб`
+    ];
+    const price = applyTimeAdjustments(params, config.discounted_delivery_price, description);
+    return { price, description };
 }
 
 export const config = {
@@ -230,8 +196,9 @@ export const config = {
     weekend_multiplier: 1.5,
     global_min_price: 500,  // Глобальный минимум для всех доставок
     bridge_distance_add: 10,
-    free_delivery_retail_min: 25000,  // Мин. сумма заказа для бесплатной доставки (розница)
-    free_delivery_opt_min: 25000      // Мин. сумма заказа для бесплатной доставки (опт)
+    delivery_retail_min: 25000,
+    delivery_opt_min: 20000,
+    discounted_delivery_price: 700
 };
 
 export const vehiclesConfig = {
@@ -246,6 +213,7 @@ export const vehiclesConfig = {
     2: {
         name: "Газон",
         price: 80,
+        outside_city_price: 50,
         price_hour: 1200,
         max_weight: 4300,
         minimal_city_price: 2300,

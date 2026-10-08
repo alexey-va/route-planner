@@ -1,6 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import DeliveryOptions from './DeliveryOptions';
+import { config } from './script.jsx';
+
+const formatRubles = (amount) => amount.toLocaleString('ru-RU');
+const normalizeSpaces = (text) => text.replace(/\s+/g, ' ').trim();
 
 const options = {
     by_time: false,
@@ -12,6 +16,24 @@ const options = {
 };
 
 describe('DeliveryOptions', () => {
+    it('shows wholesale and retail order thresholds without unlocking hints', () => {
+        const { container } = render(
+            <DeliveryOptions
+                options={options}
+                handleOptionChange={vi.fn()}
+                setOrderTotal={vi.fn()}
+            />
+        );
+
+        const thresholds = Array.from(container.querySelectorAll('.route-order-threshold'));
+        const thresholdText = thresholds.map((threshold) => normalizeSpaces(threshold.textContent));
+
+        expect(thresholds).toHaveLength(2);
+        expect(thresholdText).toContain(normalizeSpaces(`от ${formatRubles(config.delivery_opt_min)} ₽`));
+        expect(thresholdText).toContain(normalizeSpaces(`от ${formatRubles(config.delivery_retail_min)} ₽`));
+        thresholds.forEach((threshold) => expect(threshold).toBeVisible());
+    });
+
     it('keeps the day validation message slot mounted after a day is selected', () => {
         const { container, rerender } = render(
             <DeliveryOptions

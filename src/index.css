@@ -200,6 +200,8 @@ input:focus-visible {
 
 .route-map-column {
     min-width: 0;
+    display: grid;
+    gap: 20px;
 }
 
 .route-card {
@@ -824,7 +826,6 @@ input:focus-visible {
 
 .route-calculator-card {
     grid-column: 2;
-    grid-row: 1 / span 2;
     position: sticky;
     top: 14px;
     overflow: visible;
@@ -1133,7 +1134,7 @@ input:focus-visible {
 }
 
 .route-segmented {
-    height: 44px;
+    min-height: 58px;
     padding: 3px;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1143,12 +1144,21 @@ input:focus-visible {
 
 .route-segmented label {
     display: grid;
-    place-items: center;
+    align-content: center;
+    justify-items: center;
+    gap: 3px;
     color: #68756f;
     border-radius: 8px;
     cursor: pointer;
     font-size: 12px;
     font-weight: 720;
+}
+
+.route-order-threshold {
+    color: #7d8984;
+    font-size: 10px;
+    font-weight: 560;
+    line-height: 1.1;
 }
 
 .route-segmented label.is-selected {
@@ -1461,7 +1471,6 @@ input:focus-visible {
 }
 
 .route-tariff-card {
-    grid-column: 1;
     padding: 22px 24px;
 }
 
@@ -1480,7 +1489,7 @@ input:focus-visible {
 
 .route-tariff-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
 }
 
@@ -1517,6 +1526,18 @@ input:focus-visible {
     margin: 5px 0 0;
     font-size: 10px;
     line-height: 1.35;
+}
+
+.route-tariff-item .route-tariff-outside-rate {
+    margin-top: 6px;
+    color: #65736c;
+}
+
+.route-tariff-discounted-note {
+    margin: 12px 0 0;
+    color: #78857f;
+    font-size: 11px;
+    line-height: 1.4;
 }
 
 .route-access-panel {
@@ -1833,6 +1854,45 @@ input:focus-visible {
     }
 }
 
+@media (min-width: 921px) {
+    .route-workspace {
+        align-items: stretch;
+    }
+
+    .route-map-column {
+        grid-template-rows: minmax(min-content, 1fr) auto;
+    }
+
+    .route-map-card {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .route-map-header,
+    .route-map-search-panel,
+    .route-map-footer {
+        flex: 0 0 auto;
+    }
+
+    .route-map-canvas,
+    .route-map-experience {
+        min-height: 0;
+        display: flex;
+        flex: 1 1 0;
+    }
+
+    .route-map-experience {
+        flex-direction: column;
+    }
+
+    .route-map-viewport {
+        height: auto;
+        min-height: 500px;
+        flex: 1 1 0;
+    }
+}
+
 @media (max-width: 920px) {
     .route-app-shell {
         padding: 0 18px 24px;
@@ -1842,10 +1902,22 @@ input:focus-visible {
         grid-template-columns: 1fr;
     }
 
+    .route-map-column {
+        display: contents;
+    }
+
     .route-calculator-card,
     .route-tariff-card {
         grid-column: 1;
         grid-row: auto;
+    }
+
+    .route-calculator-card {
+        order: 1;
+    }
+
+    .route-tariff-card {
+        order: 2;
     }
 
     .route-calculator-card {

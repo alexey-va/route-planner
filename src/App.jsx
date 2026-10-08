@@ -44,7 +44,7 @@ const LEGACY_APP_DOCUMENT = `<!doctype html>
     <script>${LEGACY_STORAGE_EXPIRY_GUARD}</script>
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;coordorder=longlat&amp;apikey=6ed1e48a-8c3f-47a5-8192-4b5c04e3dc05&amp;suggest_apikey=a802db44-bd3b-4d25-a554-035219420a69"></script>
     <script src="https://yandex.st/jquery/2.2.3/jquery.js"></script>
-    <script type="module" crossorigin src="/legacy/assets/index-B7n7Y-Dz.js"></script>
+    <script type="module" crossorigin src="/legacy/assets/index-B3gReeQw.js"></script>
     <link rel="stylesheet" crossorigin href="/legacy/assets/index-DXN-bJtr.css" />
     <style>
       body {
@@ -323,6 +323,12 @@ function ModernApp({ onSelectLegacy }) {
                         </div>
                     </article>
 
+                    <TariffReference
+                        vehiclesConfig={vehiclesConfig}
+                        isUnlocked={isUnlocked}
+                        onUnlock={unlock}
+                        onLock={lock}
+                    />
                 </section>
 
                 <aside className="route-card route-calculator-card" aria-label="Параметры и стоимость доставки">
@@ -410,13 +416,6 @@ function ModernApp({ onSelectLegacy }) {
                         />
                     </div>
                 </aside>
-
-                <TariffReference
-                    vehiclesConfig={vehiclesConfig}
-                    isUnlocked={isUnlocked}
-                    onUnlock={unlock}
-                    onLock={lock}
-                />
             </main>
 
             <footer className="route-footer">

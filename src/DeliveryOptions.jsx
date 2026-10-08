@@ -1,4 +1,7 @@
 import FieldHint from './components/FieldHint';
+import { config } from './script.jsx';
+
+const formatRubles = (amount) => amount.toLocaleString('ru-RU');
 
 function DeliveryOptions({
     options,
@@ -110,9 +113,10 @@ function DeliveryOptions({
                                 checked={options.retail !== false}
                                 onChange={() => handleOptionChange('retail')}
                             />
-                            <FieldHint showHint={showHints} text="Розница. При заказе от 25 000 руб — бесплатная доставка в пределах города при соблюдении условий">
+                            <FieldHint showHint={showHints} text={`Розница. Льготная доставка Газелью в городе при заказе от ${formatRubles(config.delivery_retail_min)} руб и соблюдении условий`}>
                                 Розница
                             </FieldHint>
+                            <small className="route-order-threshold">от {formatRubles(config.delivery_retail_min)} ₽</small>
                         </label>
                         <label className={options.opt === true ? 'is-selected' : ''}>
                             <input
@@ -122,9 +126,10 @@ function DeliveryOptions({
                                 checked={options.opt === true}
                                 onChange={() => handleOptionChange('opt')}
                             />
-                            <FieldHint showHint={showHints} text="Опт. При заказе от 25 000 руб — бесплатная доставка в пределах города при соблюдении условий">
+                            <FieldHint showHint={showHints} text={`Опт. Льготная доставка Газелью в городе при заказе от ${formatRubles(config.delivery_opt_min)} руб и соблюдении условий`}>
                                 Опт
                             </FieldHint>
+                            <small className="route-order-threshold">от {formatRubles(config.delivery_opt_min)} ₽</small>
                         </label>
                     </div>
 

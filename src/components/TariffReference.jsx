@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { ADMIN_PASSWORD } from '../constants/adminAccess';
+import { config } from '../script.jsx';
 import { VEHICLE_LABELS } from '../utils/pricingRules';
+
+const formatRubles = (amount) => amount.toLocaleString('ru-RU');
 
 function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
     const [password, setPassword] = useState('');
@@ -41,12 +44,26 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
                             <p>
                                 {isKamaz
                                     ? 'База 2 000 ₽ + пробег'
-                                    : `Минимум ${vehicle.minimal_city_price.toLocaleString('ru-RU')} ₽`}
+                                    : `${Number(key) === 0 ? 'Обычный минимум' : 'Минимум'} ${formatRubles(vehicle.minimal_city_price)} ₽`}
                             </p>
+                            {vehicle.outside_city_price !== undefined && (
+                                <p className="route-tariff-outside-rate">
+                                    Зелёная зона и Коминтерн · {formatRubles(vehicle.price)} ₽/км
+                                    <br />
+                                    За пределами зон · {formatRubles(vehicle.outside_city_price)} ₽/км
+                                </p>
+                            )}
                         </div>
                     );
                 })}
             </div>
+
+            <p className="route-tariff-discounted-note">
+                Газель по городу — от {formatRubles(config.discounted_delivery_price)} ₽ при заказе от{' '}
+                {formatRubles(config.delivery_opt_min)} ₽ (опт) / от {formatRubles(config.delivery_retail_min)} ₽ (розница);
+                {' '}утром +{formatRubles(config.morning_add)} ₽, днём +{formatRubles(config.evening_add)} ₽.
+                {' '}Действуют ограничения по зоне, весу и дню доставки.
+            </p>
 
             <div className="route-access-panel">
                 {isUnlocked ? (

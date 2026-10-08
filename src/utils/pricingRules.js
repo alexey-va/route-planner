@@ -22,7 +22,13 @@ function formatVehicleBaseRule(vehicleKey, vehicle) {
     return {
         title: label,
         items: [
-            `Тариф: ${vehicle.price} руб/км × расстояние (км) × 2 (туда-обратно)`,
+            ...(vehicle.outside_city_price !== undefined
+                ? [
+                    `Киров (зелёная зона) и Коминтерн: ${vehicle.price} руб/км`,
+                    `За пределами этих зон: ${vehicle.outside_city_price} руб/км`,
+                    'Тариф × расстояние (км) × 2 (туда-обратно)'
+                ]
+                : [`Тариф: ${vehicle.price} руб/км × расстояние (км) × 2 (туда-обратно)`]),
             `Минимальная стоимость: ${vehicle.minimal_city_price} руб`,
             `Грузоподъёмность до ${vehicle.max_weight} кг`
         ]
@@ -66,17 +72,18 @@ export function getPricingRules() {
             title: 'Выходные дни',
             items: [
                 `Суббота–воскресенье: при весе более 800 кг цена × ${config.weekend_multiplier}`,
-                'Бесплатная доставка в выходные не действует'
+                'Льготная доставка в выходные не действует'
             ]
         },
         {
-            title: 'Бесплатная доставка (розница / опт)',
+            title: 'Льготная доставка (розница / опт)',
             items: [
-                `Заказ от ${config.free_delivery_retail_min} руб (розница и опт)`,
+                `Розница: заказ от ${config.delivery_retail_min} руб; опт: от ${config.delivery_opt_min} руб`,
+                `Стоимость доставки: ${config.discounted_delivery_price} руб`,
                 'Только Газель 1.5т, вес груза до 1500 кг',
                 'Только в пределах города (Киров), не в зоне Коминтерн',
                 'Не действует: выходные, «ко времени», «сегодня»',
-                `При выборе утра или дня — только надбавка за время (${config.morning_add} / ${config.evening_add} руб)`
+                `При выборе утра или дня — дополнительно надбавка за время (${config.morning_add} / ${config.evening_add} руб)`
             ]
         }
     ];
