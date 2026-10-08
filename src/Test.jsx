@@ -5,6 +5,7 @@ import {
     normalizeRecentAddresses,
     resolveDeliveryZone
 } from './utils/mapHelpers';
+import { createRouteViewport } from './utils/routeViewport';
 
 const ORIGIN_ADDRESS = 'Киров, Коммунальная улица, 5';
 const KIROV_CENTER = [49.605433, 58.565190];
@@ -130,6 +131,9 @@ function Test({
         let routeRequestTimer = null;
         let locationRequestId = 0;
         const routesWithClickHandler = new WeakSet();
+        const routeViewport = createRouteViewport((bounds) => {
+            map.setBounds(bounds, { checkZoomRange: true, zoomMargin: 34 });
+        });
 
         const closeSuggestions = () => {
             setSuggestionsSuppressed(true);
@@ -350,6 +354,7 @@ function Test({
         };
 
         const createRoute = (destination) => {
+            routeViewport.requestFit();
             lastDestination = destination;
             destinationMarker.geometry.setCoordinates(destination.coords);
             destinationMarker.properties.set({
@@ -367,7 +372,7 @@ function Test({
                         reverseGeocoding: true
                     }
                 }, {
-                    boundsAutoApply: true,
+                    boundsAutoApply: false,
                     wayPointVisible: false,
                     routeActiveStrokeColor: '#176c54',
                     routeActiveStrokeWidth: 6,
@@ -393,17 +398,13 @@ function Test({
                 });
                 multiRoute.model.events.add('requestfail', () => {
                     if (disposed) return;
+                    routeViewport.cancelFit();
                     window.clearTimeout(routeRequestTimer);
                     setRouteStatus('error');
                     setErrorMessage('Не удалось построить маршрут. Проверьте адрес и повторите попытку.');
                 });
                 multiRoute.events.add('boundschange', () => {
-                    if (!disposed && multiRoute.getBounds()) {
-                        map.setBounds(multiRoute.getBounds(), {
-                            checkZoomRange: true,
-                            zoomMargin: 34
-                        });
-                    }
+                    if (!disposed) routeViewport.onBoundsChange(multiRoute.getBounds());
                 });
                 map.geoObjects.add(multiRoute);
             } else {
@@ -476,6 +477,7 @@ function Test({
         };
 
         const resetMap = () => {
+            routeViewport.cancelFit();
             locationRequestId += 1;
             if (multiRoute && map) {
                 map.geoObjects.remove(multiRoute);
@@ -527,7 +529,7 @@ function Test({
                     options: {
                         size: 'small',
                         float: 'none',
-                        position: { bottom: 18, right: 12 }
+                        position: { top: 18, right: 12 }
                     }
                 });
                 map.controls.add(zoomControl);

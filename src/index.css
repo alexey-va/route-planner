@@ -684,13 +684,13 @@ input:focus-visible {
 }
 
 .route-map-alternatives {
-    padding: 11px 13px 12px;
+    padding: 9px 12px 10px;
     border-top: 1px solid #dce4df;
     background: white;
 }
 
 .route-map-alternatives-heading {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -704,24 +704,24 @@ input:focus-visible {
 
 .route-map-alternatives-heading > div strong {
     color: var(--route-ink);
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .route-map-alternatives-heading > div span {
     margin-top: 2px;
     color: var(--route-muted);
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .route-map-alternatives-list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     gap: 6px;
 }
 
 .route-map-alternatives-list > button {
     min-width: 0;
-    padding: 8px 9px;
+    padding: 8px 10px;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 3px 8px;
@@ -730,7 +730,7 @@ input:focus-visible {
     border-radius: 10px;
     background: #f7f9f8;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 13px;
     text-align: left;
     transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
@@ -750,7 +750,11 @@ input:focus-visible {
 
 .route-map-alternatives-list > button > div {
     min-width: 0;
-    grid-row: 1 / span 3;
+    grid-row: auto;
+}
+
+.route-map-alternatives-list > button > span {
+    font-size: 13px;
 }
 
 .route-map-alternatives-list > button strong,
@@ -761,6 +765,8 @@ input:focus-visible {
 .route-map-alternatives-list > button strong {
     overflow: hidden;
     color: inherit;
+    font-size: 14px;
+    line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -768,14 +774,14 @@ input:focus-visible {
 .route-map-alternatives-list > button em {
     margin-top: 3px;
     color: var(--route-danger);
-    font-size: 8px;
+    font-size: 11px;
     font-style: normal;
 }
 
 .route-map-alternatives-list > button small {
     grid-column: 2;
     color: #77847e;
-    font-size: 9px;
+    font-size: 12px;
 }
 
 .route-map-footer {
@@ -995,6 +1001,11 @@ input:focus-visible {
     font-weight: 760;
 }
 
+.route-input:focus-visible {
+    outline: none;
+    outline-offset: 0;
+}
+
 .route-input::-webkit-inner-spin-button,
 .route-order-total input::-webkit-inner-spin-button {
     opacity: 0.4;
@@ -1134,7 +1145,7 @@ input:focus-visible {
 }
 
 .route-segmented {
-    min-height: 58px;
+    height: 58px;
     padding: 3px;
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1156,9 +1167,9 @@ input:focus-visible {
 
 .route-order-threshold {
     color: #7d8984;
-    font-size: 10px;
-    font-weight: 560;
-    line-height: 1.1;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.15;
 }
 
 .route-segmented label.is-selected {
@@ -1174,18 +1185,22 @@ input:focus-visible {
 }
 
 .route-order-total > label {
-    margin-bottom: 5px;
-    font-size: 11px;
+    margin-bottom: 7px;
+    font-size: 12px;
 }
 
 .route-order-total > div {
-    height: 44px;
+    height: 58px;
     display: flex;
     align-items: center;
     overflow: hidden;
     border: 1px solid #ccd7d1;
     border-radius: 11px;
     background: #fbfcfb;
+}
+
+.route-order-row + .route-field-message.is-placeholder {
+    display: none;
 }
 
 .route-order-total input {
@@ -2081,14 +2096,30 @@ input:focus-visible {
     .route-map-alternatives-list > button {
         grid-template-columns: minmax(0, 1fr) auto auto;
         align-items: center;
+        gap: 3px 6px;
+        padding: 7px 8px;
+        font-size: 12px;
     }
 
     .route-map-alternatives-list > button > div {
         grid-row: auto;
     }
 
+    .route-map-alternatives-list > button strong {
+        font-size: 13px;
+    }
+
+    .route-map-alternatives-list > button > span {
+        font-size: 12px;
+    }
+
+    .route-map-alternatives-list > button em {
+        font-size: 10px;
+    }
+
     .route-map-alternatives-list > button small {
         grid-column: auto;
+        font-size: 12px;
     }
 
     .route-map-footer {
