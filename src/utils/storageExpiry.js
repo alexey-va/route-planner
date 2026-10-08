@@ -12,6 +12,7 @@ export const EXPIRING_CALCULATOR_STORAGE_KEYS = [
     'options',
     'vehicle',
     'mapDistance',
+    'routeZoneSplit',
     'price',
     'orderTotal',
 ];

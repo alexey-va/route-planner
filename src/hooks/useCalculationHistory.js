@@ -67,6 +67,7 @@ export function useCalculationHistory() {
             },
             vehicle: historyItem.vehicle || 0,
             mapDistance: historyItem.mapDistance || 0,
+            routeZoneSplit: historyItem.routeZoneSplit || null,
             time: historyItem.time || 'day'
         };
     }, []);

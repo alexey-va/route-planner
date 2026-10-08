@@ -1,4 +1,5 @@
 import { formatPrice } from './utils/formatters';
+import RouteZoneBreakdown from './components/RouteZoneBreakdown';
 
 const MANUAL_DISTANCE_THRESHOLD = 99.9;
 
@@ -49,6 +50,8 @@ function ResultDisplay({
                     <dd>{weight || 1} кг</dd>
                 </div>
             </dl>
+
+            <RouteZoneBreakdown pricing={price.routePricing} />
 
             {showComments && (
                 <div className="route-result-comments">

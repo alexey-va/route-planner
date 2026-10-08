@@ -140,6 +140,7 @@ describe('useCalculationHistory', () => {
             options: { by_time: true, day_of_week: 'weekdays' },
             vehicle: 0,
             mapDistance: 10000,
+            routeZoneSplit: { insideMeters: 6000, outsideMeters: 4000, totalMeters: 10000 },
             time: 'day'
         };
         
@@ -155,6 +156,7 @@ describe('useCalculationHistory', () => {
             options: { by_time: true, day_of_week: 'weekdays' },
             vehicle: 0,
             mapDistance: 10000,
+            routeZoneSplit: { insideMeters: 6000, outsideMeters: 4000, totalMeters: 10000 },
             time: 'day'
         });
     });
@@ -186,6 +188,7 @@ describe('useCalculationHistory', () => {
             },
             vehicle: 0,
             mapDistance: 0,
+            routeZoneSplit: null,
             time: 'day'
         });
     });

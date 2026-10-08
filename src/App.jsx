@@ -44,8 +44,8 @@ const LEGACY_APP_DOCUMENT = `<!doctype html>
     <script>${LEGACY_STORAGE_EXPIRY_GUARD}</script>
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;coordorder=longlat&amp;apikey=6ed1e48a-8c3f-47a5-8192-4b5c04e3dc05&amp;suggest_apikey=a802db44-bd3b-4d25-a554-035219420a69"></script>
     <script src="https://yandex.st/jquery/2.2.3/jquery.js"></script>
-    <script type="module" crossorigin src="/legacy/assets/index-Q6_Fb3Zf.js"></script>
-    <link rel="stylesheet" crossorigin href="/legacy/assets/index-DXN-bJtr.css" />
+    <script type="module" crossorigin src="/legacy/assets/index-B4sTOcwr.js"></script>
+    <link rel="stylesheet" crossorigin href="/legacy/assets/index-DgJHJEG7.css" />
     <style>
       body {
         font-size: 17px;
@@ -157,6 +157,7 @@ function ModernApp({ onSelectLegacy }) {
     const [options, setOptions] = useLocalStorage('options', DEFAULT_OPTIONS);
     const [vehicle, setVehicle] = useLocalStorage('vehicle', 0);
     const [mapDistance, setMapDistance] = useLocalStorage('mapDistance', 0);
+    const [routeZoneSplit, setRouteZoneSplit] = useLocalStorage('routeZoneSplit', null);
     const [price, setPrice] = useLocalStorage('price', DEFAULT_PRICE);
     const [orderTotal, setOrderTotal] = useLocalStorage('orderTotal', 0);
 
@@ -178,11 +179,12 @@ function ModernApp({ onSelectLegacy }) {
             region,
             regions,
             time,
-            orderTotal
+            orderTotal,
+            routeZoneSplit
         };
         const calculatedPrice = calculate(params);
         setPrice(calculatedPrice);
-    }, [distance, duration, weight, options, vehicle, region, regions, time, orderTotal, setPrice]);
+    }, [distance, duration, weight, options, vehicle, region, regions, time, orderTotal, routeZoneSplit, setPrice]);
 
     useEffect(() => {
         if (!vehiclesConfig[vehicle]) {
@@ -231,6 +233,7 @@ function ModernApp({ onSelectLegacy }) {
                 options,
                 vehicle,
                 mapDistance,
+                routeZoneSplit,
                 time,
                 price
             });
@@ -245,6 +248,7 @@ function ModernApp({ onSelectLegacy }) {
         setPrice(DEFAULT_PRICE);
         setAddress('');
         setMapDistance(0);
+        setRouteZoneSplit(null);
         setRegions([]);
         setTime('day');
         setOrderTotal(0);
@@ -310,6 +314,7 @@ function ModernApp({ onSelectLegacy }) {
                                   setAddress={setAddress}
                                   setMapDistance={setMapDistance}
                                   setRegions={setRegions}
+                                  setRouteZoneSplit={setRouteZoneSplit}
                             />
                         </div>
                         <div className={`route-map-footer ${hasRoute ? 'is-ready' : ''}`}>

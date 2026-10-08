@@ -1,4 +1,5 @@
 import { isWeekend } from './utils/dayOfWeek';
+import { getRoutePricing } from './utils/routePricing';
 
 export function calculate(params) {
     const comments = [];
@@ -37,9 +38,10 @@ export function calculate(params) {
     const normalizedParams = vehicle === params.vehicle ? params : { ...params, vehicle };
     const conditions = extractConditions(normalizedParams);
     const vehicleConfig = vehiclesConfig[vehicle];
+    const routePricing = getRoutePricing(normalizedParams, vehicleConfig);
 
     // Calculate base price
-    let price = calculateBasePrice(normalizedParams, vehicleConfig, comments);
+    let price = calculateBasePrice(normalizedParams, vehicleConfig, comments, routePricing);
 
     // Apply time-based adjustments
     price = applyTimeAdjustments(normalizedParams, price, comments);
@@ -49,7 +51,7 @@ export function calculate(params) {
 
     const discountedDelivery = applyDiscountedDelivery(normalizedParams);
     if (discountedDelivery !== null) {
-        return discountedDelivery;
+        return { ...discountedDelivery, routePricing };
     }
 
     // Apply global minimum price
@@ -60,7 +62,8 @@ export function calculate(params) {
 
     return {
         price: price,
-        description: comments
+        description: comments,
+        routePricing
     };
 }
 
@@ -90,13 +93,9 @@ function extractConditions(params) {
     };
 }
 
-function calculateBasePrice(params, vehicleConfig, comments) {
+function calculateBasePrice(params, vehicleConfig, comments, routePricing) {
     const distanceKm = params.distance / 1000;
-    const inCityZone = params.region === 'Киров' || params.region === 'Коминтерн'
-        || params.regions?.includes('Коминтерн');
-    const rate = !inCityZone && vehicleConfig.outside_city_price !== undefined
-        ? vehicleConfig.outside_city_price
-        : vehicleConfig.price;
+    const rate = routePricing?.mode === 'destination' ? routePricing.rate : vehicleConfig.price;
     let price;
 
     if (params.vehicle === 3) {
@@ -107,10 +106,22 @@ function calculateBasePrice(params, vehicleConfig, comments) {
             `Базовая цена: ${basePrice} руб + ${rate} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
         );
     } else {
-        price = distanceKm * rate * 2;
-        comments.push(
-            `Базовая цена: ${rate} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
-        );
+        if (routePricing?.mode === 'split' && vehicleConfig.outside_city_price !== undefined) {
+            const insideKm = routePricing.insideMeters / 1000;
+            const outsideKm = routePricing.outsideMeters / 1000;
+            price = (insideKm * routePricing.insideRate + outsideKm * routePricing.outsideRate) * 2;
+            comments.push(
+                `По участкам маршрута: (${insideKm.toFixed(2)} км × ${routePricing.insideRate} руб/км в Кирове и Коминтерне + ${outsideKm.toFixed(2)} км × ${routePricing.outsideRate} руб/км за пределами зон) × 2 (туда-обратно) = ${price.toFixed(0)} руб`
+            );
+        } else {
+            price = distanceKm * rate * 2;
+            comments.push(
+                `Базовая цена: ${rate} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
+            );
+            if (routePricing?.mode === 'destination') {
+                comments.push('Без разбивки маршрута: тариф выбран по зоне назначения');
+            }
+        }
 
         // Apply minimal price if needed
         if (price < vehicleConfig.minimal_city_price) {

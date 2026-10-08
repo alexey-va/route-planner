@@ -6,6 +6,7 @@ import {
     resolveDeliveryZone
 } from './utils/mapHelpers';
 import { createRouteViewport } from './utils/routeViewport';
+import { readRouteZoneSplit } from './utils/routeZoneAdapter';
 
 const ORIGIN_ADDRESS = 'Киров, Коммунальная улица, 5';
 const KIROV_CENTER = [49.605433, 58.565190];
@@ -64,7 +65,8 @@ function Test({
     setRegion,
     setAddress,
     setMapDistance,
-    setRegions
+    setRegions,
+    setRouteZoneSplit
 }) {
     const searchInputRef = useRef(null);
     const queryRef = useRef('');
@@ -74,7 +76,8 @@ function Test({
         setRegion,
         setAddress,
         setMapDistance,
-        setRegions
+        setRegions,
+        setRouteZoneSplit
     });
     const controllerRef = useRef(null);
     const [mapAttempt, setMapAttempt] = useState(0);
@@ -97,7 +100,8 @@ function Test({
         setRegion,
         setAddress,
         setMapDistance,
-        setRegions
+        setRegions,
+        setRouteZoneSplit
     };
     queryRef.current = query;
 
@@ -123,6 +127,7 @@ function Test({
         let destinationMarker = null;
         let originMarker = null;
         let deliveryZones = null;
+        let zoneGeojson = null;
         let suggestView = null;
         let zonesVisibleValue = true;
         let lastDestination = null;
@@ -130,7 +135,8 @@ function Test({
         let zoneAbortController = null;
         let routeRequestTimer = null;
         let locationRequestId = 0;
-        const routesWithClickHandler = new WeakSet();
+        let activeRouteRevision = 0;
+        let routeResponseReady = false;
         const routeViewport = createRouteViewport((bounds) => {
             map.setBounds(bounds, { checkZoomRange: true, zoomMargin: 34 });
         });
@@ -155,6 +161,8 @@ function Test({
         };
 
         const clearRouteValues = () => {
+            routeResponseReady = false;
+            setRouteAlternatives([]);
             const callbacks = callbacksRef.current;
             callbacks.setDistance(0);
             callbacks.setDuration(0);
@@ -162,6 +170,7 @@ function Test({
             callbacks.setAddress('');
             callbacks.setMapDistance(0);
             callbacks.setRegions([]);
+            callbacks.setRouteZoneSplit(null);
         };
 
         const removeZones = () => {
@@ -204,6 +213,7 @@ function Test({
 
                 removeZones();
                 deliveryZones = ymapsApi.geoQuery(data).addToMap(map);
+                zoneGeojson = data;
                 deliveryZones.each((zone) => {
                     zone.options.set({
                         fillColor: zone.properties.get('fill'),
@@ -241,8 +251,9 @@ function Test({
                     return null;
                 }
                 console.error('Failed to load delivery zones:', error);
+                zoneGeojson = null;
                 setZonesStatus('error');
-                setZoneWarning('Тарифные зоны не загрузились. Маршрут можно построить, но район лучше проверить.');
+                setZoneWarning('Тарифные зоны не загрузились. Разбивка маршрута недоступна; проверьте район доставки.');
                 return null;
             } finally {
                 window.clearTimeout(timeout);
@@ -298,14 +309,6 @@ function Test({
             const alternatives = [];
             multiRoute.getRoutes().each((route, index) => {
                 alternatives.push(makeRouteAlternative(index, route, activeRoute));
-                if (!routesWithClickHandler.has(route)) {
-                    routesWithClickHandler.add(route);
-                    route.events.add('click', () => {
-                        window.setTimeout(() => {
-                            if (!disposed) applyActiveRoute(route);
-                        }, 0);
-                    });
-                }
             });
             setRouteAlternatives(alternatives);
         };
@@ -315,12 +318,12 @@ function Test({
             if (!route) return;
 
             multiRoute.setActiveRoute(route);
-            applyActiveRoute(route);
         };
 
         const applyActiveRoute = async (selectedRoute = null) => {
             if (!multiRoute || !lastDestination) return;
 
+            const revision = ++activeRouteRevision;
             const activeRoute = selectedRoute || multiRoute.getActiveRoute();
             const destination = lastDestination;
             if (!activeRoute) {
@@ -334,7 +337,8 @@ function Test({
                 disposed ||
                 !multiRoute ||
                 !lastDestination ||
-                lastDestination !== destination
+                lastDestination !== destination ||
+                revision !== activeRouteRevision
             ) {
                 return;
             }
@@ -344,6 +348,7 @@ function Test({
             const callbacks = callbacksRef.current;
             callbacks.setDistance(distance?.value || 0);
             callbacks.setMapDistance(distance?.value || 0);
+            callbacks.setRouteZoneSplit(readRouteZoneSplit(activeRoute, zoneGeojson));
             callbacks.setDuration(duration?.value || 0);
             callbacks.setAddress(destination.address);
             resolveZoneForCoordinates(destination.coords);
@@ -354,6 +359,8 @@ function Test({
         };
 
         const createRoute = (destination) => {
+            activeRouteRevision++;
+            clearRouteValues();
             routeViewport.requestFit();
             lastDestination = destination;
             destinationMarker.geometry.setCoordinates(destination.coords);
@@ -383,6 +390,8 @@ function Test({
 
                 multiRoute.model.events.add('requestsend', () => {
                     if (disposed) return;
+                    activeRouteRevision++;
+                    clearRouteValues();
                     window.clearTimeout(routeRequestTimer);
                     routeRequestTimer = window.setTimeout(() => {
                         if (disposed) return;
@@ -394,10 +403,15 @@ function Test({
                 });
                 multiRoute.model.events.add('requestsuccess', () => {
                     window.clearTimeout(routeRequestTimer);
-                    if (!disposed) applyActiveRoute();
+                    if (!disposed) {
+                        routeResponseReady = true;
+                        applyActiveRoute();
+                    }
                 });
                 multiRoute.model.events.add('requestfail', () => {
                     if (disposed) return;
+                    activeRouteRevision++;
+                    clearRouteValues();
                     routeViewport.cancelFit();
                     window.clearTimeout(routeRequestTimer);
                     setRouteStatus('error');
@@ -405,6 +419,9 @@ function Test({
                 });
                 multiRoute.events.add('boundschange', () => {
                     if (!disposed) routeViewport.onBoundsChange(multiRoute.getBounds());
+                });
+                multiRoute.events.add('activeroutechange', () => {
+                    if (!disposed && routeResponseReady) applyActiveRoute();
                 });
                 map.geoObjects.add(multiRoute);
             } else {

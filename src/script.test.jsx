@@ -205,6 +205,60 @@ describe('calculate function', () => {
     });
   });
 
+  describe('Gazon route sections', () => {
+    const routeZoneSplit = { insideMeters: 10000, outsideMeters: 30000, totalMeters: 40000 };
+    const gazonParams = (overrides = {}) => createDefaultParams({
+      vehicle: 2, weight: 1000, distance: 40000, region: 'Область', routeZoneSplit, ...overrides
+    });
+
+    it.each(['Киров', 'Коминтерн', 'Область'])('charges both sections regardless of destination %s', (region) => {
+      const result = calculate(gazonParams({ region }));
+      expect(result.price).toBe(4600); // (10 km × 80 + 30 km × 50) × 2
+      expect(result.routePricing).toMatchObject({ mode: 'split', insideRate: 80, outsideRate: 50 });
+      expect(result.description[0]).toContain('10.00 км × 80');
+      expect(result.description[0]).toContain('30.00 км × 50');
+    });
+
+    it('applies the minimum to the combined cost only once', () => {
+      const result = calculate(gazonParams({
+        distance: 5000,
+        routeZoneSplit: { insideMeters: 2000, outsideMeters: 3000, totalMeters: 5000 }
+      }));
+      expect(result.price).toBe(2300);
+    });
+
+    it('applies morning and weekend adjustments after adding the section costs', () => {
+      const result = calculate(gazonParams({
+        options: { ...createDefaultParams().options, morning: true, day_of_week: 'weekend' }
+      }));
+      expect(result.price).toBe(10200); // (4600 + 500) × 2
+    });
+
+    it('does not reuse route sections after the distance is edited manually', () => {
+      const result = calculate(gazonParams({ distance: 50000 }));
+      expect(result.price).toBe(5000);
+      expect(result.routePricing).toEqual({ mode: 'destination', totalMeters: 50000, rate: 50 });
+      expect(result.description).toContain('Без разбивки маршрута: тариф выбран по зоне назначения');
+    });
+
+    it.each([
+      null,
+      { insideMeters: -10000, outsideMeters: 50000, totalMeters: 40000 },
+      { insideMeters: 30000, outsideMeters: 30000, totalMeters: 40000 },
+      { insideMeters: NaN, outsideMeters: 30000, totalMeters: 40000 },
+    ])('labels the destination fallback when section data is unavailable or invalid: %j', (split) => {
+      const result = calculate(gazonParams({ routeZoneSplit: split }));
+      expect(result.price).toBe(4000);
+      expect(result.routePricing.mode).toBe('destination');
+    });
+
+    it.each([[0, 4400], [3, 7760]])('keeps the single rate of vehicle %s', (vehicle, expected) => {
+      const result = calculate(gazonParams({ vehicle }));
+      expect(result.price).toBe(expected);
+      expect(result.routePricing.insideRate).toBe(result.routePricing.outsideRate);
+    });
+  });
+
   describe('Time Adjustments', () => {
     it('should multiply price by by_time factor', () => {
       const params = createDefaultParams({
