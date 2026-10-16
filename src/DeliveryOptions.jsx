@@ -106,16 +106,6 @@ function DeliveryOptions({
                     <fieldset className="route-order-type" aria-describedby="route-order-discount">
                         <legend>Тип заказа</legend>
                         <div className="route-segmented">
-                            <label className={options.retail !== false ? 'is-selected' : ''}>
-                                <input
-                                    type="radio"
-                                    id="retail"
-                                    name="retail_opt"
-                                    checked={options.retail !== false}
-                                    onChange={() => handleOptionChange('retail')}
-                                />
-                                Розница
-                            </label>
                             <label className={options.opt === true ? 'is-selected' : ''}>
                                 <input
                                     type="radio"
@@ -125,6 +115,16 @@ function DeliveryOptions({
                                     onChange={() => handleOptionChange('opt')}
                                 />
                                 Опт
+                            </label>
+                            <label className={options.retail !== false ? 'is-selected' : ''}>
+                                <input
+                                    type="radio"
+                                    id="retail"
+                                    name="retail_opt"
+                                    checked={options.retail !== false}
+                                    onChange={() => handleOptionChange('retail')}
+                                />
+                                Розница
                             </label>
                         </div>
                     </fieldset>

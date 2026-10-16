@@ -1,0 +1,277 @@
+diff --git a/src/App.jsx b/src/App.jsx
+index 3182a49..26f9f08 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -42,0 +43 @@ function App() {
++    const [routeZoneSplit, setRouteZoneSplit] = useLocalStorage('routeZoneSplit', null);
+@@ -64 +65,2 @@ function App() {
+-            orderTotal
++            orderTotal,
++            routeZoneSplit
+@@ -68 +70 @@ function App() {
+-    }, [distance, duration, weight, options, vehicle, region, regions, time, orderTotal, setPrice]);
++    }, [distance, duration, weight, options, vehicle, region, regions, time, orderTotal, routeZoneSplit, setPrice]);
+@@ -70,0 +73,6 @@ function App() {
++    useEffect(() => {
++        if (!vehiclesConfig[vehicle]) {
++            setVehicle(findNextAvailableVehicle(weight, vehiclesConfig));
++        }
++    }, [vehicle, weight, setVehicle]);
++
+@@ -110,0 +119 @@ function App() {
++                routeZoneSplit,
+@@ -124,0 +134 @@ function App() {
++        setRouteZoneSplit(null);
+@@ -155,0 +166 @@ function App() {
++                                  setRouteZoneSplit={setRouteZoneSplit}
+diff --git a/src/DeliveryOptions.jsx b/src/DeliveryOptions.jsx
+index ddf0c9e..006d1b3 100644
+--- a/src/DeliveryOptions.jsx
++++ b/src/DeliveryOptions.jsx
+@@ -2,0 +3 @@ import { getFieldValidationClass } from './utils/validation';
++import { config } from './script.jsx';
+@@ -4,0 +6,4 @@ import FieldHint from './components/FieldHint';
++function formatOrderThreshold(amount) {
++    return amount.toLocaleString('ru-RU');
++}
++
+@@ -122 +127 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            id="retail"
++                            id="opt"
+@@ -124,2 +129,2 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            checked={options.retail !== false}
+-                            onChange={() => handleOptionChange('retail')}
++                            checked={options.opt === true}
++                            onChange={() => handleOptionChange('opt')}
+@@ -128 +133 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                        <label htmlFor="retail"
++                        <label htmlFor="opt"
+@@ -130,3 +135 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            <FieldHint showHint={showHints} text="Розница. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
+-                                Розница
+-                            </FieldHint>
++                            Опт
+@@ -138 +141 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            id="opt"
++                            id="retail"
+@@ -140,2 +143,2 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            checked={options.opt === true}
+-                            onChange={() => handleOptionChange('opt')}
++                            checked={options.retail !== false}
++                            onChange={() => handleOptionChange('retail')}
+@@ -144 +147 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                        <label htmlFor="opt"
++                        <label htmlFor="retail"
+@@ -146,3 +149 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            <FieldHint showHint={showHints} text="Опт. При заказе от 25 000 руб — бесплатная доставка (в пределах города, без доставки к конкретному времени, машина до 1.5 т). В зоне Коминтерн и в выходные не действует">
+-                                Опт
+-                            </FieldHint>
++                            Розница
+@@ -151,0 +153,5 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
++                <p className="text-sm text-gray-600 mt-2">
++                    Льготная доставка Газелью — от {formatOrderThreshold(config.discounted_delivery_price)} ₽.
++                    При сумме заказа от {formatOrderThreshold(config.delivery_opt_min)} ₽ для опта
++                    {' '}или от {formatOrderThreshold(config.delivery_retail_min)} ₽ для розницы.
++                </p>
+diff --git a/src/ResultDisplay.jsx b/src/ResultDisplay.jsx
+index 6787f3f..1ef33f5 100644
+--- a/src/ResultDisplay.jsx
++++ b/src/ResultDisplay.jsx
+@@ -1,0 +2 @@ import { formatPrice } from './utils/formatters';
++import RouteZoneBreakdown from './components/RouteZoneBreakdown';
+@@ -40,0 +42,2 @@ function ResultDisplay({ distance, duration, region, address, price, weight, map
++            <RouteZoneBreakdown pricing={price.routePricing} />
++
+diff --git a/src/Test.jsx b/src/Test.jsx
+index 7b68018..f8cccc8 100644
+--- a/src/Test.jsx
++++ b/src/Test.jsx
+@@ -1,0 +2,2 @@ import {useEffect} from "react";
++import { readRouteZoneSplit } from './utils/routeZoneAdapter';
++import { resolveDeliveryZone } from './utils/mapHelpers';
+@@ -5 +7 @@ export let routePanelControl; // Move this to the outer scope
+-function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, setRegions}) {
++function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance, setRegions, setRouteZoneSplit}) {
+@@ -64,23 +66,20 @@ function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance,
+-            // Повесим обработчик на событие построения маршрута.
+-            route.model.events.add('requestsuccess', function () {
+-
+-                var activeRoute = route.getActiveRoute();
+-                if (activeRoute) {
+-                    // Получим протяженность маршрута.
+-                    var coords = route.properties.get("rawProperties").RouterMetaData.Waypoints[1].coordinates;
+-                    var address = route.properties.get("rawProperties").RouterMetaData.Waypoints[1].name
+-                    //console.log(activeRoute)
+-                    //console.log(myMap)
+-                    //console.log(coords)
+-                    //console.log(route.properties.get("rawProperties").RouterMetaData.Waypoints[1].coordinates)
+-                    var polygons = deliveryZones.searchContaining(coords);
+-
+-                    // check that at least one polygon is За Мостом
+-                    let bridge = false;
+-                    let comintern = false;
+-                    polygons.each(function (obj) {
+-                        if (obj.properties.get('description') === "За мостом") {
+-                            bridge = true;
+-                        } else if (obj.properties.get('description') === "Коминтерн") {
+-                            comintern = true;
+-                        }
++            let zoneGeojson = null;
++            let revision = 0;
++            let routeResponseReady = false;
++            const zonesReady = fetch('./data.geojson')
++                .then(response => {
++                    if (!response.ok) throw new Error(`Zones: ${response.status}`);
++                    return response.json();
++                })
++                .then(json => {
++                    zoneGeojson = json;
++                    deliveryZones = ymaps.geoQuery(json).addToMap(myMap);
++                    deliveryZones.each(obj => {
++                        obj.options.set({
++                            fillColor: obj.properties.get('fill'),
++                            fillOpacity: obj.properties.get('fill-opacity'),
++                            strokeColor: obj.properties.get('stroke'),
++                            strokeWidth: obj.properties.get('stroke-width'),
++                            strokeOpacity: obj.properties.get('stroke-opacity')
++                        });
++                        obj.properties.set('balloonContent', obj.properties.get('description'));
+@@ -88,24 +87,21 @@ function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance,
+-                    let regions = []
+-                    if(bridge) regions.push("За мостом")
+-                    if(comintern) regions.push("Коминтерн")
+-                    setRegions(regions)
+-                    var polygon = polygons.get(0);
+-                    var region = !polygon ? "Область" : polygon.properties.get('description');
+-                    if(region === 'За мостом') region = 'Область'
+-
+-                    setRegion(region);
+-                    var duration = route.getActiveRoute().properties.get("duration");
+-                    var length = route.getActiveRoute().properties.get("distance");
+-                    setDistance(length.value)
+-                    setMapDistance(length.value)
+-                    setDuration(duration.value)
+-                    setAddress(address)
+-
+-                    let balloonContentLayout = ymaps.templateLayoutFactory.createClass(
+-                        '<span>Расстояние: ' + length.text + '.</span><br/>'
+-                        //+ '<span style="font-weight: bold; font-style: italic">Стоимость доставки: ' + price + ' р.</span>'
+-                    );
+-                    // Зададим этот макет для содержимого балуна.
+-                    route.options.set('routeBalloonContentLayout', balloonContentLayout);
+-                    // Откроем балун.
+-                    activeRoute.balloon.open();
++                })
++                .catch(error => console.error('Error fetching delivery zones:', error));
++
++            const clearRouteValues = () => {
++                routeResponseReady = false;
++                revision++;
++                setDistance(0);
++                setMapDistance(0);
++                setRouteZoneSplit(null);
++                setDuration(0);
++                setRegion('');
++                setRegions([]);
++                setAddress('');
++            };
++
++            const applyActiveRoute = async () => {
++                const activeRoute = route.getActiveRoute();
++                const currentRevision = ++revision;
++                if (!activeRoute) {
++                    clearRouteValues();
++                    return;
+@@ -113,16 +109,8 @@ function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance,
+-            });
+-
+-
+-            function onZonesLoad(json) {
+-                // Добавляем зоны на карту.
+-                deliveryZones = ymaps.geoQuery(json).addToMap(myMap);
+-                // Задаём цвет и контент балунов полигонов.
+-                deliveryZones.each(function (obj) {
+-                    obj.options.set({
+-                        fillColor: obj.properties.get('fill'),
+-                        fillOpacity: obj.properties.get('fill-opacity'),
+-                        strokeColor: obj.properties.get('stroke'),
+-                        strokeWidth: obj.properties.get('stroke-width'),
+-                        strokeOpacity: obj.properties.get('stroke-opacity')
+-                    });
+-                    obj.properties.set('balloonContent', obj.properties.get('description'));
++                await zonesReady;
++                if (currentRevision !== revision || route.getActiveRoute() !== activeRoute) return;
++
++                const waypoint = route.properties.get('rawProperties')?.RouterMetaData?.Waypoints?.[1];
++                if (!waypoint) return;
++                const descriptions = [];
++                deliveryZones?.searchContaining(waypoint.coordinates).each(polygon => {
++                    descriptions.push(polygon.properties.get('description'));
+@@ -130,6 +118,25 @@ function Test({setDistance, setDuration, setRegion, setAddress, setMapDistance,
+-            }
+-
+-            fetch('./data.geojson')
+-                .then(response => response.json())
+-                .then(data => onZonesLoad(data))
+-                .catch(error => console.error('Error fetching data:', error));
++                const zone = resolveDeliveryZone(descriptions);
++                const length = activeRoute.properties.get('distance');
++                const duration = activeRoute.properties.get('duration');
++                setRegion(zone.region);
++                setRegions(zone.regions);
++                setDistance(length.value);
++                setMapDistance(length.value);
++                setRouteZoneSplit(readRouteZoneSplit(activeRoute, zoneGeojson));
++                setDuration(duration.value);
++                setAddress(waypoint.name);
++                route.options.set('routeBalloonContentLayout', ymaps.templateLayoutFactory.createClass(
++                    '<span>Расстояние: ' + length.text + '.</span><br/>'
++                ));
++                activeRoute.balloon.open();
++            };
++
++            route.model.events.add('requestsend', clearRouteValues);
++            route.model.events.add('requestfail', clearRouteValues);
++            route.model.events.add('requestsuccess', () => {
++                routeResponseReady = true;
++                applyActiveRoute();
++            });
++            route.events.add('activeroutechange', () => {
++                if (routeResponseReady) applyActiveRoute();
++            });
+diff --git a/src/VehicleSelection.jsx b/src/VehicleSelection.jsx
+index cbd97ea..40624f9 100644
+--- a/src/VehicleSelection.jsx
++++ b/src/VehicleSelection.jsx
+@@ -12,0 +13,3 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
++                    const rate = value.outside_city_price === undefined
++                        ? `${value.price} руб/км`
++                        : `${value.price} руб/км в Кирове и Коминтерне, ${value.outside_city_price} руб/км за городом`;
+@@ -30 +33 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
+-                                        text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${value.price} руб/км. Минимальная стоимость: ${value.minimal_city_price} руб`}
++                                        text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${rate}. Минимальная стоимость: ${value.minimal_city_price} руб`}
+diff --git a/src/WeightDistanceInput.jsx b/src/WeightDistanceInput.jsx
+index f3a6829..8a7e8f7 100644
+--- a/src/WeightDistanceInput.jsx
++++ b/src/WeightDistanceInput.jsx
+@@ -4,0 +5 @@ import { isWeekend } from './utils/dayOfWeek';
++import { config, vehiclesConfig } from './script.jsx';
+@@ -32 +33,5 @@ function WeightDistanceInput({
+-    const showWeekendWarning = isWeekendDay && parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD;
++    const isTruck = vehiclesConfig[vehicle]?.heavy;
++    const showWeekendWarning = isWeekendDay && (isTruck || parseFloat(displayWeight) > WEEKEND_WEIGHT_WARNING_THRESHOLD);
++    const weekendWarning = isTruck
++        ? `В выходные стоимость ×${config.truck_weekend_multiplier} при любом весе`
++        : `Свыше 800 кг в выходные: +${Math.round((config.weekend_multiplier - 1) * 100)}%`;
+@@ -138 +143 @@ function WeightDistanceInput({
+-                        Более 800кг в выходные дни +50%
++                        {weekendWarning}
+diff --git a/src/components/TariffReference.jsx b/src/components/TariffReference.jsx
+index 2fef86a..dc7f1fa 100644
+--- a/src/components/TariffReference.jsx
++++ b/src/components/TariffReference.jsx
+@@ -37 +37,3 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
+-                                    : `${vehicle.price} руб/км`}
++                                    : vehicle.outside_city_price !== undefined
++                                        ? `${vehicle.price} руб/км в Кирове и Коминтерне; ${vehicle.outside_city_price} руб/км за городом`
++                                        : `${vehicle.price} руб/км`}
