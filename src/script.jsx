@@ -202,26 +202,35 @@ function applyDiscountedDelivery(params) {
 
     const typeLabel = isRetail ? 'розница' : 'опт';
     const minOrderSum = isRetail ? config.delivery_retail_min : config.delivery_opt_min;
+    const isHeavyRetail = isRetail && params.weight > config.discounted_delivery_retail_weight_threshold;
+    const deliveryPrice = isHeavyRetail
+        ? config.discounted_delivery_retail_heavy_price
+        : config.discounted_delivery_price;
+    const weightCondition = isRetail
+        ? `, вес ${isHeavyRetail ? 'более' : 'до'} ${config.discounted_delivery_retail_weight_threshold} кг`
+        : '';
     const description = [
-        `Льготная доставка: ${config.discounted_delivery_price} руб, ${typeLabel}, заказ от ${minOrderSum} руб`
+        `Льготная доставка: ${deliveryPrice} руб, ${typeLabel}, заказ от ${minOrderSum} руб${weightCondition}`
     ];
-    const price = applyTimeAdjustments(params, config.discounted_delivery_price, description);
+    const price = applyTimeAdjustments(params, deliveryPrice, description);
     return { price, description };
 }
 
 export const config = {
     by_time: 1.7,
     today: 2.0,
-    morning_add: 500,
-    evening_add: 300,
+    morning_add: 600,
+    evening_add: 400,
     right_now: 2,
     weekend_multiplier: 1.5,
     truck_weekend_multiplier: 2,
     global_min_price: 500,  // Глобальный минимум для всех доставок
     bridge_distance_add: 10,
-    delivery_retail_min: 25000,
-    delivery_opt_min: 20000,
-    discounted_delivery_price: 700
+    delivery_retail_min: 20000,
+    delivery_opt_min: 25000,
+    discounted_delivery_price: 800,
+    discounted_delivery_retail_weight_threshold: 500,
+    discounted_delivery_retail_heavy_price: 1300
 };
 
 export const vehiclesConfig = {
@@ -236,7 +245,7 @@ export const vehiclesConfig = {
     2: {
         name: "Газон",
         price: 80,
-        outside_city_price: 50,
+        outside_city_price: 55,
         price_hour: 1200,
         max_weight: 4300,
         minimal_city_price: 2300,

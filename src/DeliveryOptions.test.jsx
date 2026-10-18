@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import DeliveryOptions from './DeliveryOptions';
-import { config } from './script.jsx';
+import { config, vehiclesConfig } from './script.jsx';
 
 const formatRubles = (amount) => amount.toLocaleString('ru-RU');
 const normalizeSpaces = (text) => text.replace(/\s+/g, ' ').trim();
@@ -16,7 +16,7 @@ const options = {
 };
 
 describe('DeliveryOptions', () => {
-    it('shows wholesale and retail order thresholds without unlocking hints', () => {
+    it('shows order thresholds, retail weight tiers and time surcharges without unlocking hints', () => {
         const { container } = render(
             <DeliveryOptions
                 options={options}
@@ -29,12 +29,15 @@ describe('DeliveryOptions', () => {
         const explanationText = normalizeSpaces(explanation.textContent);
 
         expect(explanation).toBeVisible();
+        expect(explanationText).toContain('Льготная доставка Газелью');
         expect(explanationText).toContain(normalizeSpaces(
-            `Льготная доставка Газелью — от ${formatRubles(config.discounted_delivery_price)} ₽`
+            `Розница от ${formatRubles(config.delivery_retail_min)} ₽ — доставка ${formatRubles(config.discounted_delivery_price)} ₽ до ${formatRubles(config.discounted_delivery_retail_weight_threshold)} кг, свыше — ${formatRubles(config.discounted_delivery_retail_heavy_price)} ₽.`
         ));
         expect(explanationText).toContain(normalizeSpaces(
-            `При сумме заказа от ${formatRubles(config.delivery_opt_min)} ₽ для опта или от ${formatRubles(config.delivery_retail_min)} ₽ для розницы.`
+            `Опт от ${formatRubles(config.delivery_opt_min)} ₽ — доставка ${formatRubles(config.discounted_delivery_price)} ₽ при любом весе до ${formatRubles(vehiclesConfig[0].max_weight)} кг.`
         ));
+        expect(screen.getByText(`9:00–12:00 · +${formatRubles(config.morning_add)} ₽`)).toBeVisible();
+        expect(screen.getByText(`12:00–16:00 · +${formatRubles(config.evening_add)} ₽`)).toBeVisible();
         expect(screen.getByRole('radio', { name: 'Розница', exact: true })).toBeChecked();
         expect(screen.getByRole('radio', { name: 'Опт', exact: true })).not.toBeChecked();
         expect(screen.getByRole('spinbutton', { name: 'Сумма заказа' })).toHaveAttribute(

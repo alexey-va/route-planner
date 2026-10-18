@@ -1,5 +1,5 @@
 import FieldHint from './components/FieldHint';
-import { config } from './script.jsx';
+import { config, vehiclesConfig } from './script.jsx';
 
 const formatRubles = (amount) => amount.toLocaleString('ru-RU');
 
@@ -39,10 +39,10 @@ function DeliveryOptions({
                             onChange={() => handleOptionChange('morning')}
                         />
                         <span className="route-option-copy">
-                            <FieldHint showHint={showHints} text="Доставка в утреннее время. Надбавка +500 руб">
+                            <FieldHint showHint={showHints} text={`Доставка в утреннее время. Надбавка +${config.morning_add} руб`}>
                                 <strong>Утром</strong>
                             </FieldHint>
-                            <small>9:00–12:00 · +500 ₽</small>
+                            <small>9:00–12:00 · +{formatRubles(config.morning_add)} ₽</small>
                         </span>
                     </label>
 
@@ -54,10 +54,10 @@ function DeliveryOptions({
                             onChange={() => handleOptionChange('evening')}
                         />
                         <span className="route-option-copy">
-                            <FieldHint showHint={showHints} text="Доставка в дневное время. Надбавка +300 руб">
+                            <FieldHint showHint={showHints} text={`Доставка в дневное время. Надбавка +${config.evening_add} руб`}>
                                 <strong>Днём</strong>
                             </FieldHint>
-                            <small>12:00–16:00 · +300 ₽</small>
+                            <small>12:00–16:00 · +{formatRubles(config.evening_add)} ₽</small>
                         </span>
                     </label>
                 </div>
@@ -154,10 +154,15 @@ function DeliveryOptions({
                     {validationErrors.orderTotal || '\u00A0'}
                 </p>
                 <div className="route-order-discount" id="route-order-discount">
-                    <p><strong>Льготная доставка Газелью — от {formatRubles(config.discounted_delivery_price)} ₽</strong></p>
+                    <p><strong>Льготная доставка Газелью</strong></p>
                     <p>
-                        При сумме заказа от {formatRubles(config.delivery_opt_min)} ₽ для опта
-                        {' '}или от {formatRubles(config.delivery_retail_min)} ₽ для розницы.
+                        Розница от {formatRubles(config.delivery_retail_min)} ₽ — доставка{' '}
+                        {formatRubles(config.discounted_delivery_price)} ₽ до {formatRubles(config.discounted_delivery_retail_weight_threshold)} кг,
+                        {' '}свыше — {formatRubles(config.discounted_delivery_retail_heavy_price)} ₽.
+                    </p>
+                    <p>
+                        Опт от {formatRubles(config.delivery_opt_min)} ₽ — доставка{' '}
+                        {formatRubles(config.discounted_delivery_price)} ₽ при любом весе до {formatRubles(vehiclesConfig[0].max_weight)} кг.
                     </p>
                     <details>
                         <summary>Условия льготной доставки</summary>

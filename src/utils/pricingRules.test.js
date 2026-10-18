@@ -26,9 +26,13 @@ describe('getPricingRules', () => {
         expect(allItems).toContain(`${vehiclesConfig[0].minimal_city_price} руб`);
         expect(allItems).toContain('Газон 4.3т');
         expect(allItems).toContain('80 руб/км');
-        expect(allItems).toContain('50 руб/км');
+        expect(allItems).toContain('55 руб/км');
         expect(allItems).toContain('20000 руб');
-        expect(allItems).toContain('700 руб');
+        expect(allItems).toContain('25000 руб');
+        expect(allItems).toContain(`Розница: заказ от ${config.delivery_retail_min} руб — ${config.discounted_delivery_price} руб при весе до ${config.discounted_delivery_retail_weight_threshold} кг; ${config.discounted_delivery_retail_heavy_price} руб при весе более ${config.discounted_delivery_retail_weight_threshold} кг`);
+        expect(allItems).toContain(`Опт: заказ от ${config.delivery_opt_min} руб — ${config.discounted_delivery_price} руб при любом весе в пределах грузоподъёмности`);
+        expect(allItems).toContain('Утром (9:00–12:00): +600 руб');
+        expect(allItems).toContain('Днём (12:00–16:00): +400 руб');
         expect(allItems).not.toContain('Бесплатная доставка');
         expect(allItems).toContain('Суббота–воскресенье: Газель при весе более 800 кг — цена × 1.5');
         expect(allItems).toContain('Суббота–воскресенье: Газон и Камаз при любом весе — цена × 2');

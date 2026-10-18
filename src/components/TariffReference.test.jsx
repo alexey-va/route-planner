@@ -21,10 +21,13 @@ describe('TariffReference', () => {
         const noteText = normalizeSpaces(note.textContent);
 
         expect(note).toBeVisible();
-        expect(noteText).toContain(normalizeSpaces(`от ${formatRubles(config.discounted_delivery_price)} ₽`));
-        expect(noteText).toContain(normalizeSpaces(`при заказе от ${formatRubles(config.delivery_opt_min)} ₽ (опт)`));
-        expect(noteText).toContain(normalizeSpaces(`от ${formatRubles(config.delivery_retail_min)} ₽ (розница)`));
-        expect(noteText).toContain(normalizeSpaces(`утром +${formatRubles(config.morning_add)} ₽`));
+        expect(noteText).toContain(normalizeSpaces(
+            `розница от ${formatRubles(config.delivery_retail_min)} ₽ — доставка ${formatRubles(config.discounted_delivery_price)} ₽ до ${formatRubles(config.discounted_delivery_retail_weight_threshold)} кг, свыше — ${formatRubles(config.discounted_delivery_retail_heavy_price)} ₽.`
+        ));
+        expect(noteText).toContain(normalizeSpaces(
+            `Опт от ${formatRubles(config.delivery_opt_min)} ₽ — доставка ${formatRubles(config.discounted_delivery_price)} ₽ при любом весе до ${formatRubles(vehiclesConfig[0].max_weight)} кг.`
+        ));
+        expect(noteText).toContain(normalizeSpaces(`Утром +${formatRubles(config.morning_add)} ₽`));
         expect(noteText).toContain(normalizeSpaces(`днём +${formatRubles(config.evening_add)} ₽`));
     });
 
@@ -39,6 +42,6 @@ describe('TariffReference', () => {
         );
 
         expect(screen.getByText(/Зелёная зона и Коминтерн · 80 ₽\/км/)).toBeVisible();
-        expect(screen.getByText(/За городом · 50 ₽\/км/)).toBeVisible();
+        expect(screen.getByText(/За городом · 55 ₽\/км/)).toBeVisible();
     });
 });

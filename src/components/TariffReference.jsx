@@ -61,9 +61,12 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
             </div>
 
             <p className="route-tariff-discounted-note">
-                Газель по городу — от {formatRubles(config.discounted_delivery_price)} ₽ при заказе от{' '}
-                {formatRubles(config.delivery_opt_min)} ₽ (опт) / от {formatRubles(config.delivery_retail_min)} ₽ (розница);
-                {' '}утром +{formatRubles(config.morning_add)} ₽, днём +{formatRubles(config.evening_add)} ₽.
+                Газель по городу: розница от {formatRubles(config.delivery_retail_min)} ₽ — доставка{' '}
+                {formatRubles(config.discounted_delivery_price)} ₽ до {formatRubles(config.discounted_delivery_retail_weight_threshold)} кг,
+                {' '}свыше — {formatRubles(config.discounted_delivery_retail_heavy_price)} ₽.
+                {' '}Опт от {formatRubles(config.delivery_opt_min)} ₽ — доставка{' '}
+                {formatRubles(config.discounted_delivery_price)} ₽ при любом весе до {formatRubles(vehiclesConfig[0].max_weight)} кг.
+                {' '}Утром +{formatRubles(config.morning_add)} ₽, днём +{formatRubles(config.evening_add)} ₽.
                 {' '}Действуют ограничения по зоне, весу и дню доставки.
             </p>
 

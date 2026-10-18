@@ -25,16 +25,22 @@ index 3182a49..26f9f08 100644
 @@ -155,0 +166 @@ function App() {
 +                                  setRouteZoneSplit={setRouteZoneSplit}
 diff --git a/src/DeliveryOptions.jsx b/src/DeliveryOptions.jsx
-index ddf0c9e..006d1b3 100644
+index ddf0c9e..0cdf4b7 100644
 --- a/src/DeliveryOptions.jsx
 +++ b/src/DeliveryOptions.jsx
 @@ -2,0 +3 @@ import { getFieldValidationClass } from './utils/validation';
-+import { config } from './script.jsx';
++import { config, vehiclesConfig } from './script.jsx';
 @@ -4,0 +6,4 @@ import FieldHint from './components/FieldHint';
 +function formatOrderThreshold(amount) {
 +    return amount.toLocaleString('ru-RU');
 +}
 +
+@@ -52 +57 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            <FieldHint showHint={showHints} text="Доставка в утреннее время. Надбавка +500 руб">
++                            <FieldHint showHint={showHints} text={`Доставка в утреннее время. Надбавка +${config.morning_add} руб`}>
+@@ -67 +72 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
+-                            <FieldHint showHint={showHints} text="Доставка в вечернее время. Надбавка +300 руб">
++                            <FieldHint showHint={showHints} text={`Доставка в дневное время. Надбавка +${config.evening_add} руб`}>
 @@ -122 +127 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
 -                            id="retail"
 +                            id="opt"
@@ -67,12 +73,23 @@ index ddf0c9e..006d1b3 100644
 -                                Опт
 -                            </FieldHint>
 +                            Розница
-@@ -151,0 +153,5 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
-+                <p className="text-sm text-gray-600 mt-2">
-+                    Льготная доставка Газелью — от {formatOrderThreshold(config.discounted_delivery_price)} ₽.
-+                    При сумме заказа от {formatOrderThreshold(config.delivery_opt_min)} ₽ для опта
-+                    {' '}или от {formatOrderThreshold(config.delivery_retail_min)} ₽ для розницы.
-+                </p>
+@@ -151,0 +153,16 @@ function DeliveryOptions({options, handleOptionChange, validationErrors = {}, va
++                <div className="text-sm text-gray-600 mt-2">
++                    <p>Льготная доставка Газелью</p>
++                    <p>
++                        Розница от {formatOrderThreshold(config.delivery_retail_min)} ₽ — доставка{' '}
++                        {formatOrderThreshold(config.discounted_delivery_price)} ₽ до {formatOrderThreshold(config.discounted_delivery_retail_weight_threshold)} кг,
++                        {' '}свыше — {formatOrderThreshold(config.discounted_delivery_retail_heavy_price)} ₽.
++                    </p>
++                    <p>
++                        Опт от {formatOrderThreshold(config.delivery_opt_min)} ₽ — доставка{' '}
++                        {formatOrderThreshold(config.discounted_delivery_price)} ₽ при любом весе до {formatOrderThreshold(vehiclesConfig[0].max_weight)} кг.
++                    </p>
++                    <p>
++                        В Кирове, кроме Коминтерна, в будни. Не действует сегодня и ко времени.
++                        {' '}Утром +{formatOrderThreshold(config.morning_add)} ₽, днём +{formatOrderThreshold(config.evening_add)} ₽.
++                    </p>
++                </div>
 diff --git a/src/ResultDisplay.jsx b/src/ResultDisplay.jsx
 index 6787f3f..1ef33f5 100644
 --- a/src/ResultDisplay.jsx

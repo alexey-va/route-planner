@@ -81,9 +81,9 @@ export function getPricingRules() {
         {
             title: 'Льготная доставка (розница / опт)',
             items: [
-                `Розница: заказ от ${config.delivery_retail_min} руб; опт: от ${config.delivery_opt_min} руб`,
-                `Стоимость доставки: ${config.discounted_delivery_price} руб`,
-                'Только Газель 1.5т, вес груза до 1500 кг',
+                `Розница: заказ от ${config.delivery_retail_min} руб — ${config.discounted_delivery_price} руб при весе до ${config.discounted_delivery_retail_weight_threshold} кг; ${config.discounted_delivery_retail_heavy_price} руб при весе более ${config.discounted_delivery_retail_weight_threshold} кг`,
+                `Опт: заказ от ${config.delivery_opt_min} руб — ${config.discounted_delivery_price} руб при любом весе в пределах грузоподъёмности`,
+                `Только Газель 1.5т, вес груза до ${vehiclesConfig[0].max_weight} кг`,
                 'Только в пределах города (Киров), не в зоне Коминтерн',
                 'Не действует: выходные, «ко времени», «сегодня»',
                 `При выборе утра или дня — дополнительно надбавка за время (${config.morning_add} / ${config.evening_add} руб)`

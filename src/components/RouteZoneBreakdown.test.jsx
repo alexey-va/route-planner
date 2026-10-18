@@ -9,7 +9,7 @@ const splitPricing = {
     outsideMeters: 20250,
     totalMeters: 21500,
     insideRate: 80,
-    outsideRate: 50
+    outsideRate: 55
 };
 
 describe('RouteZoneBreakdown', () => {
@@ -29,7 +29,7 @@ describe('RouteZoneBreakdown', () => {
         expect(screen.getByText('80 ₽/км')).toBeInTheDocument();
         expect(screen.getByText('За городом')).toBeInTheDocument();
         expect(screen.getByText('20,25 км')).toBeInTheDocument();
-        expect(screen.getByText('50 ₽/км')).toBeInTheDocument();
+        expect(screen.getByText('55 ₽/км')).toBeInTheDocument();
         expect(screen.getByText('Для расчёта стоимости пробег считается туда-обратно.')).toBeInTheDocument();
     });
 
