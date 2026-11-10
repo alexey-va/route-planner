@@ -53,9 +53,11 @@ it.each([
         expect(labels).toContain('Розница');
         expect(labels).toContain('Опт');
         const bodyText = dom.window.document.body.textContent.replace(/\s+/g, ' ');
-        expect(bodyText).toContain('Розница от 20 000 ₽ — доставка 800 ₽ до 500 кг, свыше — 1 300 ₽.');
-        expect(bodyText).toContain('Опт от 25 000 ₽ — доставка 800 ₽ при любом весе до 1 500 кг.');
-        expect(bodyText).toContain('Утром +600 ₽, днём +400 ₽.');
+        expect(bodyText).not.toContain('Льготная доставка Газелью');
+        expect(bodyText).not.toContain('Розница от 20 000 ₽');
+        expect(bodyText).not.toContain('Опт от 25 000 ₽');
+        expect(bodyText).not.toContain('В Кирове, кроме Коминтерна');
+        expect(bodyText).toContain('Справка по тарифам');
         if (routeZoneSplit) {
             expect(bodyText).toContain('Маршрут по зонам');
             expect(bodyText).toContain('10,00 км');

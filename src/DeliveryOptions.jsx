@@ -1,5 +1,5 @@
 import FieldHint from './components/FieldHint';
-import { config, vehiclesConfig } from './script.jsx';
+import { config } from './script.jsx';
 
 const formatRubles = (amount) => amount.toLocaleString('ru-RU');
 
@@ -103,7 +103,7 @@ function DeliveryOptions({
 
             <div className="route-option-group">
                 <div className="route-order-row">
-                    <fieldset className="route-order-type" aria-describedby="route-order-discount">
+                    <fieldset className="route-order-type">
                         <legend>Тип заказа</legend>
                         <div className="route-segmented">
                             <label className={options.opt === true ? 'is-selected' : ''}>
@@ -141,7 +141,6 @@ function DeliveryOptions({
                                 value={orderTotal || ''}
                                 onChange={(event) => setOrderTotal(parseFloat(event.target.value) || 0)}
                                 placeholder="0"
-                                aria-describedby="route-order-discount"
                             />
                             <span>₽</span>
                         </div>
@@ -153,26 +152,6 @@ function DeliveryOptions({
                 >
                     {validationErrors.orderTotal || '\u00A0'}
                 </p>
-                <div className="route-order-discount" id="route-order-discount">
-                    <p><strong>Льготная доставка Газелью</strong></p>
-                    <p>
-                        Розница от {formatRubles(config.delivery_retail_min)} ₽ — доставка{' '}
-                        {formatRubles(config.discounted_delivery_price)} ₽ до {formatRubles(config.discounted_delivery_retail_weight_threshold)} кг,
-                        {' '}свыше — {formatRubles(config.discounted_delivery_retail_heavy_price)} ₽.
-                    </p>
-                    <p>
-                        Опт от {formatRubles(config.delivery_opt_min)} ₽ — доставка{' '}
-                        {formatRubles(config.discounted_delivery_price)} ₽ при любом весе до {formatRubles(vehiclesConfig[0].max_weight)} кг.
-                    </p>
-                    <details>
-                        <summary>Условия льготной доставки</summary>
-                        <p>
-                            В зоне «Киров», кроме Коминтерна, до 1,5 т, в будни.
-                            Не действует на доставку сегодня и ко времени.
-                            Утром +{formatRubles(config.morning_add)} ₽, днём +{formatRubles(config.evening_add)} ₽.
-                        </p>
-                    </details>
-                </div>
             </div>
         </div>
     );

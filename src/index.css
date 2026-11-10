@@ -1217,36 +1217,6 @@ input:focus-visible {
     display: none;
 }
 
-.route-order-discount {
-    margin-top: 12px;
-    color: #68756f;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.route-order-discount p {
-    margin: 0;
-}
-
-.route-order-discount strong {
-    color: #34423c;
-    font-weight: 650;
-}
-
-.route-order-discount details {
-    margin-top: 4px;
-}
-
-.route-order-discount summary {
-    width: fit-content;
-    color: var(--route-accent-strong);
-    cursor: pointer;
-}
-
-.route-order-discount details p {
-    margin-top: 5px;
-}
-
 .route-order-total input {
     min-width: 0;
     height: 100%;
