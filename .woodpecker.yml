@@ -1,3 +1,6 @@
+labels:
+  deploy-host: vds-general
+
 when:
   - event: [push, manual]
     branch: master
@@ -7,8 +10,7 @@ steps:
     image: docker:27-cli
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/freedeeml/ci:/opt/ci:ro
+      - /srv/route-planner-vds/ci/deploy-route-planner-web.sh:/opt/ci/deploy-route-planner-web.sh:ro
     commands:
       - apk add --no-cache bash git
-      - export WORKSPACE=$${CI_WORKSPACE}
-      - bash /opt/ci/deploy-route-planner.sh
+      - bash /opt/ci/deploy-route-planner-web.sh
