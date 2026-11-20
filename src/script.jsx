@@ -224,11 +224,11 @@ export const config = {
     right_now: 2,
     weekend_multiplier: 1.5,
     truck_weekend_multiplier: 2,
-    global_min_price: 500,  // Глобальный минимум для всех доставок
+    global_min_price: 1000,  // Глобальный минимум для всех доставок
     bridge_distance_add: 10,
     delivery_retail_min: 20000,
     delivery_opt_min: 25000,
-    discounted_delivery_price: 800,
+    discounted_delivery_price: 1000,
     discounted_delivery_retail_weight_threshold: 500,
     discounted_delivery_retail_heavy_price: 1300
 };

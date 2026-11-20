@@ -58,26 +58,18 @@ describe('calculate function', () => {
   });
 
   describe('Global Minimum Price', () => {
-    it('should always have minimum price of 500 rubles', () => {
-      const params = createDefaultParams({
-        distance: 100, // Very short distance
-        vehicle: 0, // Газель 1.5т
-        region: 'Киров'
-      });
-      const result = calculate(params);
-      
-      expect(result.price).toBeGreaterThanOrEqual(500);
+    it('sets the global minimum to 1000 rubles', () => {
+      expect(config.global_min_price).toBe(1000);
     });
 
-    it('should apply global minimum even for short distances', () => {
+    it('keeps the higher vehicle minimum for short distances', () => {
       const params = createDefaultParams({
         distance: 500, // 0.5 km
         region: 'Другой город'
       });
       const result = calculate(params);
       
-      // Минимум должен быть не менее 500 руб
-      expect(result.price).toBeGreaterThanOrEqual(config.global_min_price);
+      expect(result.price).toBe(1300);
     });
   });
 
@@ -625,7 +617,6 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      // Теперь всегда платно, минимум 500 руб
       expect(result.price).toBeGreaterThanOrEqual(config.global_min_price);
     });
 
@@ -979,13 +970,13 @@ describe('calculate function', () => {
   describe('Discounted Delivery with Retail/Opt', () => {
     it.each([
       ['retail', 19999, 1300],
-      ['retail', 20000, 800],
-      ['retail', 24999, 800],
-      ['retail', 25000, 800],
+      ['retail', 20000, 1000],
+      ['retail', 24999, 1000],
+      ['retail', 25000, 1000],
       ['opt', 19999, 1300],
       ['opt', 20000, 1300],
       ['opt', 24999, 1300],
-      ['opt', 25000, 800]
+      ['opt', 25000, 1000]
     ])('charges %s orders of %i at %i rubles for 500 kg', (orderType, orderTotal, price) => {
       const result = calculate(createDefaultParams({
         orderTotal,
@@ -996,12 +987,12 @@ describe('calculate function', () => {
     });
 
     it.each([
-      ['retail', 20000, 500, 800],
+      ['retail', 20000, 500, 1000],
       ['retail', 20000, 501, 1300],
       ['retail', 20000, 1500, 1300],
-      ['opt', 25000, 500, 800],
-      ['opt', 25000, 501, 800],
-      ['opt', 25000, 1500, 800]
+      ['opt', 25000, 500, 1000],
+      ['opt', 25000, 501, 1000],
+      ['opt', 25000, 1500, 1000]
     ])('charges qualifying %s orders of %i at %i kg a fixed %i rubles', (orderType, orderTotal, weight, price) => {
       const result = calculate(createDefaultParams({
         distance: 30000,
@@ -1017,12 +1008,12 @@ describe('calculate function', () => {
     });
 
     it.each([
-      ['retail', 500, 'morning', 1400, 600],
-      ['retail', 500, 'evening', 1200, 400],
+      ['retail', 500, 'morning', 1600, 600],
+      ['retail', 500, 'evening', 1400, 400],
       ['retail', 501, 'morning', 1900, 600],
       ['retail', 501, 'evening', 1700, 400],
-      ['opt', 1500, 'morning', 1400, 600],
-      ['opt', 1500, 'evening', 1200, 400]
+      ['opt', 1500, 'morning', 1600, 600],
+      ['opt', 1500, 'evening', 1400, 400]
     ])('adds %s %i kg %s surcharge once: %i rubles', (orderType, weight, time, price, surcharge) => {
       const result = calculate(createDefaultParams({
         weight,
@@ -1050,7 +1041,7 @@ describe('calculate function', () => {
           ...overrides,
           options: { ...createDefaultParams().options, [orderType]: true }
         }));
-        expect(result.price).toBeGreaterThan(800);
+        expect(result.price).toBeGreaterThan(1000);
         expect(result.description.join(' ')).not.toContain('Льготная доставка');
       }
     });
@@ -1067,7 +1058,7 @@ describe('calculate function', () => {
           orderTotal: 30000,
           options: { ...createDefaultParams().options, [orderType]: true, ...options }
         }));
-        expect(result.price).toBeGreaterThan(800);
+        expect(result.price).toBeGreaterThan(1000);
         expect(result.description.join(' ')).not.toContain('Льготная доставка');
       }
     });

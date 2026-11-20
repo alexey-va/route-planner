@@ -4,11 +4,11 @@ import { JSDOM, VirtualConsole } from 'jsdom';
 import { expect, it, vi } from 'vitest';
 
 it.each([
-    { vehicle: 0, day: 'weekdays', price: 800, orderTotal: 20000 },
+    { vehicle: 0, day: 'weekdays', price: 1000, orderTotal: 20000 },
     { vehicle: 0, day: 'weekdays', price: 1300, orderTotal: 20000, weight: 501, distance: 30000 },
-    { vehicle: 0, day: 'weekdays', price: 800, orderType: 'opt', weight: 1500 },
-    { vehicle: 0, day: 'weekdays', price: 1400, time: 'morning' },
-    { vehicle: 0, day: 'weekdays', price: 1200, orderType: 'opt', time: 'evening' },
+    { vehicle: 0, day: 'weekdays', price: 1000, orderType: 'opt', weight: 1500 },
+    { vehicle: 0, day: 'weekdays', price: 1600, time: 'morning' },
+    { vehicle: 0, day: 'weekdays', price: 1400, orderType: 'opt', time: 'evening' },
     { vehicle: 2, day: 'weekdays', price: 2300 },
     { vehicle: 2, day: 'weekend', price: 4600 },
     { vehicle: 3, day: 'weekdays', price: 3440 },
