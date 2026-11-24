@@ -42,6 +42,9 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
                 const isDisabled = weight > value.max_weight;
                 const vehicleKey = parseInt(key, 10);
                 const isSelected = vehicle === vehicleKey;
+                const tariff = value.base_price !== undefined
+                    ? `${value.base_price} руб + ${value.price} руб/км (туда-обратно)`
+                    : `${value.price} руб/км. Минимальная стоимость: ${value.minimal_city_price} руб`;
 
                 return (
                     <label
@@ -63,7 +66,7 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
                         <span className="route-vehicle-copy">
                             <FieldHint
                                 showHint={showHints}
-                                text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${value.price} руб/км. Минимальная стоимость: ${value.minimal_city_price} руб`}
+                                text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${tariff}`}
                             >
                                 <strong>{value.name}</strong>
                             </FieldHint>

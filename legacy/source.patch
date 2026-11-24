@@ -238,13 +238,16 @@ diff --git a/src/VehicleSelection.jsx b/src/VehicleSelection.jsx
 index cbd97ea..40624f9 100644
 --- a/src/VehicleSelection.jsx
 +++ b/src/VehicleSelection.jsx
-@@ -12,0 +13,3 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
+@@ -12,0 +13,6 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
 +                    const rate = value.outside_city_price === undefined
 +                        ? `${value.price} руб/км`
 +                        : `${value.price} руб/км в Кирове и Коминтерне, ${value.outside_city_price} руб/км за городом`;
-@@ -30 +33 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
++                    const tariff = value.base_price !== undefined
++                        ? `${value.base_price} руб + ${rate} (туда-обратно)`
++                        : `${rate}. Минимальная стоимость: ${value.minimal_city_price} руб`;
+@@ -30 +36 @@ function VehicleSelection({vehiclesConfig, weight, vehicle, setVehicle, showHint
 -                                        text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${value.price} руб/км. Минимальная стоимость: ${value.minimal_city_price} руб`}
-+                                        text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${rate}. Минимальная стоимость: ${value.minimal_city_price} руб`}
++                                        text={`${value.name}, грузоподъемность до ${value.max_weight} кг. Стоимость: ${tariff}`}
 diff --git a/src/WeightDistanceInput.jsx b/src/WeightDistanceInput.jsx
 index f3a6829..8a7e8f7 100644
 --- a/src/WeightDistanceInput.jsx
@@ -265,8 +268,18 @@ diff --git a/src/components/TariffReference.jsx b/src/components/TariffReference
 index 2fef86a..dc7f1fa 100644
 --- a/src/components/TariffReference.jsx
 +++ b/src/components/TariffReference.jsx
-@@ -37 +37,3 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
+@@ -29 +29 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
+-                    const isKamaz = Number(key) === 3;
++                    const hasBasePrice = vehicle.base_price !== undefined;
+@@ -35,3 +35,5 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
+-                                {isKamaz
+-                                    ? `2000 руб + ${vehicle.price} руб/км`
 -                                    : `${vehicle.price} руб/км`}
++                                {hasBasePrice
++                                    ? `${vehicle.base_price} руб + ${vehicle.price} руб/км`
 +                                    : vehicle.outside_city_price !== undefined
 +                                        ? `${vehicle.price} руб/км в Кирове и Коминтерне; ${vehicle.outside_city_price} руб/км за городом`
 +                                        : `${vehicle.price} руб/км`}
+@@ -40 +42 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
+-                                {isKamaz
++                                {hasBasePrice

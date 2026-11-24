@@ -31,7 +31,7 @@ describe('TariffReference', () => {
         expect(noteText).toContain(normalizeSpaces(`днём +${formatRubles(config.evening_add)} ₽`));
     });
 
-    it('shows both GazON rates from the vehicle configuration', () => {
+    it('shows the Gazon minimum, both distance rates, and the Kamaz base price', () => {
         render(
             <TariffReference
                 vehiclesConfig={vehiclesConfig}
@@ -43,5 +43,7 @@ describe('TariffReference', () => {
 
         expect(screen.getByText(/Зелёная зона и Коминтерн · 80 ₽\/км/)).toBeVisible();
         expect(screen.getByText(/За городом · 55 ₽\/км/)).toBeVisible();
+        expect(screen.getByText('Минимум 2 500 ₽')).toBeVisible();
+        expect(screen.getByText('База 2 500 ₽ + пробег')).toBeVisible();
     });
 });

@@ -98,9 +98,8 @@ function calculateBasePrice(params, vehicleConfig, comments, routePricing) {
     const rate = routePricing?.mode === 'destination' ? routePricing.rate : vehicleConfig.price;
     let price;
 
-    if (params.vehicle === 3) {
-        // Камаз has base price of 2000
-        const basePrice = 2000;
+    if (vehicleConfig.base_price !== undefined) {
+        const basePrice = vehicleConfig.base_price;
         price = basePrice + distanceKm * rate * 2;
         comments.push(
             `Базовая цена: ${basePrice} руб + ${rate} руб/км × ${distanceKm.toFixed(1)} км × 2 (в две стороны) = ${price.toFixed(0)} руб`
@@ -248,7 +247,7 @@ export const vehiclesConfig = {
         outside_city_price: 55,
         price_hour: 1200,
         max_weight: 4300,
-        minimal_city_price: 2300,
+        minimal_city_price: 2500,
         heavy: true
     },
     3: {
@@ -256,7 +255,7 @@ export const vehiclesConfig = {
         price: 72,
         price_hour: 1200,
         max_weight: 10000,
-        minimal_city_price: 2000,
+        base_price: 2500,
         heavy: true
     }
 };

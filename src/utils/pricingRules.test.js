@@ -36,7 +36,8 @@ describe('getPricingRules', () => {
         expect(allItems).not.toContain('Бесплатная доставка');
         expect(allItems).toContain('Суббота–воскресенье: Газель при весе более 800 кг — цена × 1.5');
         expect(allItems).toContain('Суббота–воскресенье: Газон и Камаз при любом весе — цена × 2');
-        expect(allItems).toContain('2300 руб');
+        expect(allItems).toContain('Минимальная стоимость: 2500 руб');
+        expect(allItems).toContain('Базовая стоимость: 2500 руб + 72 руб/км');
         expect(allItems).not.toContain('Газель 2т');
         expect(allItems).toContain('не в зоне Коминтерн');
         expect(allItems).toContain('Льготная доставка в выходные не действует');

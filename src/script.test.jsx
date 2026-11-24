@@ -102,8 +102,8 @@ describe('calculate function', () => {
       const result = calculate(params);
 
       expect(vehiclesConfig[2].price).toBe(80);
-      expect(vehiclesConfig[2].minimal_city_price).toBe(2300);
-      expect(result.price).toBe(2300);
+      expect(vehiclesConfig[2].minimal_city_price).toBe(2500);
+      expect(result.price).toBe(2500);
       expect(result.description.some(desc => 
         desc.includes('Базовая цена') && desc.includes('55 руб/км')
       )).toBe(true);
@@ -119,7 +119,7 @@ describe('calculate function', () => {
         region: 'Другой город'
       }));
 
-      expect(result.price).toBe(2300);
+      expect(result.price).toBe(2500);
       expect(result.description.some(desc => desc.includes('55 руб/км'))).toBe(true);
     });
 
@@ -130,10 +130,10 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      const expectedPrice = 2000 + (10000 / 1000) * vehiclesConfig[3].price * 2;
+      const expectedPrice = 2500 + (10000 / 1000) * vehiclesConfig[3].price * 2;
       expect(result.price).toBe(expectedPrice);
       expect(result.description.some(desc => 
-        desc.includes('Базовая цена: 2000 руб')
+        desc.includes('Базовая цена: 2500 руб')
       )).toBe(true);
     });
 
@@ -181,11 +181,11 @@ describe('calculate function', () => {
       expect(result.description[0]).toContain(`${rate} руб/км`);
     });
 
-    it('keeps the 2300 minimum outside the city', () => {
+    it('keeps the 2500 minimum outside the city', () => {
       const result = calculate(createDefaultParams({
         distance: 5000, weight: 2000, vehicle: 2, region: 'Область'
       }));
-      expect(result.price).toBe(2300);
+      expect(result.price).toBe(2500);
     });
 
     it('applies time and weekend adjustments to the outside-city rate', () => {
@@ -216,7 +216,7 @@ describe('calculate function', () => {
         distance: 5000,
         routeZoneSplit: { insideMeters: 2000, outsideMeters: 3000, totalMeters: 5000 }
       }));
-      expect(result.price).toBe(2300);
+      expect(result.price).toBe(2500);
     });
 
     it('applies morning and weekend adjustments after adding the section costs', () => {
@@ -244,7 +244,7 @@ describe('calculate function', () => {
       expect(result.routePricing.mode).toBe('destination');
     });
 
-    it.each([[0, 4400], [3, 7760]])('keeps the single rate of vehicle %s', (vehicle, expected) => {
+    it.each([[0, 4400], [3, 8260]])('keeps the single rate of vehicle %s', (vehicle, expected) => {
       const result = calculate(gazonParams({ vehicle }));
       expect(result.price).toBe(expected);
       expect(result.routePricing.insideRate).toBe(result.routePricing.outsideRate);
@@ -383,12 +383,12 @@ describe('calculate function', () => {
       { vehicleName: 'Газон', vehicle: 2, day: 'saturday', weight: 1000, expectedPrice: 8800 },
       { vehicleName: 'Газон', vehicle: 2, day: 'sunday', weight: 1, expectedPrice: 8800 },
       { vehicleName: 'Газон', vehicle: 2, day: 'sunday', weight: 1000, expectedPrice: 8800 },
-      { vehicleName: 'Камаз', vehicle: 3, day: 'weekend', weight: 1, expectedPrice: 15520 },
-      { vehicleName: 'Камаз', vehicle: 3, day: 'weekend', weight: 1000, expectedPrice: 15520 },
-      { vehicleName: 'Камаз', vehicle: 3, day: 'saturday', weight: 1, expectedPrice: 15520 },
-      { vehicleName: 'Камаз', vehicle: 3, day: 'saturday', weight: 1000, expectedPrice: 15520 },
-      { vehicleName: 'Камаз', vehicle: 3, day: 'sunday', weight: 1, expectedPrice: 15520 },
-      { vehicleName: 'Камаз', vehicle: 3, day: 'sunday', weight: 1000, expectedPrice: 15520 }
+      { vehicleName: 'Камаз', vehicle: 3, day: 'weekend', weight: 1, expectedPrice: 16520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'weekend', weight: 1000, expectedPrice: 16520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'saturday', weight: 1, expectedPrice: 16520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'saturday', weight: 1000, expectedPrice: 16520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'sunday', weight: 1, expectedPrice: 16520 },
+      { vehicleName: 'Камаз', vehicle: 3, day: 'sunday', weight: 1000, expectedPrice: 16520 }
     ])('$vehicleName gets one ×2 weekend multiplier at $weight kg for $day', ({ vehicle, day, weight, expectedPrice }) => {
       const result = calculate(createDefaultParams({
         distance: 40000,
@@ -407,8 +407,8 @@ describe('calculate function', () => {
     it.each([
       { vehicleName: 'Газон', vehicle: 2, weight: 1, expectedPrice: 4400 },
       { vehicleName: 'Газон', vehicle: 2, weight: 1000, expectedPrice: 4400 },
-      { vehicleName: 'Камаз', vehicle: 3, weight: 1, expectedPrice: 7760 },
-      { vehicleName: 'Камаз', vehicle: 3, weight: 1000, expectedPrice: 7760 }
+      { vehicleName: 'Камаз', vehicle: 3, weight: 1, expectedPrice: 8260 },
+      { vehicleName: 'Камаз', vehicle: 3, weight: 1000, expectedPrice: 8260 }
     ])('$vehicleName keeps its weekday price at $weight kg', ({ vehicle, weight, expectedPrice }) => {
       const result = calculate(createDefaultParams({
         distance: 40000,
@@ -424,7 +424,7 @@ describe('calculate function', () => {
 
     it.each([
       { vehicleName: 'Газон', vehicle: 2, basePrice: 4400, expectedPrice: 14960 },
-      { vehicleName: 'Камаз', vehicle: 3, basePrice: 7760, expectedPrice: 26384 }
+      { vehicleName: 'Камаз', vehicle: 3, basePrice: 8260, expectedPrice: 28084 }
     ])('$vehicleName applies the weekend multiplier after the by-time multiplier', ({ vehicle, basePrice, expectedPrice }) => {
       const result = calculate(createDefaultParams({
         distance: 40000,
@@ -526,10 +526,8 @@ describe('calculate function', () => {
       });
       const result = calculate(params);
       
-      // Kamaz: 2000 + (20 * 72 * 2) = 4880
-      // by_time: 4880 * 1.7 = 8296
-      // weekend: 8296 * 2 = 16592
-      let expectedPrice = 2000 + (20000 / 1000) * vehiclesConfig[3].price * 2;
+      // Kamaz: 2500 + (20 * 72 * 2) = 5380
+      let expectedPrice = 2500 + (20000 / 1000) * vehiclesConfig[3].price * 2;
       expectedPrice *= config.by_time;
       expectedPrice *= 2;
       
@@ -563,7 +561,7 @@ describe('calculate function', () => {
         
         if (vehicle === 3) {
           // Камаз has base price
-          const expectedPrice = 2000 + (distance / 1000) * vehiclesConfig[vehicle].price * 2;
+          const expectedPrice = 2500 + (distance / 1000) * vehiclesConfig[vehicle].price * 2;
           expect(result.price).toBe(expectedPrice);
         } else {
           const expectedPrice = (distance / 1000) * vehiclesConfig[vehicle].price * 2;

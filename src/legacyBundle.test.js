@@ -9,10 +9,11 @@ it.each([
     { vehicle: 0, day: 'weekdays', price: 1000, orderType: 'opt', weight: 1500 },
     { vehicle: 0, day: 'weekdays', price: 1600, time: 'morning' },
     { vehicle: 0, day: 'weekdays', price: 1400, orderType: 'opt', time: 'evening' },
-    { vehicle: 2, day: 'weekdays', price: 2300 },
-    { vehicle: 2, day: 'weekend', price: 4600 },
-    { vehicle: 3, day: 'weekdays', price: 3440 },
-    { vehicle: 3, day: 'weekend', price: 6880 },
+    { vehicle: 2, day: 'weekdays', price: 2500 },
+    { vehicle: 2, day: 'weekend', price: 5000 },
+    { vehicle: 3, day: 'weekdays', price: 3940 },
+    { vehicle: 3, day: 'weekend', price: 7880 },
+    { vehicle: 3, day: 'weekdays', price: 3708, distance: 8390 },
     { vehicle: 2, day: 'weekdays', price: 4900, distance: 40000,
         routeZoneSplit: { insideMeters: 10000, outsideMeters: 30000, totalMeters: 40000 } },
 ])('renders the shipped classic bundle: vehicle $vehicle, $day → $price', async ({
@@ -58,6 +59,8 @@ it.each([
         expect(bodyText).not.toContain('Опт от 25 000 ₽');
         expect(bodyText).not.toContain('В Кирове, кроме Коминтерна');
         expect(bodyText).toContain('Справка по тарифам');
+        expect(bodyText).toContain('Минимум: 2500 руб');
+        expect(bodyText).toContain('2500 руб + 72 руб/км');
         if (routeZoneSplit) {
             expect(bodyText).toContain('Маршрут по зонам');
             expect(bodyText).toContain('10,00 км');

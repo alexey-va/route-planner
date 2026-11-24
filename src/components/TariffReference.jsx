@@ -33,7 +33,6 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
             <div className="route-tariff-grid">
                 {Object.entries(vehiclesConfig).map(([key, vehicle]) => {
                     const label = `${vehicle.name} ${VEHICLE_LABELS[key]}`;
-                    const isKamaz = Number(key) === 3;
 
                     return (
                         <div key={key} className="route-tariff-item">
@@ -42,8 +41,8 @@ function TariffReference({ vehiclesConfig, isUnlocked, onUnlock, onLock }) {
                                 <strong>{vehicle.price} ₽/км</strong>
                             </div>
                             <p>
-                                {isKamaz
-                                    ? 'База 2 000 ₽ + пробег'
+                                {vehicle.base_price !== undefined
+                                    ? `База ${formatRubles(vehicle.base_price)} ₽ + пробег`
                                     : `${Number(key) === 0 ? 'Обычный минимум' : 'Минимум'} ${formatRubles(vehicle.minimal_city_price)} ₽`}
                             </p>
                             {vehicle.outside_city_price !== undefined && (

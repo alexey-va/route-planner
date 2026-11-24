@@ -9,11 +9,11 @@ export const VEHICLE_LABELS = {
 function formatVehicleBaseRule(vehicleKey, vehicle) {
     const label = `${vehicle.name} ${VEHICLE_LABELS[vehicleKey]}`;
 
-    if (Number(vehicleKey) === 3) {
+    if (vehicle.base_price !== undefined) {
         return {
             title: label,
             items: [
-                `Базовая стоимость: 2000 руб + ${vehicle.price} руб/км × расстояние (км) × 2 (туда-обратно)`,
+                `Базовая стоимость: ${vehicle.base_price} руб + ${vehicle.price} руб/км × расстояние (км) × 2 (туда-обратно)`,
                 `Грузоподъёмность до ${vehicle.max_weight} кг`
             ]
         };
